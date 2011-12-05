@@ -61,7 +61,8 @@ Bind properties to views:
 - handles conversion and validation errors automatically
 - bind ListView to matched propoids (backed by a cursor)
 
-      listView.setAdapater(new GenericAdapter(repository.query(Foo.class)));
+
+    listView.setAdapater(new GenericAdapter(repository.query(Foo.class)));
 
 propoid-core
 ------------
