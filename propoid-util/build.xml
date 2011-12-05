@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<project default="all">
+	
+	<property file="../build.properties" />
+	
+    <target name="clean">
+        <delete dir="target"/>
+    </target>
+	
+    <target name="package">
+        <mkdir dir="target/classes"/>
+    	
+        <javac srcdir="src/main/java" destdir="target/classes">
+        	<classpath path="../propoid-core/target/classes" />
+        	<classpath location="../${propoid.android}" />
+    	</javac>
+
+    	<jar destfile="target/propoid-util-${propoid.version}.jar">
+            <fileset dir="target/classes" includes="**"/>
+        </jar>
+    </target>
+	
+    <target name="all" depends="clean,package" />
+</project>

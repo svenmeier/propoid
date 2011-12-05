@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<project default="all">
+
+    <property file="build.properties" />
+
+    <target name="modules">
+        <ant dir="./propoid-core" />
+        <ant dir="./propoid-db" />
+        <ant dir="./propoid-ui" />
+        <ant dir="./propoid-validation" />
+        <ant dir="./propoid-util" />
+    </target>
+
+    <target name="javadoc">
+        <mkdir dir="target/api"/>
+
+        <javadoc
+           destdir="target/api"
+           author="true"
+           version="true"
+           use="true"
+           windowtitle="Propoid API"
+           verbose="true"
+           classpath="${propoid.android}"
+        >
+            <fileset dir="./propoid-core/src/main" />
+            <fileset dir="./propoid-db/src/main" />
+            <fileset dir="./propoid-ui/src/main" />
+            <fileset dir="./propoid-validation/src/main" />
+            <fileset dir="./propoid-util/src/main" />
+
+            <link
+                offline="true"
+                href="http://developer.android.com/reference/"
+                packagelistLoc="${propoid.android.docs}/reference"
+            />
+        </javadoc>
+    </target>
+
+    <target name="package">
+        <mkdir dir="target"/>
+
+        <jar destfile="target/propoid-all-${propoid.version}.jar">
+            <zipgroupfileset dir="." includes="./propoid*/target/propoid-*.jar" /> 
+        </jar>
+    </target>
+
+    <target name="all" depends="modules,javadoc,package"/>
+</project>

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<project default="all">
+	
+	<property file="../build.properties" />
+	
+    <target name="clean">
+        <delete dir="target"/>
+    </target>
+	
+    <target name="package">
+        <mkdir dir="target/classes"/>
+        <javac srcdir="src/main/java" destdir="target/classes">
+            <classpath location="../${propoid.android}" />
+    	</javac>
+
+        <mkdir dir="target/test-classes"/>
+        <javac srcdir="src/test/java" destdir="target/test-classes">
+            <classpath location="../${propoid.android}" />
+            <classpath location="target/classes" />
+    	</javac>
+
+        <mkdir dir="target/test-report"/>
+        <junit haltonfailure="on" haltonerror="on">
+            <classpath location="../${propoid.android}" />
+            <classpath location="target/classes" />
+            <classpath location="target/test-classes" />
+            <batchtest todir="target/test-report">
+        	    <fileset dir="target/test-classes" includes="**/*Test.class"/>
+            	<formatter type="xml"/>
+            </batchtest>
+        </junit>
+    	
+    	<jar destfile="target/propoid-core-${propoid.version}.jar">
+            <fileset dir="target/classes" includes="**"/>
+        </jar>
+    </target>
+	
+    <target name="all" depends="clean,package" />
+</project>
