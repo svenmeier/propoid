@@ -20,7 +20,7 @@ import propoid.core.Property;
 /**
  * Order of an index or query.
  * 
- * @see Repository#index(propoid.core.Propoid, String, boolean, Order...)
+ * @see Repository#index(propoid.core.Propoid, boolean, Order...)
  * @see Match#first(Order...)
  * @see Match#list(Range, Order...)
  */

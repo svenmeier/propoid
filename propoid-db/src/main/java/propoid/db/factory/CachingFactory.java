@@ -25,7 +25,7 @@ import propoid.db.Repository;
 /**
  * A factory caching {@link Propoid}s by type and id.
  * 
- * @see #create(Class, long, String)
+ * @see #create(Repository, Class, long)
  */
 public class CachingFactory implements Factory {
 
@@ -39,15 +39,17 @@ public class CachingFactory implements Factory {
 	 * @param factory
 	 *            factory to delegate to
 	 */
-	public CachingFactory(Factory lifecycle) {
-		this.factory = lifecycle;
+	public CachingFactory(Factory factory) {
+		this.factory = factory;
 	}
 
 	/**
 	 * Returns a cached propoid if already present for type and id.
 	 * 
-	 * @param type
-	 *            type of propoid
+	 * @param repository
+	 *            repository to get propoid for
+	 * @param clazz
+	 *            class of propoid
 	 * @param id
 	 *            id of propoid
 	 */

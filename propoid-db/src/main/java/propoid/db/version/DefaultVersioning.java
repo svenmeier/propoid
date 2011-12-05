@@ -46,8 +46,8 @@ public class DefaultVersioning implements Versioning {
 	 * Each {@link Upgrade} is applied in a separate transaction to keep the
 	 * databse in a consistent state in case of a failure.
 	 * 
-	 * @param database
-	 *            database to upgrade
+	 * @param repository
+	 *            repository to upgrade
 	 */
 	@Override
 	public void upgrade(Repository repository) {

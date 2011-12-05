@@ -156,7 +156,7 @@ public class Where {
 	 * @param property
 	 * @param value
 	 * @param where
-	 * @return
+	 * @return this
 	 */
 	public static <P extends Propoid> Where has(Property<P> property, P value,
 			Where where) {
@@ -169,7 +169,7 @@ public class Where {
 	 * @param property
 	 * @param value
 	 * @param where
-	 * @return
+	 * @return this
 	 */
 	public static <P extends Propoid> Where hasNot(Property<P> property,
 			P value, Where where) {

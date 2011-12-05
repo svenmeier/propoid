@@ -232,8 +232,8 @@ public class Repository {
 	/**
 	 * Lookup a {@link Propoid} by reference.
 	 * 
-	 * @param propoid
-	 *            propoid to refresh
+	 * @param reference
+	 *            reference of propoid
 	 */
 	@SuppressWarnings("unchecked")
 	public <P extends Propoid> P lookup(Reference<P> reference) {
