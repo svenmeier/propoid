@@ -14,30 +14,30 @@ propoid-db
 
 Simple but powerful solution to persist your propoids in Sqlite.
 
-- No creation of table schema needed, just insert your objects
+No creation of table schema needed, just insert your objects
 
     Foo foo = new Foo();
     repository.insert(foo);
 
-- Use inheritance (single-table mapping)
-- Relations are lazily loaded (many-to-one)
-- Typed queries
+Typed queries
 
     Foo foo = new Foo();
     repository.query(foo, Where.equal(foo.bar, "my bar")).first();
 
-- Efficiently iterate over matched propoids (backed by a cursor)
+Efficiently iterate over matched propoids (backed by a cursor)
 
     Foo foo = new Foo();
     for (Foo match : repository.query(foo, Where.equal(foo.bar, "my bar")).list(Order.ascending(foo.baz)) {
         match.baz();
     };
 
-- Perform mass updates
+Perform mass updates
 
     Foo foo = new Foo();
     repository.query(foo).set(foo.bar, "my bar");
 
+- Use inheritance (single-table mapping)
+- Relations are lazily loaded (many-to-one)
 - Table schema is altered for new properties automagically.
 
 propoid-validation
@@ -68,14 +68,14 @@ propoid-core
 
 To benefit from these features your objects have to adhere to the following restrictions:
 
-- extend propoid.core.Propoid
-- add a default constructor
-- use propoid.core.Property for all properties
-
     public class Foo {
       public final Property bar = property();
 
       public Foo() {
       }
     }
+
+- extend propoid.core.Propoid
+- add a default constructor
+- use propoid.core.Property for all properties
 
