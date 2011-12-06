@@ -80,7 +80,7 @@ To benefit from these features your objects have to adhere to the following rest
 
 - extend propoid.core.Propoid
 - add a default constructor
-- declare all fields as 'public final propoid.core.Property'
+- declare all fields as `public final propoid.core.Property`
 
 Tags
 ====
