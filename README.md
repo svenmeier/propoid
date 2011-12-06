@@ -71,7 +71,7 @@ propoid-core
 
 To benefit from these features your objects have to adhere to the following restrictions:
 
-    public class Foo {
+    public class Foo extends Propoid {
       public final Property<String> bar = property();
 
       public Foo() {
@@ -80,7 +80,7 @@ To benefit from these features your objects have to adhere to the following rest
 
 - extend propoid.core.Propoid
 - add a default constructor
-- use propoid.core.Property for all properties (no casting needing due to generics though)
+- declare all fields as 'public final propoid.core.Property'
 
 Tags
 ====
