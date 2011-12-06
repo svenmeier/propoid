@@ -12,7 +12,9 @@ Propoid is a small library to support properties in Java:
 propoid-db
 ----------
 
-Simple but powerful solution to persist your propoids in Sqlite.
+Simple but powerful solution to persist your propoids in Sqlite:
+
+    Repository repository = new Repository(context, "foos");
 
 No creation of table schema needed, just insert your objects
 
