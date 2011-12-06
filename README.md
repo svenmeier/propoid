@@ -80,3 +80,8 @@ To benefit from these features your objects have to adhere to the following rest
 - add a default constructor
 - use propoid.core.Property for all properties (no casting needing due to generics though)
 
+Tags
+====
+
+android, java, properties, persistence, db, database, sqlite, sql, orm, or-mapper, hibernate, active-record, binding
+
