@@ -39,7 +39,7 @@ public class LocaleMapper implements Mapper<Locale> {
 	@Override
 	public void bind(Property<Locale> property, Repository repository,
 			SQLiteStatement statement, int index) {
-		Locale value = property.meta().get(property);
+		Locale value = property.meta().getInternal(property);
 		if (value == null) {
 			statement.bindNull(index);
 		} else {
@@ -51,9 +51,9 @@ public class LocaleMapper implements Mapper<Locale> {
 	public void retrieve(Property<Locale> property, Repository repository,
 			Cursor cursor, int index) {
 		if (cursor.isNull(index)) {
-			property.meta().set(property, null);
+			property.meta().setInternal(property, null);
 		} else {
-			property.meta().set(property, new Locale(cursor.getString(index)));
+			property.meta().setInternal(property, new Locale(cursor.getString(index)));
 		}
 	}
 

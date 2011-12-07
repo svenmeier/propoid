@@ -39,7 +39,7 @@ public class DateMapper implements Mapper<Date> {
 	@Override
 	public void bind(Property<Date> property, Repository repository,
 			SQLiteStatement statement, int index) {
-		Date value = property.meta().get(property);
+		Date value = property.meta().getInternal(property);
 		if (value == null) {
 			statement.bindNull(index);
 		} else {
@@ -51,9 +51,9 @@ public class DateMapper implements Mapper<Date> {
 	public void retrieve(Property<Date> property, Repository repository,
 			Cursor cursor, int index) {
 		if (cursor.isNull(index)) {
-			property.meta().set(property, null);
+			property.meta().setInternal(property, null);
 		} else {
-			property.meta().set(property, new Date(cursor.getLong(index)));
+			property.meta().setInternal(property, new Date(cursor.getLong(index)));
 		}
 	}
 

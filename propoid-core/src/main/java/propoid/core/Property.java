@@ -117,6 +117,9 @@ public final class Property<T> implements Serializable {
 		return meta;
 	}
 
+	/**
+	 * Meta information about a {@link Property}.
+	 */
 	public static final class Meta {
 		public final String name;
 		public final Type type;
@@ -133,11 +136,19 @@ public final class Property<T> implements Serializable {
 					.getActualTypeArguments()[0];
 		}
 
-		public <T> T get(Property<T> property) {
+		/**
+		 * Get the internal value of the given property, i.e. without
+		 * interfering any {@link Aspect}.
+		 */
+		public <T> T getInternal(Property<T> property) {
 			return property.value;
 		}
 
-		public <T> void set(Property<T> property, T value) {
+		/**
+		 * Set the internal value of the given property, i.e. without
+		 * interfering any {@link Aspect}.
+		 */
+		public <T> void setInternal(Property<T> property, T value) {
 			property.value = value;
 		}
 	}

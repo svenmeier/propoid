@@ -37,7 +37,7 @@ public class FloatMapper implements Mapper<Float> {
 	@Override
 	public void bind(Property<Float> property, Repository repository,
 			SQLiteStatement statement, int index) {
-		Float value = property.meta().get(property);
+		Float value = property.meta().getInternal(property);
 		if (value == null) {
 			statement.bindNull(index);
 		} else {
@@ -49,10 +49,10 @@ public class FloatMapper implements Mapper<Float> {
 	public void retrieve(Property<Float> property, Repository repository,
 			Cursor cursor, int index) {
 		if (cursor.isNull(index)) {
-			property.meta().set(property, null);
+			property.meta().setInternal(property, null);
 		} else {
 
-			property.meta().set(property, cursor.getFloat(index));
+			property.meta().setInternal(property, cursor.getFloat(index));
 		}
 	}
 

@@ -43,7 +43,7 @@ public class ClassMapper implements Mapper<Class> {
 	@Override
 	public void bind(Property<Class> property, Repository repository,
 			SQLiteStatement statement, int index) {
-		Class value = property.meta().get(property);
+		Class value = property.meta().getInternal(property);
 		if (value == null) {
 			statement.bindNull(index);
 		} else {
@@ -55,10 +55,10 @@ public class ClassMapper implements Mapper<Class> {
 	public void retrieve(Property<Class> property, Repository repository,
 			Cursor cursor, int index) {
 		if (cursor.isNull(index)) {
-			property.meta().set(property, null);
+			property.meta().setInternal(property, null);
 		} else {
 			try {
-				property.meta().set(property,
+				property.meta().setInternal(property,
 						Class.forName(cursor.getString(index)));
 			} catch (ClassNotFoundException ex) {
 				throw new RepositoryException(ex);

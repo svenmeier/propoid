@@ -55,7 +55,7 @@ public class Relation extends AbstractAspect {
 		this.property = property;
 		this.repository = repository;
 
-		Propoid propoid = property.meta().get(property);
+		Propoid propoid = property.meta().getInternal(property);
 		if (propoid == null) {
 			this.id = VOID;
 		} else {

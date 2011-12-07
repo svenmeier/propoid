@@ -63,7 +63,7 @@ public class DefaultCascading implements Cascading {
 	private void merge(Repository repository, Relation relation) {
 		if (isCascaded(relation.property)) {
 			if (relation.id != Relation.VOID) {
-				Propoid propoid = relation.property.meta().get(
+				Propoid propoid = relation.property.meta().getInternal(
 						relation.property);
 
 				if (propoid != null) {

@@ -39,7 +39,7 @@ public class CharacterMapper implements Mapper<Character> {
 	@Override
 	public void bind(Property<Character> property, Repository repository,
 			SQLiteStatement statement, int index) {
-		Character value = property.meta().get(property);
+		Character value = property.meta().getInternal(property);
 		if (value == null) {
 			statement.bindNull(index);
 		} else {
@@ -51,14 +51,14 @@ public class CharacterMapper implements Mapper<Character> {
 	public void retrieve(Property<Character> property, Repository repository,
 			Cursor cursor, int index) {
 		if (cursor.isNull(index)) {
-			property.meta().set(property, null);
+			property.meta().setInternal(property, null);
 		} else {
 			String string = cursor.getString(index);
 			if (string.length() != 1) {
 				throw new RepositoryException(
 						"character must have length 1, is '" + string + "'");
 			}
-			property.meta().set(property, string.charAt(0));
+			property.meta().setInternal(property, string.charAt(0));
 		}
 	}
 
