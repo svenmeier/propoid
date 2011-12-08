@@ -3,23 +3,47 @@
 	
 	<property file="../build.properties" />
 	
+	<path id="classpath">
+	    <path path="../propoid-core/target/classes" />
+	    <path path="../propoid-validation/target/classes" />
+	    <pathelement location="../${propoid.android}" />
+	</path>
+	
     <target name="clean">
         <delete dir="target"/>
     </target>
 	
-    <target name="package">
+    <target name="compile">
         <mkdir dir="target/classes"/>
-    	
         <javac srcdir="src/main/java" destdir="target/classes">
-        	<classpath path="../propoid-core/target/classes" />
-        	<classpath path="../propoid-validation/target/classes" />
-        	<classpath location="../${propoid.android}" />
+        	<classpath refid="classpath" />
     	</javac>
 
+        <mkdir dir="target/test-classes"/>
+        <javac srcdir="src/test/java" destdir="target/test-classes">
+        	<classpath refid="classpath" />
+        	<classpath path="target/classes" />
+    	</javac>
+    </target>
+
+    <target name="test">
+        <mkdir dir="target/test-report"/>
+        <junit haltonfailure="on" haltonerror="on">
+            <classpath refid="classpath" />
+            <classpath path="target/classes" />
+            <classpath path="target/test-classes" />
+            <batchtest todir="target/test-report">
+                <fileset dir="target/test-classes" includes="**/*Test.class"/>
+                <formatter type="xml"/>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="package">
     	<jar destfile="target/propoid-ui-${propoid.version}.jar">
             <fileset dir="target/classes" includes="**"/>
         </jar>
     </target>
 	
-    <target name="all" depends="clean,package" />
+    <target name="all" depends="clean,compile,test,package" />
 </project>

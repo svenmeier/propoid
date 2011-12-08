@@ -6,8 +6,8 @@
     <target name="modules">
         <ant dir="./propoid-core" />
         <ant dir="./propoid-db" />
-        <ant dir="./propoid-ui" />
         <ant dir="./propoid-validation" />
+        <ant dir="./propoid-ui" />
         <ant dir="./propoid-util" />
     </target>
 
