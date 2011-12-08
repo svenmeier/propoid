@@ -19,7 +19,7 @@ import propoid.core.Property;
 
 /**
  */
-public class MinLengthValidator extends PropertyValidator<String> {
+public class MinLengthValidator extends Validator<String> {
 
 	public final int length;
 

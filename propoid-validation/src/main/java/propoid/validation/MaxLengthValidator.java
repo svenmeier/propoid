@@ -19,7 +19,7 @@ import propoid.core.Property;
 
 /**
  */
-public class MaxLengthValidator extends PropertyValidator<String> {
+public class MaxLengthValidator extends Validator<String> {
 
 	public final int length;
 

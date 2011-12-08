@@ -15,21 +15,30 @@
  */
 package propoid.validation;
 
-import propoid.core.AbstractAspect;
+import propoid.core.Property;
+import propoid.core.PropertyAspect;
 import propoid.core.Propoid;
 
 /**
  * A validator of a {@link Propoid}.
  */
-public abstract class Validator extends AbstractAspect {
+public abstract class Validator<T> extends PropertyAspect<T> {
 
 	private int resId;
 
-	protected Validator(Propoid propoid, int resId) {
-		super(propoid);
+	protected Validator(Property<T> property, int resId) {
+		super(property);
 
 		this.resId = resId;
 	}
+
+	protected T onSet(T value) {
+		validate(value);
+
+		return super.onSet(value);
+	}
+
+	protected abstract void validate(T value);
 
 	/**
 	 * Report a violation with a {@link ValidatorException}.

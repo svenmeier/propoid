@@ -22,7 +22,7 @@ import propoid.core.Property;
 /**
  * Validated properties against a regular expression.
  */
-public class PatternValidator extends PropertyValidator<String> {
+public class PatternValidator extends Validator<String> {
 
 	public final String pattern;
 

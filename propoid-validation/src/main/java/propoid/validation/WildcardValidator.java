@@ -21,7 +21,7 @@ import propoid.core.Property;
 
 /**
  */
-public class WildcardValidator extends PropertyValidator<String> {
+public class WildcardValidator extends Validator<String> {
 
 	private final String wildcards;
 
