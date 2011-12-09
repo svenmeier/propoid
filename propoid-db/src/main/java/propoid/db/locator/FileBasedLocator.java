@@ -25,12 +25,24 @@ import android.database.sqlite.SQLiteDatabase;
 public class FileBasedLocator implements Locator {
 
 	private File file;
+	private SQLiteDatabase database;
 
 	public FileBasedLocator(File file) {
 		this.file = file;
 	}
 
 	public SQLiteDatabase open() {
-		return SQLiteDatabase.openOrCreateDatabase(file, null);
+		if (database != null) {
+			throw new IllegalStateException("already open");
+		}
+
+		database = SQLiteDatabase.openOrCreateDatabase(file, null);
+		return database;
+	}
+
+	@Override
+	public void close() {
+		database.close();
+		database = null;
 	}
 }

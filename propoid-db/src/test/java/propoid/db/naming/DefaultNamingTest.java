@@ -11,21 +11,21 @@ public class DefaultNamingTest extends TestCase {
 
 		DefaultNaming naming = new DefaultNaming();
 
-		assertEquals("Foo", naming.toTable(repository, Foo.class));
-		assertEquals("Foo", naming.toTable(repository, FooExtended.class));
+		assertEquals("Foo", naming.table(repository, Foo.class));
+		assertEquals("Foo", naming.table(repository, FooExtended.class));
 
-		assertEquals(null, naming.toType(repository, Foo.class));
+		assertEquals(null, naming.encodeType(repository, Foo.class));
 		assertEquals("FooExtended",
-				naming.toType(repository, FooExtended.class));
+				naming.encodeType(repository, FooExtended.class));
 
-		assertEquals(Foo.class, naming.fromType(repository, Foo.class, null));
+		assertEquals(Foo.class, naming.decodeType(repository, Foo.class, null));
 		assertEquals(FooExtended.class,
-				naming.fromType(repository, Foo.class, "FooExtended"));
+				naming.decodeType(repository, Foo.class, "FooExtended"));
 		assertEquals(FooExtended.class,
-				naming.fromType(repository, FooExtended.class, "FooExtended"));
-		assertEquals(FooExtended.class, naming.fromType(repository, Foo.class,
+				naming.decodeType(repository, FooExtended.class, "FooExtended"));
+		assertEquals(FooExtended.class, naming.decodeType(repository, Foo.class,
 				"propoid.db.naming.FooExtended"));
-		assertEquals(FooExtended.class, naming.fromType(repository,
+		assertEquals(FooExtended.class, naming.decodeType(repository,
 				FooExtended.class, "propoid.db.naming.FooExtended"));
 	}
 }

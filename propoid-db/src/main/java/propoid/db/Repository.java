@@ -44,6 +44,15 @@ import android.database.sqlite.SQLiteDatabase;
 
 /**
  * A repository of {@link Propoid}s.
+ * <p>
+ * If not specified otherwise uses the following {@link Setting}s:
+ * <ul>
+ * <li>{@link DefaultVersioning}</li>
+ * <li>{@link DefaultCascading}</li>
+ * <li>{@link DefaultFactory}</li>
+ * <li>{@link DefaultNaming}</li>
+ * <li>{@link DefaultMapping}</li>
+ * </ul>
  */
 public class Repository {
 
@@ -119,6 +128,12 @@ public class Repository {
 			public SQLiteDatabase open() {
 				return database;
 			}
+
+			@Override
+			public void close() {
+				throw new IllegalStateException(
+						"derived repository can not be closed");
+			}
 		};
 
 		Versioning versioning = lookup(settings, Versioning.class,
@@ -140,7 +155,7 @@ public class Repository {
 
 	public void close() {
 		if (database != null) {
-			database.close();
+			locator.close();
 			database = null;
 		}
 	}

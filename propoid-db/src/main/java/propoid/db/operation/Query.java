@@ -61,7 +61,7 @@ public class Query extends Operation {
 
 			sql.raw(" WHERE ");
 
-			String type = repository.naming.toType(repository,
+			String type = repository.naming.encodeType(repository,
 					propoid.getClass());
 			if (type != null) {
 				sql.raw(" _type = ? AND ");
@@ -117,7 +117,7 @@ public class Query extends Operation {
 			final Aliaser aliaser = new Aliaser();
 
 			sql.raw("SELECT * FROM ");
-			sql.escaped(repository.naming.toTable(repository,
+			sql.escaped(repository.naming.table(repository,
 					propoid.getClass()));
 			sql.raw(" ");
 			sql.raw(aliaser.alias(propoid));
@@ -142,7 +142,7 @@ public class Query extends Operation {
 			final Aliaser aliaser = new Aliaser();
 
 			sql.raw("SELECT COUNT(*) FROM ");
-			sql.escaped(repository.naming.toTable(repository,
+			sql.escaped(repository.naming.table(repository,
 					propoid.getClass()));
 			sql.raw(" ");
 			sql.raw(aliaser.alias(propoid));
@@ -189,7 +189,7 @@ public class Query extends Operation {
 			sql.raw("(");
 			sql.escaped(property.name());
 			sql.raw(") FROM ");
-			sql.escaped(repository.naming.toTable(repository,
+			sql.escaped(repository.naming.table(repository,
 					propoid.getClass()));
 			sql.raw(" ");
 			sql.raw(aliaser.alias(propoid));
@@ -215,7 +215,7 @@ public class Query extends Operation {
 			final Aliaser aliaser = new Aliaser();
 
 			sql.raw("UPDATE ");
-			sql.escaped(repository.naming.toTable(repository,
+			sql.escaped(repository.naming.table(repository,
 					propoid.getClass()));
 			sql.raw(" SET ");
 			sql.escaped(property.name());
@@ -229,7 +229,7 @@ public class Query extends Operation {
 			sql.raw(" WHERE _id IN (");
 
 			sql.raw("SELECT _id FROM ");
-			sql.escaped(repository.naming.toTable(repository,
+			sql.escaped(repository.naming.table(repository,
 					propoid.getClass()));
 			sql.raw(" ");
 			sql.raw(aliaser.alias(propoid));
@@ -246,12 +246,12 @@ public class Query extends Operation {
 
 			SQL sql = new SQL();
 			sql.raw("DELETE FROM ");
-			sql.escaped(repository.naming.toTable(repository,
+			sql.escaped(repository.naming.table(repository,
 					propoid.getClass()));
 			sql.raw(" WHERE _id IN (");
 
 			sql.raw("SELECT _id FROM ");
-			sql.escaped(repository.naming.toTable(repository,
+			sql.escaped(repository.naming.table(repository,
 					propoid.getClass()));
 			sql.raw(" ");
 			sql.raw(aliaser.alias(propoid));

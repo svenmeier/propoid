@@ -26,13 +26,27 @@ public class ContextBasedLocator implements Locator {
 	private Context context;
 	private String name;
 
+	private SQLiteDatabase database;
+
 	public ContextBasedLocator(Context context, String name) {
 		this.context = context;
 		this.name = name;
 	}
 
 	public SQLiteDatabase open() {
-		return context.openOrCreateDatabase(name, Context.MODE_WORLD_READABLE
-				| Context.MODE_WORLD_WRITEABLE, null);
+		if (database != null) {
+			throw new IllegalStateException("already open");
+		}
+
+		database = context.openOrCreateDatabase(name,
+				Context.MODE_WORLD_READABLE | Context.MODE_WORLD_WRITEABLE,
+				null);
+		return database;
+	}
+
+	@Override
+	public void close() {
+		database.close();
+		database = null;
 	}
 }

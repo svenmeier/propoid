@@ -24,4 +24,5 @@ public interface Locator {
 
 	public SQLiteDatabase open();
 
+	public void close();
 }

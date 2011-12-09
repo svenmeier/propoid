@@ -51,7 +51,7 @@ public class Schema extends Operation {
 	private void create(Propoid propoid) {
 		SQL sql = new SQL();
 		sql.raw("CREATE TABLE ");
-		sql.escaped(repository.naming.toTable(repository, propoid.getClass()));
+		sql.escaped(repository.naming.table(repository, propoid.getClass()));
 		sql.raw(" (_id INTEGER PRIMARY KEY, _type TEXT");
 
 		for (Property<?> property : propoid.properties()) {
@@ -98,7 +98,7 @@ public class Schema extends Operation {
 
 		SQL sql = new SQL();
 		sql.raw("ALTER TABLE ");
-		sql.escaped(repository.naming.toTable(repository,
+		sql.escaped(repository.naming.table(repository,
 				property.propoid.getClass()));
 		sql.raw(" ADD COLUMN ");
 		sql.escaped(property.name());
@@ -111,7 +111,7 @@ public class Schema extends Operation {
 	private List<Column> existingColumns(Propoid propoid) {
 		SQL sql = new SQL();
 		sql.raw("PRAGMA table_info(");
-		sql.escaped(repository.naming.toTable(repository, propoid.getClass()));
+		sql.escaped(repository.naming.table(repository, propoid.getClass()));
 		sql.raw(")");
 
 		Cursor cursor = repository.getDatabase().rawQuery(sql.toString(),

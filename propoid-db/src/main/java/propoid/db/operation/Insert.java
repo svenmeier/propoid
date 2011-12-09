@@ -40,7 +40,7 @@ public class Insert extends Operation {
 
 		SQL sql = new SQL();
 		sql.raw("INSERT INTO ");
-		sql.escaped(repository.naming.toTable(repository, propoid.getClass()));
+		sql.escaped(repository.naming.table(repository, propoid.getClass()));
 		sql.raw(" (_type");
 
 		int questionMarks = 0;
@@ -64,7 +64,7 @@ public class Insert extends Operation {
 		SQLiteStatement statement = repository.getDatabase().compileStatement(
 				sql.toString());
 		try {
-			String type = repository.naming.toType(repository,
+			String type = repository.naming.encodeType(repository,
 					propoid.getClass());
 			if (type != null) {
 				statement.bindString(1, type);

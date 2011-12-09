@@ -26,7 +26,12 @@ import propoid.db.aspect.Relation;
 import propoid.db.aspect.Row;
 
 /**
- * Default implementation of {@link Cascading}.
+ * Default {@link Cascading} of properties.
+ * <p>
+ * Each {@link Property} to be cascaded {@link #onInsert(Repository, Relation)},
+ * {@link #onUpdate(Repository, Relation)} and
+ * {@link #onDelete(Repository, Relation)} have to be registered with
+ * {@link #setCascaded(Property)}.
  */
 public class DefaultCascading implements Cascading {
 
@@ -50,11 +55,23 @@ public class DefaultCascading implements Cascading {
 		return cascaded.contains(property.meta());
 	}
 
+	/**
+	 * Merges the relation's {@link Propoid} if the property is registered for
+	 * cascading.
+	 * 
+	 * @see #setCascaded(Property)
+	 */
 	@Override
 	public void onInsert(Repository repository, Relation relation) {
 		merge(repository, relation);
 	}
 
+	/**
+	 * Merges the relation's {@link Propoid} if the property is registered for
+	 * cascading.
+	 * 
+	 * @see #setCascaded(Property)
+	 */
 	@Override
 	public void onUpdate(Repository repository, Relation relation) {
 		merge(repository, relation);
@@ -75,6 +92,12 @@ public class DefaultCascading implements Cascading {
 		}
 	}
 
+	/**
+	 * Deletes the relation's {@link Propoid} if the property is registered for
+	 * cascading.
+	 * 
+	 * @see #setCascaded(Property)
+	 */
 	@Override
 	public void onDelete(Repository repository, Relation relation) {
 		if (isCascaded(relation.property)) {

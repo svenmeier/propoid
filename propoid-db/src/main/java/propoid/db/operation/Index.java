@@ -42,7 +42,7 @@ public class Index extends Operation {
 		sql.raw(" INDEX ");
 		sql.escaped(name);
 		sql.raw(" ON ");
-		sql.escaped(repository.naming.toTable(repository, propoid.getClass()));
+		sql.escaped(repository.naming.table(repository, propoid.getClass()));
 		sql.raw(" (");
 		for (Order order : ordering) {
 			sql.separate(", ");

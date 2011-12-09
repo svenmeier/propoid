@@ -35,7 +35,7 @@ public class Lookup extends Operation {
 		final SQL sql = new SQL();
 
 		sql.raw("SELECT * FROM ");
-		sql.escaped(repository.naming.toTable(repository, reference.type));
+		sql.escaped(repository.naming.table(repository, reference.type));
 		sql.raw(" WHERE _id = ?");
 
 		Cursor cursor = repository.getDatabase().rawQuery(sql.toString(),

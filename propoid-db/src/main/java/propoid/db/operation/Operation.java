@@ -44,7 +44,7 @@ public abstract class Operation {
 		long id = cursor.getLong(cursor.getColumnIndex("_id"));
 
 		String type = cursor.getString(cursor.getColumnIndex("_type"));
-		clazz = repository.naming.fromType(repository, clazz, type);
+		clazz = repository.naming.decodeType(repository, clazz, type);
 
 		Propoid propoid = repository.factory.create(repository, clazz, id);
 		Row.setID(propoid, id);

@@ -35,10 +35,13 @@ public interface Match<P extends Propoid> {
 	/**
 	 * List all matched {@link Propoid}s.
 	 * <p>
-	 * See {@link #list(Range, Order...)} for further details.
+	 * See {@link #list(Range, Order...)} for further details regarding the list
+	 * implementation.
 	 * 
 	 * @param ordering
 	 *            order of listing
+	 * @return all matched propoids in a closeable list
+	 * @see Closeable
 	 */
 	public List<P> list(Order... ordering);
 
@@ -52,8 +55,12 @@ public interface Match<P extends Propoid> {
 	 * <li>getting all elements with {@link List#toArray()}</li>
 	 * <li>getting all elements with {@link List#toArray(Object[])}</li>
 	 * <li>completely iterating over all elements available from the iterator
-	 * returned by {@link List#iterator()}</li>
+	 * returned by {@link List#iterator()} (e.g. when using the Java 5
+	 * foreach-loop)</li>
 	 * </ul>
+	 * Note that one of the above is usually involved if you add all elements to
+	 * another collection, e.g. {@code new ArrayList(match.list())}.
+	 * <p>
 	 * {@link List#isEmpty()}, {@link List#size()} and {@link List#get(int)}
 	 * will leave the {@link Cursor} open, all other methods of the returned
 	 * list will throw {@link UnsupportedOperationException}.
@@ -62,6 +69,8 @@ public interface Match<P extends Propoid> {
 	 *            of propoids to list
 	 * @param ordering
 	 *            order of listing
+	 * @return all matched propoids in a closeable list
+	 * @see Closeable
 	 */
 	public List<P> list(Range range, Order... ordering);
 

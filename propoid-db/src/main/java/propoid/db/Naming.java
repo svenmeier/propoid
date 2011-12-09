@@ -25,16 +25,16 @@ public interface Naming extends Setting {
 	/**
 	 * Get the table name for the given {@link Propoid} class.
 	 */
-	public String toTable(Repository repository, Class<? extends Propoid> clazz);
+	public String table(Repository repository, Class<? extends Propoid> clazz);
 
 	/**
-	 * Get the type name for the given {@link Propoid} class.
+	 * Get a type indicator for the given {@link Propoid} class.
 	 */
-	public String toType(Repository repository, Class<? extends Propoid> clazz);
+	public String encodeType(Repository repository, Class<? extends Propoid> clazz);
 
 	/**
-	 * Get the {@link Propoid} class from the given type name.
+	 * Get the {@link Propoid} class from the given type indicator.
 	 */
-	public Class<? extends Propoid> fromType(Repository repository,
+	public Class<? extends Propoid> decodeType(Repository repository,
 			Class<? extends Propoid> clazz, String type);
 }

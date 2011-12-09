@@ -49,7 +49,7 @@ public class Delete extends Operation {
 
 		SQL sql = new SQL();
 		sql.raw("DELETE FROM ");
-		sql.escaped(repository.naming.toTable(repository, propoid.getClass()));
+		sql.escaped(repository.naming.table(repository, propoid.getClass()));
 		sql.raw(" WHERE _id = ?");
 
 		repository.getDatabase().execSQL(sql.toString(), new Object[] { id });

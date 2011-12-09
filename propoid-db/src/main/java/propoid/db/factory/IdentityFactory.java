@@ -27,7 +27,7 @@ import propoid.db.Repository;
  * 
  * @see #create(Repository, Class, long)
  */
-public class CachingFactory implements Factory {
+public class IdentityFactory implements Factory {
 
 	private Map<String, Propoid> propoids = new HashMap<String, Propoid>();
 
@@ -39,7 +39,7 @@ public class CachingFactory implements Factory {
 	 * @param factory
 	 *            factory to delegate to
 	 */
-	public CachingFactory(Factory factory) {
+	public IdentityFactory(Factory factory) {
 		this.factory = factory;
 	}
 

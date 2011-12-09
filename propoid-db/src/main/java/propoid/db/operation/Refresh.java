@@ -40,7 +40,7 @@ public class Refresh extends Operation {
 		final SQL sql = new SQL();
 
 		sql.raw("SELECT * FROM ");
-		sql.escaped(repository.naming.toTable(repository, propoid.getClass()));
+		sql.escaped(repository.naming.table(repository, propoid.getClass()));
 		sql.raw(" WHERE _id = ?");
 
 		Cursor cursor = repository.getDatabase().rawQuery(sql.toString(),

@@ -42,7 +42,7 @@ public class Update extends Operation {
 		SQL sql = new SQL();
 
 		sql.raw("update ");
-		sql.escaped(repository.naming.toTable(repository, propoid.getClass()));
+		sql.escaped(repository.naming.table(repository, propoid.getClass()));
 		sql.raw(" set ");
 
 		boolean hasProperty = false;

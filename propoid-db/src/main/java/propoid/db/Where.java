@@ -228,7 +228,7 @@ public class Where {
 
 			sql.raw(comparand);
 			sql.raw("(select null from ");
-			sql.escaped(repository.naming.toTable(repository, value.getClass()));
+			sql.escaped(repository.naming.table(repository, value.getClass()));
 			sql.raw(" ");
 			sql.raw(aliaser.alias(value));
 			sql.raw(" where ");

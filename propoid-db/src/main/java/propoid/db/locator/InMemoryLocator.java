@@ -22,10 +22,23 @@ import android.database.sqlite.SQLiteDatabase;
  */
 public class InMemoryLocator implements Locator {
 
+	private SQLiteDatabase database;
+
 	public InMemoryLocator() {
 	}
 
 	public SQLiteDatabase open() {
-		return SQLiteDatabase.create(null);
+		if (database != null) {
+			throw new IllegalStateException("already open");
+		}
+		database = SQLiteDatabase.create(null);
+
+		return database;
+	}
+
+	@Override
+	public void close() {
+		database.close();
+		database = null;
 	}
 }
