@@ -51,7 +51,7 @@ public class StringMapper implements Mapper<String> {
 	@Override
 	public void bind(Property<String> property, Repository repository,
 			SQLiteStatement statement, int index) {
-		String value = property.meta().getInternal(property);
+		String value = property.getInternal();
 		if (value == null) {
 			statement.bindNull(index);
 		} else {
@@ -63,9 +63,9 @@ public class StringMapper implements Mapper<String> {
 	public void retrieve(Property<String> property, Repository repository,
 			Cursor cursor, int index) {
 		if (cursor.isNull(index)) {
-			property.meta().setInternal(property, null);
+			property.setInternal(null);
 		} else {
-			property.meta().setInternal(property, cursor.getString(index));
+			property.setInternal(cursor.getString(index));
 		}
 	}
 

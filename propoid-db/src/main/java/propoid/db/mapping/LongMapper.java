@@ -37,7 +37,7 @@ public class LongMapper implements Mapper<Long> {
 	@Override
 	public void bind(Property<Long> property, Repository repository,
 			SQLiteStatement statement, int index) {
-		Long value = property.meta().getInternal(property);
+		Long value = property.getInternal();
 		if (value == null) {
 			statement.bindNull(index);
 		} else {
@@ -49,9 +49,9 @@ public class LongMapper implements Mapper<Long> {
 	public void retrieve(Property<Long> property, Repository repository,
 			Cursor cursor, int index) {
 		if (cursor.isNull(index)) {
-			property.meta().setInternal(property, null);
+			property.setInternal(null);
 		} else {
-			property.meta().setInternal(property, cursor.getLong(index));
+			property.setInternal(cursor.getLong(index));
 		}
 	}
 

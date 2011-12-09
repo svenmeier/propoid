@@ -47,7 +47,7 @@ public class PropoidMapper implements Mapper<Propoid> {
 
 		Relation relation = Relation.get(property);
 		if (relation == null) {
-			Propoid propoid = property.meta().getInternal(property);
+			Propoid propoid = property.getInternal();
 			if (propoid == null) {
 				id = Relation.VOID;
 			} else {
@@ -71,7 +71,7 @@ public class PropoidMapper implements Mapper<Propoid> {
 	public void retrieve(Property<Propoid> property, Repository repository,
 			Cursor cursor, int index) {
 
-		property.meta().setInternal(property, null);
+		property.setInternal(null);
 
 		long id;
 		if (cursor.isNull(index)) {

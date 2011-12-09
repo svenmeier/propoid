@@ -38,7 +38,7 @@ public class BooleanMapper implements Mapper<Boolean> {
 	@Override
 	public void bind(Property<Boolean> property, Repository repository,
 			SQLiteStatement statement, int index) {
-		Boolean value = property.meta().getInternal(property);
+		Boolean value = property.getInternal();
 		if (value == null) {
 			statement.bindNull(index);
 		} else {
@@ -51,10 +51,9 @@ public class BooleanMapper implements Mapper<Boolean> {
 			Cursor cursor, int index) {
 
 		if (cursor.isNull(index)) {
-			property.meta().setInternal(property, null);
+			property.setInternal(null);
 		} else {
-			property.meta().setInternal(property,
-					cursor.getInt(index) == 1 ? true : false);
+			property.setInternal(cursor.getInt(index) == 1 ? true : false);
 		}
 	}
 

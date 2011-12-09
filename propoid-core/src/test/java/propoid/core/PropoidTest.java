@@ -67,9 +67,9 @@ public class PropoidTest extends TestCase {
 		TestAspect aspect = new TestAspect(foo);
 
 		aspect.reset();
-		foo.bar.meta().setInternal(foo.bar, "BAR");
+		foo.bar.setInternal("BAR");
 		assertFalse(aspect.setCalled);
-		foo.bar.meta().getInternal(foo.bar);
+		foo.bar.getInternal();
 		assertFalse(aspect.getCalled);
 
 		aspect.reset();

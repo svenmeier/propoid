@@ -38,7 +38,7 @@ public class IntegerMapper implements Mapper<Integer> {
 	@Override
 	public void bind(Property<Integer> property, Repository repository,
 			SQLiteStatement statement, int index) {
-		Integer value = property.meta().getInternal(property);
+		Integer value = property.getInternal();
 		if (value == null) {
 			statement.bindNull(index);
 		} else {
@@ -50,9 +50,9 @@ public class IntegerMapper implements Mapper<Integer> {
 	public void retrieve(Property<Integer> property, Repository repository,
 			Cursor cursor, int index) {
 		if (cursor.isNull(index)) {
-			property.meta().setInternal(property, null);
+			property.setInternal(null);
 		} else {
-			property.meta().setInternal(property, cursor.getInt(index));
+			property.setInternal(cursor.getInt(index));
 		}
 	}
 

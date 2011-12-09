@@ -37,7 +37,7 @@ public class ShortMapper implements Mapper<Short> {
 	@Override
 	public void bind(Property<Short> property, Repository repository,
 			SQLiteStatement statement, int index) {
-		Short value = property.meta().getInternal(property);
+		Short value = property.getInternal();
 		if (value == null) {
 			statement.bindNull(index);
 		} else {
@@ -49,9 +49,9 @@ public class ShortMapper implements Mapper<Short> {
 	public void retrieve(Property<Short> property, Repository repository,
 			Cursor cursor, int index) {
 		if (cursor.isNull(index)) {
-			property.meta().setInternal(property, null);
+			property.setInternal(null);
 		} else {
-			property.meta().setInternal(property, (short) cursor.getLong(index));
+			property.setInternal((short) cursor.getLong(index));
 		}
 	}
 

@@ -43,7 +43,7 @@ public class BytesMapper implements Mapper<byte[]> {
 	@Override
 	public void bind(Property<byte[]> property, Repository repository,
 			SQLiteStatement statement, int index) {
-		byte[] value = property.meta().getInternal(property);
+		byte[] value = property.getInternal();
 		if (value == null) {
 			statement.bindNull(index);
 		} else {
@@ -55,9 +55,9 @@ public class BytesMapper implements Mapper<byte[]> {
 	public void retrieve(Property<byte[]> property, Repository repository,
 			Cursor cursor, int index) {
 		if (cursor.isNull(index)) {
-			property.meta().setInternal(property, null);
+			property.setInternal(null);
 		} else {
-			property.meta().setInternal(property, cursor.getBlob(index));
+			property.setInternal(cursor.getBlob(index));
 		}
 	}
 

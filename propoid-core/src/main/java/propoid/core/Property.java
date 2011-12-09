@@ -92,6 +92,24 @@ public final class Property<T> implements Serializable {
 		return String.format("%s = %s", name(), value);
 	}
 
+	/**
+	 * Get the internal value, i.e. without interfering any {@link Aspect}.
+	 * <p>
+	 * DO NOT CALL THIS METHOD FROM APPLICATION CODE!
+	 */
+	public T getInternal() {
+		return this.value;
+	}
+
+	/**
+	 * Set the internal value, i.e. without interfering any {@link Aspect}.
+	 * <p>
+	 * DO NOT CALL THIS METHOD FROM APPLICATION CODE!
+	 */
+	public void setInternal(T value) {
+		this.value = value;
+	}
+
 	@Override
 	public int hashCode() {
 		return meta().hashCode();
@@ -134,22 +152,6 @@ public final class Property<T> implements Serializable {
 
 			type = ((ParameterizedType) field.getGenericType())
 					.getActualTypeArguments()[0];
-		}
-
-		/**
-		 * Get the internal value of the given property, i.e. without
-		 * interfering any {@link Aspect}.
-		 */
-		public <T> T getInternal(Property<T> property) {
-			return property.value;
-		}
-
-		/**
-		 * Set the internal value of the given property, i.e. without
-		 * interfering any {@link Aspect}.
-		 */
-		public <T> void setInternal(Property<T> property, T value) {
-			property.value = value;
 		}
 	}
 }

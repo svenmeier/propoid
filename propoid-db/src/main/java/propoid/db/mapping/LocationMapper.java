@@ -60,7 +60,7 @@ public class LocationMapper implements Mapper<Location> {
 	@Override
 	public void bind(Property<Location> property, Repository repository,
 			SQLiteStatement statement, int index) {
-		Location value = property.meta().getInternal(property);
+		Location value = property.getInternal();
 		if (value == null) {
 			statement.bindNull(index);
 		} else {
@@ -72,10 +72,9 @@ public class LocationMapper implements Mapper<Location> {
 	public void retrieve(Property<Location> property, Repository repository,
 			Cursor cursor, int index) {
 		if (cursor.isNull(index)) {
-			property.meta().setInternal(property, null);
+			property.setInternal(null);
 		} else {
-			property.meta().setInternal(property,
-					fromString(cursor.getString(index), separator));
+			property.setInternal(fromString(cursor.getString(index), separator));
 		}
 	}
 

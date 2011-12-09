@@ -38,7 +38,7 @@ public class DoubleMapper implements Mapper<Double> {
 	@Override
 	public void bind(Property<Double> property, Repository repository,
 			SQLiteStatement statement, int index) {
-		Double value = property.meta().getInternal(property);
+		Double value = property.getInternal();
 		if (value == null) {
 			statement.bindNull(index);
 		} else {
@@ -50,9 +50,9 @@ public class DoubleMapper implements Mapper<Double> {
 	public void retrieve(Property<Double> property, Repository repository,
 			Cursor cursor, int index) {
 		if (cursor.isNull(index)) {
-			property.meta().setInternal(property, null);
+			property.setInternal(null);
 		} else {
-			property.meta().setInternal(property, cursor.getDouble(index));
+			property.setInternal(cursor.getDouble(index));
 		}
 	}
 

@@ -39,7 +39,7 @@ public class EnumMapper implements Mapper<Enum> {
 	@Override
 	public void bind(Property<Enum> property, Repository repository,
 			SQLiteStatement statement, int index) {
-		Enum value = property.meta().getInternal(property);
+		Enum value = property.getInternal();
 		if (value == null) {
 			statement.bindNull(index);
 		} else {
@@ -52,12 +52,10 @@ public class EnumMapper implements Mapper<Enum> {
 	public void retrieve(Property<Enum> property, Repository repository,
 			Cursor cursor, int index) {
 		if (cursor.isNull(index)) {
-			property.meta().setInternal(property, null);
+			property.setInternal(null);
 		} else {
-			property.meta().setInternal(
-					property,
-					Enum.valueOf((Class) property.type(),
-							cursor.getString(index)));
+			property.setInternal(Enum.valueOf((Class) property.type(),
+					cursor.getString(index)));
 		}
 	}
 
