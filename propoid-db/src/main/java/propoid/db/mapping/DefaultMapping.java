@@ -16,7 +16,9 @@
 package propoid.db.mapping;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import propoid.core.Property;
 import propoid.db.Mapping;
@@ -27,6 +29,8 @@ import propoid.db.RepositoryException;
  * Default mapping implementation supporting basic types.
  */
 public class DefaultMapping implements Mapping {
+
+	private Map<Property.Meta, Mapper<?>> cache = new HashMap<Property.Meta, Mapper<?>>();
 
 	private List<Mapper<?>> mappers = new ArrayList<Mapper<?>>();
 
@@ -61,12 +65,24 @@ public class DefaultMapping implements Mapping {
 	@SuppressWarnings("unchecked")
 	public <T> Mapper<T> getMapper(Repository repository,
 			Property<? extends T> property) {
-		for (Mapper<?> mapper : mappers) {
-			if (mapper.maps(property)) {
-				return (Mapper<T>) mapper;
+
+		Mapper<T> mapper = (Mapper<T>) cache.get(property.meta());
+
+		if (mapper == null) {
+			for (Mapper<?> candidate : mappers) {
+				if (candidate.maps(property)) {
+					mapper = (Mapper<T>) candidate;
+
+					cache.put(property.meta(), mapper);
+					break;
+				}
 			}
 		}
 
-		throw new RepositoryException("no mapper for " + property.type());
+		if (mapper == null) {
+			throw new RepositoryException("no mapper for " + property);
+		}
+
+		return mapper;
 	}
 }

@@ -61,6 +61,28 @@ public class PropoidTest extends TestCase {
 		assertFalse(properties.hasNext());
 	}
 
+	public void testNonFinalProperty() throws Exception {
+		NonFinalProperty propoid = new NonFinalProperty();
+
+		try {
+			propoid.property.meta();
+
+			fail();
+		} catch (Exception expected) {
+		}
+	}
+
+	public void testNonPublicProperty() throws Exception {
+		NonPublicProperty propoid = new NonPublicProperty();
+
+		try {
+			propoid.property.meta();
+
+			fail();
+		} catch (Exception expected) {
+		}
+	}
+
 	public void testAspects() throws Exception {
 		Foo foo = new Foo();
 
@@ -101,6 +123,16 @@ public class PropoidTest extends TestCase {
 	public static class ExtendedFoo extends Foo {
 
 		public final Property<Integer> baz = property();
+	}
+
+	public static class NonFinalProperty extends Propoid {
+
+		public Property<String> property = property();
+	}
+
+	public static class NonPublicProperty extends Propoid {
+
+		private Property<String> property = property();
 	}
 
 	public static class TestAspect extends AbstractAspect {

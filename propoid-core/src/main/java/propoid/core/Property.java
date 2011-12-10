@@ -139,19 +139,28 @@ public final class Property<T> implements Serializable {
 	 * Meta information about a {@link Property}.
 	 */
 	public static final class Meta {
+
+		public final Class<?> owner;
 		public final String name;
 		public final Type type;
 
 		Meta(Field field) {
-			name = field.getName();
+			owner = field.getDeclaringClass();
 
-			if (!Modifier.isFinal(field.getModifiers())) {
-				throw new IllegalStateException("property '" + name
-						+ "' must be declared final");
-			}
+			name = field.getName();
 
 			type = ((ParameterizedType) field.getGenericType())
 					.getActualTypeArguments()[0];
+
+			if (!Modifier.isFinal(field.getModifiers())) {
+				throw new IllegalStateException("property " + toString()
+						+ " must be declared final");
+			}
+		}
+
+		@Override
+		public String toString() {
+			return owner.getName() + '#' + name;
 		}
 	}
 }
