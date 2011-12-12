@@ -47,6 +47,11 @@ public class CheckBindingTest extends AbstractBindingTest {
 			}
 		});
 
-		assertEquals(Boolean.FALSE, foo.booleanP.get());
+		runTestOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				assertEquals(Boolean.FALSE, foo.booleanP.get());
+			}
+		});
 	}
 }
