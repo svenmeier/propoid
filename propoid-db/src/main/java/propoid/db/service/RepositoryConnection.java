@@ -17,7 +17,7 @@ import android.os.IBinder;
  *     public void onConnected(Repository repository) {
  *       // ... work with repository
  *     }
- *   }.bind(context, RepositoryServivce.class);
+ *   }.bind(context, RepositoryService.class);
  * }
  * </pre>
  */
