@@ -13,7 +13,8 @@
 	<application>
 		<uses-library android:name="android.test.runner" />
 		
-	    <activity android:name=".ui.TestActivity">
-	    </activity>
+	    <activity android:name=".ui.TestActivity" />
+	    
+	    <service android:name="propoid.test.db.service.TestRepositoryService" />
 	</application>
 </manifest>
