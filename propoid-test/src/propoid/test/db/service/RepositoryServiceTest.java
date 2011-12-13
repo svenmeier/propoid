@@ -38,6 +38,13 @@ public class RepositoryServiceTest extends ApplicationTestCase<Application> {
 			}
 		};
 
+		try {
+			connection.bind(getContext(), RepositoryService.class);
+
+			fail();
+		} catch (IllegalArgumentException expected) {
+		}
+
 		connection.bind(getContext(), TestRepositoryService.class);
 
 		synchronized (connected) {

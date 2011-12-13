@@ -34,8 +34,12 @@ public abstract class RepositoryConnection implements ServiceConnection {
 			Class<? extends RepositoryService> clazz) {
 		this.context = context;
 
-		context.bindService(new Intent(context, clazz), this,
-				Context.BIND_AUTO_CREATE);
+		boolean successful = context.bindService(new Intent(context, clazz),
+				this, Context.BIND_AUTO_CREATE);
+		if (!successful) {
+			throw new IllegalArgumentException("cannot bind to service "
+					+ clazz.getName());
+		}
 
 		return this;
 	}
