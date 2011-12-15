@@ -16,6 +16,7 @@
 package propoid.db;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -330,12 +331,28 @@ public class Repository {
 	}
 
 	/**
-	 * Restore this database from the given source.
+	 * Restore this database from the given file.
 	 * 
 	 * @param source
+	 *            source file
 	 * @throws IOException
 	 */
 	public void restore(File source) throws IOException {
+		restore(new FileInputStream(source));
+	}
+
+	/**
+	 * Restore this database from the given file descriptor.
+	 * 
+	 * @param source
+	 *            source file
+	 * @throws IOException
+	 */
+	public void restore(FileDescriptor source) throws IOException {
+		restore(new FileInputStream(source));
+	}
+
+	private void restore(FileInputStream source) throws IOException {
 		File destination = new File(database.getPath());
 
 		close();
@@ -343,7 +360,7 @@ public class Repository {
 		FileChannel src = null;
 		FileChannel dst = null;
 		try {
-			src = new FileInputStream(source).getChannel();
+			src = source.getChannel();
 			dst = new FileOutputStream(destination).getChannel();
 			dst.transferFrom(src, 0, src.size());
 		} finally {

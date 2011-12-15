@@ -3,7 +3,6 @@ package propoid.test.db.service;
 import propoid.db.Repository;
 import propoid.db.service.RepositoryConnection;
 import propoid.db.service.RepositoryService;
-import propoid.test.Foo;
 import android.app.Application;
 import android.test.ApplicationTestCase;
 
@@ -23,10 +22,6 @@ public class RepositoryServiceTest extends ApplicationTestCase<Application> {
 		final RepositoryConnection connection = new RepositoryConnection() {
 			@Override
 			public void onConnected(Repository repository) {
-				repository.insert(new Foo());
-
-				assertEquals(1, repository.query(new Foo()).count());
-
 				connected[0] = true;
 				synchronized (connected) {
 					connected.notify();
