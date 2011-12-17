@@ -15,16 +15,16 @@
  */
 package propoid.db.version;
 
+import propoid.db.Repository;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
 
 /**
- * A single upgrade for a database to a next version.
+ * A single upgrade for a {@link Repository} to a next version.
  */
 public interface Upgrade {
 
 	/**
-	 * Apply this upgrade to the given database
+	 * Apply this upgrade to the given repository.
 	 */
-	public void apply(SQLiteDatabase database) throws SQLException;
+	public void apply(Repository repository) throws SQLException;
 }

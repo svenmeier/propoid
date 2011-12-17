@@ -58,7 +58,7 @@ public class DefaultVersioning implements Versioning {
 		while (version < upgrades.size()) {
 			database.beginTransaction();
 			try {
-				upgrades.get(version).apply(database);
+				upgrades.get(version).apply(repository);
 
 				version++;
 

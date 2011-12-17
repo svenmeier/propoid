@@ -15,12 +15,11 @@
  */
 package propoid.db;
 
-import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.channels.FileChannel;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -156,6 +155,8 @@ public class Repository {
 
 	public void close() {
 		if (database != null) {
+			schemas.clear();
+
 			locator.close();
 			database = null;
 		}
@@ -309,70 +310,74 @@ public class Repository {
 	}
 
 	/**
-	 * Backup this repository to the given destination.
+	 * Backup this repository to the given output.
+	 * <p>
+	 * The stream is closed after backup.
 	 */
-	public void backup(File destination) throws IOException {
-		File source = new File(database.getPath());
-
-		FileChannel src = null;
-		FileChannel dst = null;
-		try {
-			src = new FileInputStream(source).getChannel();
-			dst = new FileOutputStream(destination).getChannel();
-			dst.transferFrom(src, 0, src.size());
-		} finally {
-			if (src != null) {
-				src.close();
-			}
-			if (dst != null) {
-				dst.close();
-			}
-		}
-	}
-
-	/**
-	 * Restore this database from the given file.
-	 * 
-	 * @param source
-	 *            source file
-	 * @throws IOException
-	 */
-	public void restore(File source) throws IOException {
-		restore(new FileInputStream(source));
-	}
-
-	/**
-	 * Restore this database from the given file descriptor.
-	 * 
-	 * @param source
-	 *            source file
-	 * @throws IOException
-	 */
-	public void restore(FileDescriptor source) throws IOException {
-		restore(new FileInputStream(source));
-	}
-
-	private void restore(FileInputStream source) throws IOException {
-		File destination = new File(database.getPath());
+	public void backup(OutputStream output) throws IOException {
+		String path = database.getPath();
 
 		close();
 
-		FileChannel src = null;
-		FileChannel dst = null;
+		InputStream input = null;
 		try {
-			src = source.getChannel();
-			dst = new FileOutputStream(destination).getChannel();
-			dst.transferFrom(src, 0, src.size());
+			input = new FileInputStream(path);
+
+			copy(input, output);
 		} finally {
-			if (src != null) {
-				src.close();
+			if (input != null) {
+				input.close();
 			}
-			if (dst != null) {
-				dst.close();
+			if (output != null) {
+				output.close();
 			}
 		}
 
 		open();
+	}
+
+	/**
+	 * Restore this database from the given input.
+	 * <p>
+	 * The stream is closed after restoring.
+	 * 
+	 * @param input
+	 *            input
+	 * @throws IOException
+	 */
+	public void restore(InputStream input) throws IOException {
+		String path = database.getPath();
+
+		close();
+
+		OutputStream output = null;
+		try {
+			output = new FileOutputStream(path);
+
+			copy(input, output);
+		} finally {
+			if (input != null) {
+				input.close();
+			}
+			if (output != null) {
+				output.close();
+			}
+		}
+
+		open();
+	}
+
+	private void copy(InputStream input, OutputStream output)
+			throws IOException {
+		byte[] buffer = new byte[1024];
+		while (true) {
+			int length = input.read(buffer);
+			if (length == -1) {
+				break;
+			}
+
+			output.write(buffer, 0, length);
+		}
 	}
 
 	/**

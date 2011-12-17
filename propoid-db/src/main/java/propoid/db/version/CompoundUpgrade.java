@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import android.database.sqlite.SQLiteDatabase;
+import propoid.db.Repository;
+import android.database.SQLException;
 
 /**
  * Multiple upgrades compound in an upgrade.
@@ -44,9 +45,10 @@ public class CompoundUpgrade implements Upgrade {
 		this.upgrades.add(upgrade);
 	}
 
-	public void apply(SQLiteDatabase database) {
+	@Override
+	public void apply(Repository repository) throws SQLException {
 		for (Upgrade upgrade : upgrades) {
-			upgrade.apply(database);
+			upgrade.apply(repository);
 		}
 	}
 }
