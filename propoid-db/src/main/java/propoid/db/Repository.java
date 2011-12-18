@@ -15,11 +15,6 @@
  */
 package propoid.db;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,7 +22,7 @@ import propoid.core.Propoid;
 import propoid.db.aspect.Row;
 import propoid.db.cascading.DefaultCascading;
 import propoid.db.factory.DefaultFactory;
-import propoid.db.locator.ContextBasedLocator;
+import propoid.db.locator.FileLocator;
 import propoid.db.mapping.DefaultMapping;
 import propoid.db.naming.DefaultNaming;
 import propoid.db.operation.Delete;
@@ -81,7 +76,7 @@ public class Repository {
 	 *            file name
 	 */
 	public Repository(Context context, String name, Setting... settings) {
-		this(new ContextBasedLocator(context, name));
+		this(new FileLocator(context, name));
 	}
 
 	/**
@@ -147,10 +142,12 @@ public class Repository {
 				mapping);
 	}
 
-	private void open() {
-		database = locator.open();
+	public void open() {
+		if (database == null) {
+			database = locator.open();
 
-		versioning.upgrade(this);
+			versioning.upgrade(this);
+		}
 	}
 
 	public void close() {
@@ -306,77 +303,6 @@ public class Repository {
 			database.setTransactionSuccessful();
 		} finally {
 			database.endTransaction();
-		}
-	}
-
-	/**
-	 * Backup this repository to the given output.
-	 * <p>
-	 * The stream is closed after backup.
-	 */
-	public void backup(OutputStream output) throws IOException {
-		String path = database.getPath();
-
-		close();
-
-		InputStream input = null;
-		try {
-			input = new FileInputStream(path);
-
-			copy(input, output);
-		} finally {
-			if (input != null) {
-				input.close();
-			}
-			if (output != null) {
-				output.close();
-			}
-		}
-
-		open();
-	}
-
-	/**
-	 * Restore this database from the given input.
-	 * <p>
-	 * The stream is closed after restoring.
-	 * 
-	 * @param input
-	 *            input
-	 * @throws IOException
-	 */
-	public void restore(InputStream input) throws IOException {
-		String path = database.getPath();
-
-		close();
-
-		OutputStream output = null;
-		try {
-			output = new FileOutputStream(path);
-
-			copy(input, output);
-		} finally {
-			if (input != null) {
-				input.close();
-			}
-			if (output != null) {
-				output.close();
-			}
-		}
-
-		open();
-	}
-
-	private void copy(InputStream input, OutputStream output)
-			throws IOException {
-		byte[] buffer = new byte[1024];
-		while (true) {
-			int length = input.read(buffer);
-			if (length == -1) {
-				break;
-			}
-
-			output.write(buffer, 0, length);
 		}
 	}
 

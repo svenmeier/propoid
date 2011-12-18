@@ -3,7 +3,7 @@ package propoid.db.service;
 import propoid.db.Locator;
 import propoid.db.Repository;
 import propoid.db.Setting;
-import propoid.db.locator.ContextBasedLocator;
+import propoid.db.locator.FileLocator;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -45,10 +45,10 @@ public class RepositoryService extends Service {
 
 	/**
 	 * Override if you want to open the repository from a different location,
-	 * i.e. "repository" in the application's data folder.
+	 * i.e. "repository" in the package's data folder.
 	 */
 	protected Locator getLocator() {
-		return new ContextBasedLocator(getApplicationContext(), "repository");
+		return new FileLocator(getApplicationContext(), "repository");
 	}
 
 	/**

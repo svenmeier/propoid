@@ -19,6 +19,7 @@ import propoid.db.Locator;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
+ * Locator of an in-memory database.
  */
 public class InMemoryLocator implements Locator {
 
