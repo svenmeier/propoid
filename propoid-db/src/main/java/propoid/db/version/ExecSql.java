@@ -15,8 +15,8 @@
  */
 package propoid.db.version;
 
-import propoid.db.Repository;
 import propoid.db.SQL;
+import android.database.sqlite.SQLiteDatabase;
 
 /**
  * A simple upgrade applying a single SQL statement only.
@@ -29,7 +29,7 @@ public class ExecSql implements Upgrade {
 		this.sql = sql;
 	}
 
-	public void apply(Repository repository) {
-		repository.getDatabase().execSQL(sql.toString());
+	public void apply(SQLiteDatabase database) {
+		database.execSQL(sql.toString());
 	}
 }

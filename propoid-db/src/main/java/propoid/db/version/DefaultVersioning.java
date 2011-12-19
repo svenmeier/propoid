@@ -18,7 +18,6 @@ package propoid.db.version;
 import java.util.ArrayList;
 import java.util.List;
 
-import propoid.db.Repository;
 import propoid.db.Versioning;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -46,19 +45,17 @@ public class DefaultVersioning implements Versioning {
 	 * Each {@link Upgrade} is applied in a separate transaction to keep the
 	 * database in a consistent state in case of a failure.
 	 * 
-	 * @param repository
-	 *            repository to upgrade
+	 * @param database
+	 *            database to upgrade
 	 */
 	@Override
-	public void upgrade(Repository repository) {
-		SQLiteDatabase database = repository.getDatabase();
-
+	public void upgrade(SQLiteDatabase database) {
 		int version = database.getVersion();
 
 		while (version < upgrades.size()) {
 			database.beginTransaction();
 			try {
-				upgrades.get(version).apply(repository);
+				upgrades.get(version).apply(database);
 
 				version++;
 

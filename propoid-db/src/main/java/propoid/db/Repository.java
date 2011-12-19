@@ -146,7 +146,7 @@ public class Repository {
 		if (database == null) {
 			database = locator.open();
 
-			versioning.upgrade(this);
+			versioning.upgrade(database);
 		}
 	}
 

@@ -15,6 +15,8 @@
  */
 package propoid.db;
 
+import android.database.sqlite.SQLiteDatabase;
+
 /**
  * Versioning of a {@link Repository}.
  */
@@ -23,5 +25,5 @@ public interface Versioning extends Setting {
 	/**
 	 * Upgrade the given database as needed.
 	 */
-	public void upgrade(Repository repository);
+	public void upgrade(SQLiteDatabase database);
 }
