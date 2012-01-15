@@ -15,6 +15,9 @@
  */
 package propoid.db;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import propoid.core.Propoid;
 import propoid.db.aspect.Row;
 import android.os.Parcel;
@@ -48,6 +51,29 @@ public class Reference<P extends Propoid> implements Parcelable {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(type.getName());
 		dest.writeLong(id);
+	}
+
+	public String toString() {
+		return String.format("%s/%s", type.getName(), id);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <P extends Propoid> Reference<P> fromString(String string) {
+		if (string == null) {
+			return null;
+		}
+
+		try {
+			Matcher matcher = Pattern.compile("(.*)/(.*)").matcher(string);
+			if (matcher.matches()) {
+				Class<P> type = (Class<P>) Class.forName(matcher.group(1));
+				long id = Long.parseLong(matcher.group(2));
+
+				return new Reference<P>(type, id);
+			}
+		} catch (Exception noReference) {
+		}
+		return null;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
