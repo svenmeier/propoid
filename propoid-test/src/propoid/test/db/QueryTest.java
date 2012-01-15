@@ -11,6 +11,8 @@ import propoid.test.Bar;
 import propoid.test.Foo;
 import propoid.test.FooEx;
 import android.app.Application;
+import android.app.SearchManager;
+import android.database.Cursor;
 import android.test.ApplicationTestCase;
 
 /**
@@ -96,5 +98,21 @@ public class QueryTest extends ApplicationTestCase<Application> {
 		repository.query(fooEx).delete();
 
 		assertEquals(1, repository.query(new Foo()).count());
+	}
+
+	public void testSuggest() {
+		Foo foo = new Foo();
+
+		Cursor cursor = repository.query(foo).suggest(foo.stringP, null);
+
+		assertEquals("_id", cursor.getColumnName(0));
+		assertEquals(SearchManager.SUGGEST_COLUMN_TEXT_1,
+				cursor.getColumnName(1));
+		assertEquals(SearchManager.SUGGEST_COLUMN_INTENT_DATA,
+				cursor.getColumnName(2));
+		assertEquals(SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID,
+				cursor.getColumnName(3));
+
+		cursor.close();
 	}
 }
