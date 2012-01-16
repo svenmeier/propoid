@@ -153,9 +153,9 @@ public interface Match<P extends Propoid> {
 	 * Create suggestions for the {@link SearchManager}.
 	 * 
 	 * @param text1
-	 *            text to be displayed for each suggestion
+	 *            property to be displayed for each suggestion
 	 * @param text2
-	 *            optional second text
+	 *            optional second property to be displayed
 	 * 
 	 * @see Reference#fromString(String)
 	 */

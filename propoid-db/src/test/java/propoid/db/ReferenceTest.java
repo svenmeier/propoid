@@ -11,15 +11,20 @@ public class ReferenceTest extends TestCase {
 
 		Row.setID(foo, 1l);
 
-		assertEquals("propoid.db.Foo/1", new Reference<Foo>(foo).toString());
+		assertEquals("propoid://propoid.db.Foo/1",
+				new Reference<Foo>(foo).toString());
 	}
 
 	public void testFromStringNull() throws Exception {
 		assertEquals(null, Reference.fromString(null));
 	}
 
+	public void testFromInvalid() throws Exception {
+		assertNull(Reference.fromString("propoid.db.Foo/1"));
+	}
+
 	public void testFromString() throws Exception {
-		Reference.fromString("propoid.db.Foo/1");
+		Reference.fromString("propoid://propoid.db.Foo/1");
 	}
 }
 

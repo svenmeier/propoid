@@ -265,22 +265,32 @@ public class Query extends Operation {
 			final Arguments arguments = new Arguments();
 			final Aliaser aliaser = new Aliaser();
 
-			sql.raw("SELECT _id, ");
+			sql.raw("SELECT _id");
+
+			// text1
+			sql.raw(", ");
 			sql.escaped(text1.name());
 			sql.raw(" as ");
 			sql.raw(SearchManager.SUGGEST_COLUMN_TEXT_1);
+
+			// text2
 			if (text2 != null) {
 				sql.raw(", ");
 				sql.escaped(text2.name());
 				sql.raw(" as ");
 				sql.raw(SearchManager.SUGGEST_COLUMN_TEXT_2);
 			}
-			sql.raw(", '");
+
+			// intent data
+			sql.raw(", 'propoid://");
 			sql.raw(propoid.getClass().getName());
 			sql.raw("' as ");
 			sql.raw(SearchManager.SUGGEST_COLUMN_INTENT_DATA);
+
+			// intent data id
 			sql.raw(", _id as ");
 			sql.raw(SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID);
+
 			sql.raw(" FROM ");
 			sql.escaped(repository.naming.table(repository, propoid.getClass()));
 			sql.raw(" ");

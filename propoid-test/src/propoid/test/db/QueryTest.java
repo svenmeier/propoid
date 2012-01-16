@@ -103,15 +103,33 @@ public class QueryTest extends ApplicationTestCase<Application> {
 	public void testSuggest() {
 		Foo foo = new Foo();
 
-		Cursor cursor = repository.query(foo).suggest(foo.stringP, null);
+		Cursor cursor = repository.query(foo).suggest(foo.stringP, foo.intP);
 
 		assertEquals("_id", cursor.getColumnName(0));
 		assertEquals(SearchManager.SUGGEST_COLUMN_TEXT_1,
 				cursor.getColumnName(1));
-		assertEquals(SearchManager.SUGGEST_COLUMN_INTENT_DATA,
+		assertEquals(SearchManager.SUGGEST_COLUMN_TEXT_2,
 				cursor.getColumnName(2));
-		assertEquals(SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID,
+		assertEquals(SearchManager.SUGGEST_COLUMN_INTENT_DATA,
 				cursor.getColumnName(3));
+		assertEquals(SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID,
+				cursor.getColumnName(4));
+
+		assertTrue(cursor.moveToNext());
+
+		assertEquals("string", cursor.getString(1));
+		assertEquals(Integer.MAX_VALUE, cursor.getInt(2));
+		assertEquals("propoid.test.Foo", cursor.getString(3));
+		assertEquals(1l, cursor.getLong(4));
+
+		assertTrue(cursor.moveToNext());
+
+		assertEquals("string", cursor.getString(1));
+		assertEquals(Integer.MAX_VALUE, cursor.getInt(2));
+		assertEquals("propoid.test.Foo", cursor.getString(3));
+		assertEquals(2l, cursor.getLong(4));
+
+		assertFalse(cursor.moveToNext());
 
 		cursor.close();
 	}

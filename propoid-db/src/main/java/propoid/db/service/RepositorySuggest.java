@@ -4,11 +4,14 @@ import propoid.core.Property;
 import propoid.core.Propoid;
 import propoid.db.Locator;
 import propoid.db.Match;
+import propoid.db.Reference;
 import propoid.db.Repository;
 import propoid.db.Setting;
 import propoid.db.locator.FileLocator;
+import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -20,10 +23,10 @@ import android.net.Uri;
  * 
  * <pre>
  * {@code
- *   <provider
- *     android:name="your.Suggest"
- *     android:authorities="your.authority" 
- *   />
+ * <provider
+ *   android:name="your.Suggest"
+ *   android:authorities="your.authority" 
+ * />
  * }
  * </pre>
  * 
@@ -46,37 +49,42 @@ import android.net.Uri;
  * 
  * <pre>
  * {@code
- *   <activity android:name="your.Activity">
- *     <intent-filter>
- *       <action android:name="android.intent.action.SEARCH" />
- *     </intent-filter>
- *     <meta-data
- *       android:name="android.app.searchable"
- *       android:resource="@xml/your_suggest"
- *     />
- *   </activity>
+ * <activity android:name="your.Activity">
+ *   <intent-filter>
+ *     <action android:name="android.intent.action.SEARCH" />
+ *   </intent-filter>
+ *   <meta-data
+ *     android:name="android.app.searchable"
+ *     android:resource="@xml/your_suggest"
+ *   />
+ * </activity>
  * }
  * </pre>
  * 
- * Let your activity handle two possibly intents:
+ * Let your activity handle {@link Intent#ACTION_SEARCH} with two possibly data:
  * <ul>
- * <li>a search was initiated from the search manager, resulting in a query
- * being passed to your activity</li>
- * <li>a propoid was selected by the search manager, resulting in a reference
- * being passed to your activity</li>
+ * <li>a search query entered by the user</li>
+ * <li>a search {@link Reference} selected by the user as the result of a search
+ * </li>
  * </ul>
  * 
  * <pre>
  * {@code
- * 	public void onCreate(Bundle state) {
- * 	  super.onCreate(state);
+ * public void onCreate(Bundle state) {
+ *   super.onCreate(state);
  * 
- * 	  String query = intent.getStringExtra(SearchManager.QUERY);
- * 	  Reference&lt;Fooe&gt; reference = Reference.fromString(intent
- * 				.getDataString());
+ * 	 String query = RepositorySuggest.getSearchQuery(getIntent());
+ * 	 Reference<Vocable> reference = RepositorySuggest.getSearchReference(getIntent());
+ *   if (query != null) {
+ *     // search by query
+ *   } else if (reference != null) {
+ *     // search by reference
+ *   }
+ * }
  * }
  * </pre>
  * 
+ * @see Repository#lookup(Reference)
  * @see #query(Repository, String)
  */
 public abstract class RepositorySuggest<P extends Propoid> extends
@@ -162,5 +170,25 @@ public abstract class RepositorySuggest<P extends Propoid> extends
 	public int update(Uri uri, ContentValues values, String selection,
 			String[] selectionArgs) {
 		throw new UnsupportedOperationException();
+	}
+
+	public static String getSearchQuery(Intent intent) {
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			return intent.getStringExtra(SearchManager.QUERY);
+		}
+
+		return null;
+	}
+
+	public static <P extends Propoid> Reference<P> getSearchReference(
+			Intent intent) {
+		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+			String data = intent.getDataString();
+			if (data != null) {
+				return Reference.fromString(intent.getDataString());
+			}
+		}
+
+		return null;
 	}
 }

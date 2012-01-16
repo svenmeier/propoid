@@ -20,14 +20,14 @@ import java.util.regex.Pattern;
 
 import propoid.core.Propoid;
 import propoid.db.aspect.Row;
-import android.os.Parcel;
-import android.os.ParcelFormatException;
-import android.os.Parcelable;
+import android.net.Uri;
 
 /**
  * A reference to a {@link Propoid}.
+ * 
+ * @see Repository#lookup(Reference)
  */
-public class Reference<P extends Propoid> implements Parcelable {
+public class Reference<P extends Propoid> {
 
 	public final Class<P> type;
 	public final long id;
@@ -42,29 +42,19 @@ public class Reference<P extends Propoid> implements Parcelable {
 		this.id = id;
 	}
 
-	@Override
-	public int describeContents() {
-		return 0;
-	}
-
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeString(type.getName());
-		dest.writeLong(id);
+	public Uri toUri() {
+		return Uri.parse(toString());
 	}
 
 	public String toString() {
-		return String.format("%s/%s", type.getName(), id);
+		return String.format("propoid://%s/%s", type.getName(), id);
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <P extends Propoid> Reference<P> fromString(String string) {
-		if (string == null) {
-			return null;
-		}
-
 		try {
-			Matcher matcher = Pattern.compile("(.*)/(.*)").matcher(string);
+			Matcher matcher = Pattern.compile("propoid://(.*)/(.*)").matcher(
+					string);
 			if (matcher.matches()) {
 				Class<P> type = (Class<P>) Class.forName(matcher.group(1));
 				long id = Long.parseLong(matcher.group(2));
@@ -76,27 +66,7 @@ public class Reference<P extends Propoid> implements Parcelable {
 		return null;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static final Creator<Reference> CREATOR = new Creator<Reference>() {
-
-		@Override
-		public Reference createFromParcel(Parcel source) {
-			Class<? extends Propoid> type;
-			try {
-				type = (Class<? extends Propoid>) Class.forName(source
-						.readString());
-			} catch (ClassNotFoundException ex) {
-				throw new ParcelFormatException();
-			}
-
-			long id = source.readLong();
-
-			return new Reference(type, id);
-		}
-
-		@Override
-		public Reference[] newArray(int size) {
-			return new Reference[size];
-		}
-	};
+	public static <P extends Propoid> Reference<P> fromUri(Uri data) {
+		return fromString(data.toString());
+	}
 }

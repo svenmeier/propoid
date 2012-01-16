@@ -29,28 +29,28 @@ public class CheckBindingTest extends AbstractBindingTest {
 			}
 		});
 
-		assertEquals(false, checkBox.isChecked());
-
-		runTestOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				foo.booleanP.set(true);
-			}
-		});
-
 		assertEquals(true, checkBox.isChecked());
 
 		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				checkBox.setChecked(false);
+				foo.booleanP.set(false);
+			}
+		});
+
+		assertEquals(false, checkBox.isChecked());
+
+		runTestOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				checkBox.setChecked(true);
 			}
 		});
 
 		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				assertEquals(Boolean.FALSE, foo.booleanP.get());
+				assertEquals(Boolean.TRUE, foo.booleanP.get());
 			}
 		});
 	}

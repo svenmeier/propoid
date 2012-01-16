@@ -28,7 +28,7 @@ public class UpdateTest extends ApplicationTestCase<Application> {
 
 		((DefaultCascading) repository.cascading).setCascaded(new Foo().barP);
 
-		Foo foo = Foo.sample();
+		Foo foo = new Foo();
 		repository.insert(foo);
 	}
 

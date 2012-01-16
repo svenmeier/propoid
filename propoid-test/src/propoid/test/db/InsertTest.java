@@ -39,7 +39,7 @@ public class InsertTest extends ApplicationTestCase<Application> {
 
 	public void testFoo() throws Exception {
 
-		Foo foo = Foo.sample();
+		Foo foo = new Foo();
 		foo.barP.set(null);
 
 		repository.insert(foo);
@@ -50,7 +50,7 @@ public class InsertTest extends ApplicationTestCase<Application> {
 
 	public void testFooWithBar() throws Exception {
 
-		Foo foo = Foo.sample();
+		Foo foo = new Foo();
 		foo.barP.set(new Bar());
 
 		repository.insert(foo);

@@ -27,7 +27,7 @@ public class TextBindingTest extends AbstractBindingTest {
 			public void run() {
 				TextBinding.string(foo.stringP, editText);
 
-				assertEquals("", editText.getText().toString());
+				assertEquals("string", editText.getText().toString());
 			}
 		});
 

@@ -30,16 +30,16 @@ public class SpinnerBindingTest extends AbstractBindingTest {
 			}
 		});
 
-		assertEquals(null, spinner.getSelectedItem());
+		assertEquals(Encoding.UTF_8, spinner.getSelectedItem());
 
 		runTestOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				foo.enumP.set(Encoding.UTF_8);
+				foo.enumP.set(Encoding.UTF_16);
 			}
 		});
 
-		assertEquals(Encoding.UTF_8, spinner.getSelectedItem());
+		assertEquals(Encoding.UTF_16, spinner.getSelectedItem());
 
 		runTestOnUiThread(new Runnable() {
 			@Override

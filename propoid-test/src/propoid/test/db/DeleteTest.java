@@ -28,7 +28,7 @@ public class DeleteTest extends ApplicationTestCase<Application> {
 
 		((DefaultCascading) repository.cascading).setCascaded(new Foo().barP);
 
-		Foo foo = Foo.sample();
+		Foo foo = new Foo();
 		foo.barP.set(new Bar());
 		repository.insert(foo);
 	}
