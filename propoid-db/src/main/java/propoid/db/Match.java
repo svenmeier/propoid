@@ -20,7 +20,6 @@ import java.util.List;
 
 import propoid.core.Property;
 import propoid.core.Propoid;
-import android.app.SearchManager;
 import android.database.Cursor;
 
 /**
@@ -148,16 +147,4 @@ public interface Match<P extends Propoid> {
 	 *            value
 	 */
 	public <T> void set(Property<T> property, T value);
-
-	/**
-	 * Create suggestions for the {@link SearchManager}.
-	 * 
-	 * @param text1
-	 *            property to be displayed for each suggestion
-	 * @param text2
-	 *            optional second property to be displayed
-	 * 
-	 * @see Reference#fromString(String)
-	 */
-	public Cursor suggest(Property<?> text1, Property<?> text2);
 }
