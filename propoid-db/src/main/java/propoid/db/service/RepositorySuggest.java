@@ -33,12 +33,12 @@ import android.net.Uri;
  * {@code
  * <provider
  *   android:name="your.Suggest"
- *   android:authorities="your.authority" 
+ *   android:authorities="your.suggest" 
  * />
  * }
  * </pre>
  * 
- * Define your search suggestions in "res/xml/your_suggest":
+ * Define your search in "res/xml/your_search.xml":
  * 
  * <pre>
  * {@code
@@ -47,9 +47,9 @@ import android.net.Uri;
  *   android:label="@string/your_app_name"
  *   android:hint="@string/your_search_hint"
  *   android:includeInGlobalSearch="true"
- *   android:searchSuggestAuthority="your.authority"
- *   android:searchSuggestIntentAction="android.intent.action.VIEW"
  *   android:searchSettingsDescription="@string/your_search_description"
+ *   android:searchSuggestAuthority="your.suggest"
+ *   android:searchSuggestIntentAction="android.intent.action.VIEW"
  * />
  * }
  * </pre>
@@ -64,9 +64,22 @@ import android.net.Uri;
  *   </intent-filter>
  *   <meta-data
  *     android:name="android.app.searchable"
- *     android:resource="@xml/your_suggest"
+ *     android:resource="@xml/your_search"
  *   />
  * </activity>
+ * }
+ * </pre>
+ * 
+ * Optionally make your activity the default searchable for your application
+ * (i.e. a search is started inside your application when pressing the search
+ * button):
+ * 
+ * <pre>
+ * {@code
+ * <meta-data
+ *   android:name="android.app.default_searchable"
+ *   android:value="your.Activity"
+ * />
  * }
  * </pre>
  * 
