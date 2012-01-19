@@ -58,6 +58,8 @@ public class FileLocator implements Locator {
 		}
 
 		if (!file.exists()) {
+			file.getParentFile().mkdirs();
+
 			InputStream input = initial();
 			if (input != null) {
 				FileOutputStream output = null;
