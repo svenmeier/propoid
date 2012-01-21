@@ -23,6 +23,8 @@ import propoid.db.Locator;
 import propoid.db.RepositoryException;
 import propoid.db.util.IOUtils;
 import android.content.Context;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
@@ -84,6 +86,9 @@ public class FileLocator implements Locator {
 	/**
 	 * Hook method to provide an initial content in case the database doesn't
 	 * exits.
+	 * 
+	 * @see Resources#openRawResource(int)
+	 * @see AssetManager#open(String)
 	 */
 	protected InputStream initial() {
 		return null;
