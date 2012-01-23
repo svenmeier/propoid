@@ -16,11 +16,13 @@
 package propoid.db.factory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import propoid.core.Propoid;
 import propoid.db.Factory;
 import propoid.db.Repository;
+import propoid.db.aspect.Row;
 
 /**
  * A factory caching {@link Propoid}s by type and id.
@@ -41,6 +43,30 @@ public class IdentityFactory implements Factory {
 	 */
 	public IdentityFactory(Factory factory) {
 		this.factory = factory;
+	}
+
+	/**
+	 * Cache {@link Propoid}s instantiated by the given factory.
+	 * 
+	 * @param factory
+	 *            factory to delegate to
+	 * @param propoids
+	 *            propoids to cache initially
+	 */
+	public IdentityFactory(Factory factory, List<? extends Propoid> propoids) {
+		this.factory = factory;
+
+		for (Propoid propoid : propoids) {
+			long id = Row.getID(propoid);
+			if (id == Row.TRANSIENT) {
+				throw new IllegalArgumentException(
+						"propoids must not be transient");
+			}
+
+			String key = key(propoid.getClass(), id);
+
+			this.propoids.put(key, propoid);
+		}
 	}
 
 	/**
