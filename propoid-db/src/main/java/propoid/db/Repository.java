@@ -138,8 +138,14 @@ public class Repository {
 		Naming naming = lookup(settings, Naming.class, this.naming);
 		Mapping mapping = lookup(settings, Mapping.class, this.mapping);
 
-		return new Repository(locator, versioning, cascading, factory, naming,
-				mapping);
+		Repository repository = new Repository(locator, versioning, cascading,
+				factory, naming, mapping);
+
+		// performance optimization: since the same database is used, we can
+		// assume identical schemas
+		repository.schemas = this.schemas;
+
+		return repository;
 	}
 
 	public void open() {
