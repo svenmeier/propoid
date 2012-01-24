@@ -415,7 +415,7 @@ public class Query extends Operation {
 			throw new UnsupportedOperationException();
 		}
 
-		class PropoidIterator implements Iterator<Propoid> {
+		class PropoidIterator implements Iterator<Propoid>, Closeable {
 
 			private Boolean next = null;
 
@@ -461,6 +461,11 @@ public class Query extends Operation {
 				close();
 
 				throw new RepositoryException("remove not supported");
+			}
+
+			@Override
+			public void close() {
+				PropoidList.this.close();
 			}
 		}
 	}
