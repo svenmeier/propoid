@@ -37,13 +37,17 @@ public class NumberConverter implements Converter<Number> {
 	public String fromProperty(Property<Number> property, Number value) {
 		if (value == null) {
 			return "";
-		} else {
-			return format.format(value);
 		}
+
+		return format.format(value);
 	}
 
 	@Override
 	public Number toProperty(Property<Number> property, String string) {
+		if (string.length() == 0) {
+			return null;
+		}
+
 		try {
 			Number parsed = format.parse(string);
 

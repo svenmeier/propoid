@@ -38,11 +38,19 @@ public class DateConverter implements Converter<Date> {
 
 	@Override
 	public String fromProperty(Property<Date> property, Date value) {
+		if (value == null) {
+			return "";
+		}
+
 		return format.format(value);
 	}
 
 	@Override
 	public Date toProperty(Property<Date> property, String string) {
+		if (string.length() == 0) {
+			return null;
+		}
+
 		try {
 			return format.parse(string);
 		} catch (ParseException e) {

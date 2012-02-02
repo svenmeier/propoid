@@ -30,6 +30,9 @@ public class NumberConverterTest extends TestCase {
 				"0",
 				this.<Double> converter().fromProperty(new Foo().doubleP,
 						(double) 0));
+
+		assertEquals("",
+				this.<Double> converter().fromProperty(new Foo().doubleP, null));
 	}
 
 	public void testToProperty() throws Exception {
@@ -45,6 +48,9 @@ public class NumberConverterTest extends TestCase {
 				this.<Float> converter().toProperty(new Foo().floatP, "0"));
 		assertEquals((double) 0,
 				this.<Double> converter().toProperty(new Foo().doubleP, "0"));
+
+		assertEquals(null,
+				this.<Double> converter().toProperty(new Foo().doubleP, ""));
 	}
 
 	@SuppressWarnings("unchecked")

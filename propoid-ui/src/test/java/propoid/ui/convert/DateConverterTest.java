@@ -18,6 +18,7 @@ public class DateConverterTest extends TestCase {
 
 		assertEquals("01.01.2000",
 				converter.fromProperty(new Foo().enumP, new Date(100, 0, 1)));
+		assertEquals("", converter.fromProperty(new Foo().enumP, null));
 	}
 
 	public void testToProperty() throws Exception {
@@ -26,6 +27,7 @@ public class DateConverterTest extends TestCase {
 
 		assertEquals(new Date(100, 0, 1),
 				converter.toProperty(new Foo().enumP, "01.01.2000"));
+		assertEquals(null, converter.toProperty(new Foo().enumP, ""));
 	}
 
 	public static class Foo extends Propoid {
