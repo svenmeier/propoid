@@ -30,6 +30,7 @@ import propoid.db.Repository;
 import propoid.db.RepositoryException;
 import propoid.db.SQL;
 import propoid.db.Where;
+import propoid.db.aspect.Row;
 import android.database.Cursor;
 
 /**
@@ -80,11 +81,17 @@ public class Query extends Operation {
 			try {
 				if (list.size() == 0) {
 					return null;
-				} else if (list.size() > 1) {
-					throw new RepositoryException("multiple propoids matched");
 				}
 
-				return list.get(0);
+				Propoid first = list.get(0);
+
+				if (list.size() > 1) {
+					throw new RepositoryException(String.format(
+							"multiple propoids matched, first id: %s",
+							Row.getID(first)));
+				}
+
+				return first;
 			} finally {
 				list.close();
 			}

@@ -3,6 +3,7 @@ package propoid.test.db;
 import java.util.Iterator;
 
 import propoid.db.Repository;
+import propoid.db.RepositoryException;
 import propoid.db.Where;
 import propoid.db.cascading.DefaultCascading;
 import propoid.db.locator.InMemoryLocator;
@@ -96,5 +97,14 @@ public class QueryTest extends ApplicationTestCase<Application> {
 		repository.query(fooEx).delete();
 
 		assertEquals(1, repository.query(new Foo()).count());
+	}
+
+	public void testFooSingle() {
+		try {
+			repository.query(new Foo()).single();
+		} catch (RepositoryException expected) {
+		}
+
+		repository.query(new FooEx()).single();
 	}
 }
