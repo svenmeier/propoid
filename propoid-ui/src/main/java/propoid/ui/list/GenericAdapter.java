@@ -248,17 +248,4 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 
 		view.setSelectionFromTop(position, top);
 	}
-
-	/**
-	 * Helper method to get the item for the given context menu item.
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T getContextMenuItem(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
-				.getMenuInfo();
-
-		ListView listView = (ListView) info.targetView.getParent();
-
-		return (T) listView.getAdapter().getItem(info.position);
-	}
 }
