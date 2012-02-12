@@ -52,6 +52,11 @@ public class TextBinding<T> extends Binding<T> implements TextWatcher,
 	public TextBinding(Property<T> property, View view, Converter<T> converter) {
 		super(property, view);
 
+		if (getView() instanceof EditText) {
+			getView().addTextChangedListener(null);
+			getView().setOnKeyListener(null);
+		}
+
 		this.converter = converter;
 
 		onChange(property.get());

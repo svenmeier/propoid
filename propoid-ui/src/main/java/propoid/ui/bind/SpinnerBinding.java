@@ -91,6 +91,8 @@ public class SpinnerBinding<T> extends Binding<T> implements
 			SpinnerAdapter adapter) {
 		super(property, view);
 
+		getView().setOnItemSelectedListener(null);
+
 		this.adapter = adapter;
 
 		getView().setAdapter(adapter);
