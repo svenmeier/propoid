@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 
 import propoid.core.Propoid;
 import propoid.db.aspect.Row;
+import android.content.Intent;
 import android.net.Uri;
 
 /**
@@ -50,8 +51,16 @@ public class Reference<P extends Propoid> {
 		return String.format("propoid://%s/%s", type.getName(), id);
 	}
 
+	/**
+	 * Create a reference from its string representation.
+	 * 
+	 * @param string
+	 *            string representation of a reference
+	 * @return reference or {@code null}
+	 * @see #toString()
+	 */
 	@SuppressWarnings("unchecked")
-	public static <P extends Propoid> Reference<P> fromString(String string) {
+	public static <P extends Propoid> Reference<P> from(String string) {
 		try {
 			Matcher matcher = Pattern.compile("propoid://(.*)/(.*)").matcher(
 					string);
@@ -66,7 +75,31 @@ public class Reference<P extends Propoid> {
 		return null;
 	}
 
-	public static <P extends Propoid> Reference<P> fromUri(Uri data) {
-		return fromString(data.toString());
+	/**
+	 * Create a reference from its {@link Uri}.
+	 * 
+	 * @param uri
+	 *            uri
+	 * @return reference or {@code null}
+	 * @see #toUri()
+	 */
+	public static <P extends Propoid> Reference<P> from(Uri uri) {
+		return from(uri.toString());
+	}
+
+	/**
+	 * Create a reference from an {@link Intent}s data.
+	 * 
+	 * @param intent
+	 *            intent with references as data
+	 * @return reference or {@code null}
+	 * @see Intent#getData()
+	 */
+	public static <P extends Propoid> Reference<P> from(Intent intent) {
+		Uri data = intent.getData();
+		if (data == null) {
+			return null;
+		}
+		return from(data.toString());
 	}
 }

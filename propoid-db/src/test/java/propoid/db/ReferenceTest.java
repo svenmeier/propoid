@@ -15,16 +15,16 @@ public class ReferenceTest extends TestCase {
 				new Reference<Foo>(foo).toString());
 	}
 
+	public void testFromString() throws Exception {
+		Reference.from("propoid://propoid.db.Foo/1");
+	}
+
 	public void testFromStringNull() throws Exception {
-		assertEquals(null, Reference.fromString(null));
+		assertEquals(null, Reference.from((String) null));
 	}
 
 	public void testFromInvalid() throws Exception {
-		assertNull(Reference.fromString("propoid.db.Foo/1"));
-	}
-
-	public void testFromString() throws Exception {
-		Reference.fromString("propoid://propoid.db.Foo/1");
+		assertNull(Reference.from("propoid.db.Foo/1"));
 	}
 }
 

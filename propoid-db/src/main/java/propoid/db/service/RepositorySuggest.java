@@ -207,7 +207,7 @@ public abstract class RepositorySuggest<P extends Propoid> extends
 			return new MatchCursor(match, range);
 		} else if (path.startsWith("/"
 				+ SearchManager.SUGGEST_URI_PATH_SHORTCUT)) {
-			Reference<P> reference = Reference.fromString(uri
+			Reference<P> reference = Reference.from(uri
 					.getLastPathSegment());
 			if (reference != null) {
 				try {
@@ -265,20 +265,6 @@ public abstract class RepositorySuggest<P extends Propoid> extends
 	public static String getQuery(Intent intent) {
 		if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
 			return intent.getStringExtra(SearchManager.QUERY);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Utility method to get the selected reference from the given intent.
-	 * 
-	 * @see Intent#getData()
-	 */
-	public static <P extends Propoid> Reference<P> getReference(Intent intent) {
-		Uri data = intent.getData();
-		if (data != null) {
-			return Reference.fromUri(data);
 		}
 
 		return null;
