@@ -53,7 +53,7 @@ public class TextBinding<T> extends Binding<T> implements TextWatcher,
 		super(property, view);
 
 		if (getView() instanceof EditText) {
-			getView().addTextChangedListener(null);
+			getView().removeTextChangedListener(this);
 			getView().setOnKeyListener(null);
 		}
 

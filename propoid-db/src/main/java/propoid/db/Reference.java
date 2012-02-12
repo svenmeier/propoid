@@ -43,6 +43,21 @@ public class Reference<P extends Propoid> {
 		this.id = id;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof Reference<?>) {
+			Reference<?> other = (Reference<?>) o;
+
+			return this.type == other.type && this.id == other.id;
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return (int) id;
+	}
+
 	public Uri toUri() {
 		return Uri.parse(toString());
 	}
