@@ -21,17 +21,14 @@ import android.os.IBinder;
  * }
  * </pre>
  */
-public abstract class RepositoryConnection implements ServiceConnection {
+public class RepositoryConnection implements ServiceConnection {
 
 	private Context context;
-
-	private Repository repository;
 
 	/**
 	 * Bind to the {@link RepositoryService}.
 	 */
-	public RepositoryConnection bind(Context context,
-			Class<? extends RepositoryService> clazz) {
+	public void bind(Context context, Class<? extends RepositoryService> clazz) {
 		this.context = context;
 
 		boolean successful = context.bindService(new Intent(context, clazz),
@@ -40,31 +37,25 @@ public abstract class RepositoryConnection implements ServiceConnection {
 			throw new IllegalArgumentException("cannot bind to service "
 					+ clazz.getName());
 		}
-
-		return this;
 	}
 
 	/**
 	 * Unbind from the {@link RepositoryService}.
 	 */
-	public RepositoryConnection unbind() {
+	public void unbind() {
 		context.unbindService(this);
 
 		this.context = null;
-
-		return this;
 	}
 
 	public final void onServiceConnected(ComponentName className, IBinder binder) {
-		repository = ((RepositoryBinder) binder).service.repository;
+		Repository repository = ((RepositoryBinder) binder).service.repository;
 
 		onConnected(repository);
 	}
 
 	public final void onServiceDisconnected(ComponentName className) {
-		onDisconnected(repository);
-
-		repository = null;
+		onDisconnected();
 	}
 
 	/**
@@ -76,6 +67,6 @@ public abstract class RepositoryConnection implements ServiceConnection {
 	/**
 	 * Hook method on disconnect from the repository.
 	 */
-	public void onDisconnected(Repository repository) {
+	public void onDisconnected() {
 	}
 }

@@ -16,12 +16,8 @@
 package propoid.db.locator;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 
 import propoid.db.Locator;
-import propoid.db.RepositoryException;
-import propoid.db.util.IOUtils;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
@@ -62,20 +58,7 @@ public class FileLocator implements Locator {
 		if (!file.exists()) {
 			file.getParentFile().mkdirs();
 
-			InputStream input = initial();
-			if (input != null) {
-				FileOutputStream output = null;
-				try {
-					output = new FileOutputStream(file);
-
-					IOUtils.copy(input, output);
-				} catch (Exception ex) {
-					throw new RepositoryException(ex);
-				} finally {
-					IOUtils.closeQuietly(input);
-					IOUtils.closeQuietly(output);
-				}
-			}
+			initial(file);
 		}
 
 		database = SQLiteDatabase.openOrCreateDatabase(file, null);
@@ -86,12 +69,13 @@ public class FileLocator implements Locator {
 	/**
 	 * Hook method to provide an initial content in case the database doesn't
 	 * exits.
+	 * <p>
+	 * Default implementation does nothing.
 	 * 
 	 * @see Resources#openRawResource(int)
 	 * @see AssetManager#open(String)
 	 */
-	protected InputStream initial() {
-		return null;
+	protected void initial(File file) {
 	}
 
 	@Override

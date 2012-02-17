@@ -15,6 +15,8 @@
  */
 package propoid.db;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -317,5 +319,14 @@ public class Repository {
 	 */
 	public void vacuum() {
 		database.execSQL("VACUUM");
+	}
+
+	public static void closeQuietly(Object object) {
+		if (object != null && object instanceof Closeable) {
+			try {
+				((Closeable) object).close();
+			} catch (IOException ignore) {
+			}
+		}
 	}
 }

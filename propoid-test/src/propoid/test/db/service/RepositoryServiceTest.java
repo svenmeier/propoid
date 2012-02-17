@@ -29,7 +29,7 @@ public class RepositoryServiceTest extends ApplicationTestCase<Application> {
 			}
 
 			@Override
-			public void onDisconnected(Repository repository) {
+			public void onDisconnected() {
 			}
 		};
 
