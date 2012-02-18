@@ -1,6 +1,8 @@
 package propoid.ui.list;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import propoid.core.Propoid;
@@ -34,16 +36,6 @@ public class PropoidSelection<T extends Propoid> implements
 		checkBox.setOnCheckedChangeListener(this);
 	}
 
-	public Set<T> getSelected(Repository repository) {
-		Set<T> selected = new HashSet<T>();
-
-		for (Reference<T> reference : references) {
-			selected.add(repository.lookup(reference));
-		}
-
-		return selected;
-	}
-
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
@@ -55,5 +47,27 @@ public class PropoidSelection<T extends Propoid> implements
 		} else {
 			references.remove(reference);
 		}
+	}
+
+	public void clear() {
+		references.clear();
+	}
+
+	public int size() {
+		return references.size();
+	}
+
+	public List<T> list(Repository repository) {
+		List<T> selected = new ArrayList<T>();
+
+		for (Reference<T> reference : references) {
+			selected.add(repository.lookup(reference));
+		}
+
+		return selected;
+	}
+
+	public T first(Repository repository) {
+		return repository.lookup(references.iterator().next());
 	}
 }
