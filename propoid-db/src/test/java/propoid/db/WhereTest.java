@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import propoid.core.Property;
 import propoid.core.Propoid;
 
-public class CriteriaTest extends TestCase {
+public class WhereTest extends TestCase {
 
 	public void testWhere() throws Exception {
 		Foo foo = new Foo();
