@@ -26,19 +26,16 @@ import propoid.core.Property;
  */
 public class Order {
 
-	private final Property<?> property;
+	private final Property.Meta property;
 	private final boolean ascending;
 
-	Order(Property<?> property, boolean ascending) {
+	Order(Property.Meta property, boolean ascending) {
 		this.property = property;
 		this.ascending = ascending;
 	}
 
-	public Property<?> getProperty() {
-		if (property == null) {
-			throw new IllegalStateException("random does not have a property");
-		}
-		return property;
+	public String toString() {
+		return property.name;
 	}
 
 	public String toString(Repository repository) {
@@ -47,7 +44,7 @@ public class Order {
 		}
 
 		SQL sql = new SQL();
-		sql.escaped(property.name());
+		sql.escaped(property.name);
 		if (ascending) {
 			sql.raw(" asc");
 		} else {
@@ -67,13 +64,34 @@ public class Order {
 	 * Ascending by property.
 	 */
 	public static Order ascending(Property<?> property) {
-		return new Order(property, true);
+		return new Order(property.meta(), true);
 	}
 
 	/**
 	 * Descending by property.
 	 */
 	public static Order descending(Property<?> property) {
-		return new Order(property, false);
+		return new Order(property.meta(), false);
+	}
+
+	@Override
+	public int hashCode() {
+		if (property == null) {
+			return 42;
+		} else {
+			return property.hashCode();
+		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Order)) {
+			return false;
+		}
+
+		Order other = (Order) o;
+
+		return other.property == this.property
+				&& other.ascending == this.ascending;
 	}
 }

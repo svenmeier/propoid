@@ -8,41 +8,63 @@ import java.util.Set;
 import propoid.core.Propoid;
 import propoid.db.Reference;
 import propoid.db.Repository;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Checkable;
+import android.widget.ListView;
+import android.widget.RadioButton;
 
-public class PropoidSelection<T extends Propoid> implements
-		OnCheckedChangeListener {
+/**
+ * A selection of {@link Propoid}s. Can be used in {@link ListView}s to keep the
+ * currently selected items:
+ * 
+ * <pre>
+ * {@code
+ * public final View getView(int position, View convertView, ViewGroup parent) {
+ *     ...
+ *     selection.bind(checkBoxOrRadioButton, propoid);
+ *     ...
+ * }
+ * </pre>
+ * 
+ * @param <T>
+ *            propoid type
+ */
+public class PropoidSelection<T extends Propoid> implements OnClickListener {
 
 	private Set<Reference<T>> references = new HashSet<Reference<T>>();
 
 	/**
-	 * Bind the given checkbox to a propoid.
+	 * Bind the given checkable to a propoid.
 	 * 
-	 * @param checkBox
-	 *            checkbox to bind
+	 * @param checkable
+	 *            checkable to bind
 	 * @param propoid
 	 *            propoid to bind to
 	 */
-	public void bind(CheckBox checkBox, T propoid) {
-		checkBox.setOnCheckedChangeListener(null);
+	public void bind(Checkable checkable, T propoid) {
+		View view = (View) checkable;
+
+		view.setOnClickListener(null);
 
 		Reference<T> reference = new Reference<T>(propoid);
-		checkBox.setTag(reference);
+		view.setTag(reference);
 
-		checkBox.setChecked(references.contains(reference));
+		checkable.setChecked(references.contains(reference));
 
-		checkBox.setOnCheckedChangeListener(this);
+		view.setOnClickListener(this);
 	}
 
 	@Override
-	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+	public void onClick(View view) {
 
 		@SuppressWarnings("unchecked")
-		Reference<T> reference = (Reference<T>) buttonView.getTag();
+		Reference<T> reference = (Reference<T>) view.getTag();
 
-		if (isChecked) {
+		if (((Checkable) view).isChecked()) {
+			if (view instanceof RadioButton) {
+				references.clear();
+			}
 			references.add(reference);
 		} else {
 			references.remove(reference);

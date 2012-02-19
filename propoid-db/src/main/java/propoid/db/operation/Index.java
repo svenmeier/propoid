@@ -68,7 +68,7 @@ public class Index extends Operation {
 
 		for (Order order : ordering) {
 			sql.separate(":");
-			sql.raw(order.getProperty().name());
+			sql.raw(order.toString());
 		}
 
 		return sql.toString();
