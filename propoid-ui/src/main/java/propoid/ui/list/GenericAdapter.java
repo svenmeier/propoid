@@ -234,15 +234,17 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 	protected abstract void adaptItem(T item, View view);
 
 	/**
-	 * Helper method to set this adapter to the given {@link ListView} without
-	 * losing the scroll position.
+	 * Helper method to install to the given {@link ListView}, i.e. set as
+	 * adapter, register as {@link OnItemClickListener} and keep the previous
+	 * scroll position.
 	 */
-	public void scrollSaveSetAdapter(ListView view) {
+	public void install(ListView view) {
 		int position = view.getFirstVisiblePosition();
 		View child = view.getChildAt(0);
 		int top = (child == null) ? 0 : child.getTop();
 
 		view.setAdapter(this);
+		view.setOnItemClickListener(this);
 
 		view.setSelectionFromTop(position, top);
 	}

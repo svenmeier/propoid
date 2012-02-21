@@ -1,9 +1,7 @@
 package propoid.ui.list;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import propoid.core.Propoid;
 import propoid.db.Reference;
@@ -32,15 +30,15 @@ import android.widget.RadioButton;
  */
 public class PropoidSelection<T extends Propoid> implements OnClickListener {
 
-	private Set<Reference<T>> references = new HashSet<Reference<T>>();
+	private List<Reference<T>> references = new ArrayList<Reference<T>>();
 
 	/**
 	 * Bind the given checkable to a propoid.
 	 * 
 	 * @param checkable
-	 *            checkable to bind
+	 *            checkable view to bind to
 	 * @param propoid
-	 *            propoid to bind to
+	 *            propoid to bind
 	 */
 	public void bind(Checkable checkable, T propoid) {
 		View view = (View) checkable;
@@ -65,20 +63,38 @@ public class PropoidSelection<T extends Propoid> implements OnClickListener {
 			if (view instanceof RadioButton) {
 				references.clear();
 			}
-			references.add(reference);
+
+			if (!references.contains(reference)) {
+				references.add(reference);
+
+			}
 		} else {
 			references.remove(reference);
 		}
 	}
 
+	/**
+	 * Clear selection.
+	 */
 	public void clear() {
 		references.clear();
 	}
 
+	/**
+	 * Get selection size.
+	 * 
+	 * @return size
+	 */
 	public int size() {
 		return references.size();
 	}
 
+	/**
+	 * List all selected.
+	 * 
+	 * @param repository
+	 * @return all selected
+	 */
 	public List<T> list(Repository repository) {
 		List<T> selected = new ArrayList<T>();
 
@@ -89,7 +105,17 @@ public class PropoidSelection<T extends Propoid> implements OnClickListener {
 		return selected;
 	}
 
+	/**
+	 * Get the first selected.
+	 * 
+	 * @param repository
+	 * @return first selected or {@code null}
+	 */
 	public T first(Repository repository) {
-		return repository.lookup(references.iterator().next());
+		if (references.isEmpty()) {
+			return null;
+		} else {
+			return repository.lookup(references.iterator().next());
+		}
 	}
 }
