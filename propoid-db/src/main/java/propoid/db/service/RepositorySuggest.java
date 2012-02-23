@@ -6,11 +6,11 @@ import java.util.List;
 
 import propoid.core.Propoid;
 import propoid.db.Locator;
+import propoid.db.LookupException;
 import propoid.db.Match;
 import propoid.db.Range;
 import propoid.db.Reference;
 import propoid.db.Repository;
-import propoid.db.RepositoryException;
 import propoid.db.Setting;
 import propoid.db.aspect.Row;
 import propoid.db.locator.FileLocator;
@@ -207,12 +207,11 @@ public abstract class RepositorySuggest<P extends Propoid> extends
 			return new MatchCursor(match, range);
 		} else if (path.startsWith("/"
 				+ SearchManager.SUGGEST_URI_PATH_SHORTCUT)) {
-			Reference<P> reference = Reference.from(uri
-					.getLastPathSegment());
+			Reference<P> reference = Reference.from(uri.getLastPathSegment());
 			if (reference != null) {
 				try {
 					return new ReferenceCursor(reference);
-				} catch (RepositoryException ex) {
+				} catch (LookupException ex) {
 				}
 			}
 		}

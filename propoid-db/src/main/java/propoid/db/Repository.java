@@ -256,6 +256,8 @@ public class Repository {
 	 * 
 	 * @param reference
 	 *            reference of propoid
+	 * @throws LookupException
+	 *             if no propoid exists with the given reference
 	 */
 	@SuppressWarnings("unchecked")
 	public <P extends Propoid> P lookup(Reference<P> reference) {

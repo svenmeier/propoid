@@ -16,9 +16,9 @@
 package propoid.db.operation;
 
 import propoid.core.Propoid;
+import propoid.db.LookupException;
 import propoid.db.Reference;
 import propoid.db.Repository;
-import propoid.db.RepositoryException;
 import propoid.db.SQL;
 import android.database.Cursor;
 
@@ -42,7 +42,7 @@ public class Lookup extends Operation {
 				new String[] { Long.toString(reference.id) });
 		try {
 			if (!cursor.moveToFirst()) {
-				throw new RepositoryException("unkown propoid " + reference.id);
+				throw new LookupException(reference);
 			}
 
 			return instantiate(reference.type, cursor);
