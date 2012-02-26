@@ -15,6 +15,11 @@
  */
 package propoid.db.operation;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import propoid.core.Propoid;
 import propoid.db.LookupException;
 import propoid.db.Reference;
@@ -49,5 +54,50 @@ public class Lookup extends Operation {
 		} finally {
 			cursor.close();
 		}
+	}
+
+	public List<Propoid> now(List<Reference<Propoid>> references) {
+		Map<Reference<Propoid>, Propoid> referenceToPropoid = new HashMap<Reference<Propoid>, Propoid>();
+
+		if (!references.isEmpty()) {
+			Class<? extends Propoid> type = references.get(0).type;
+
+			final SQL sql = new SQL();
+			String[] ids = new String[references.size()];
+
+			sql.raw("SELECT * FROM ");
+			sql.escaped(repository.naming.table(repository, type));
+			sql.raw(" WHERE _id in (");
+			for (int r = 0; r < references.size(); r++) {
+				if (r > 0) {
+					sql.raw(",");
+				}
+				sql.raw("?");
+				ids[r] = Long.toString(references.get(r).id);
+			}
+			sql.raw(")");
+
+			Cursor cursor = repository.getDatabase().rawQuery(sql.toString(),
+					ids);
+			try {
+				while (cursor.moveToNext()) {
+					Propoid propoid = instantiate(type, cursor);
+
+					referenceToPropoid.put(new Reference<Propoid>(propoid),
+							propoid);
+				}
+			} finally {
+				cursor.close();
+			}
+		}
+
+		List<Propoid> propoids = new ArrayList<Propoid>();
+		for (Reference<Propoid> reference : references) {
+			Propoid propoid = referenceToPropoid.get(reference);
+			if (propoid != null) {
+				propoids.add(propoid);
+			}
+		}
+		return propoids;
 	}
 }

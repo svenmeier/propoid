@@ -18,6 +18,7 @@ package propoid.db;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import propoid.core.Propoid;
@@ -168,6 +169,9 @@ public class Repository {
 	}
 
 	public SQLiteDatabase getDatabase() {
+		if (database == null) {
+			throw new RepositoryException("closed");
+		}
 		return database;
 	}
 
@@ -262,6 +266,22 @@ public class Repository {
 	@SuppressWarnings("unchecked")
 	public <P extends Propoid> P lookup(Reference<P> reference) {
 		return (P) new Lookup(this).now(reference);
+	}
+
+	/**
+	 * Lookup {@link Propoid}s by reference.
+	 * <p>
+	 * Invalid references are silently dropped.
+	 * 
+	 * @param references
+	 *            references of propoid
+	 */
+	@SuppressWarnings("unchecked")
+	public <P extends Propoid> List<P> lookup(List<Reference<P>> references) {
+		List<?> ungeneric = (List<?>) references;
+
+		return (List<P>) new Lookup(this)
+				.now((List<Reference<Propoid>>) ungeneric);
 	}
 
 	/**
