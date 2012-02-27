@@ -1,6 +1,6 @@
 package propoid.util.service;
 
-import propoid.util.service.ListenableService.Binder;
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -8,20 +8,29 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 
 /**
- * A listener to a {@link ListenableService}.
+ * A listener to a service with {@link ServiceListenerBinder}.
+ * 
+ * <pre>
+ * {@code
+ * 	FooListener listener = new FooListener() {
+ *    public void onBar() {
+ *    } 
+ * 	};
+ * 	listener.register(context, FooService.class);
+ * }
+ * </pre>
  */
 @SuppressWarnings("rawtypes")
 public abstract class ServiceListener implements ServiceConnection {
 
 	private Context context;
 
-	private Binder binder;
+	private ServiceListenerBinder binder;
 
 	/**
 	 * Register with the given {@link ListenableService}.
 	 */
-	public void register(Context context,
-			Class<? extends ListenableService> service) {
+	public void register(Context context, Class<? extends Service> service) {
 		if (this.context != null) {
 			throw new IllegalStateException();
 		}
@@ -51,7 +60,7 @@ public abstract class ServiceListener implements ServiceConnection {
 	@SuppressWarnings("unchecked")
 	@Override
 	public final void onServiceConnected(ComponentName name, IBinder binder) {
-		this.binder = (ListenableService.Binder) binder;
+		this.binder = (ServiceListenerBinder) binder;
 
 		this.binder.register(this);
 	}
