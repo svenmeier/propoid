@@ -177,7 +177,7 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 			init(view);
 		}
 
-		adaptItem(position, view, item);
+		bind(position, view, item);
 
 		return view;
 	}
@@ -229,9 +229,16 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 	}
 
 	/**
-	 * Adapt the given item for the given view.
+	 * Bind the given item for the given view.
+	 * 
+	 * @param position
+	 *            position of view in list
+	 * @param view
+	 *            view to bind to
+	 * @param item
+	 *            item to bind
 	 */
-	protected abstract void adaptItem(int position, View view, T item);
+	protected abstract void bind(int position, View view, T item);
 
 	/**
 	 * Helper method to install to the given {@link ListView}, i.e. set as

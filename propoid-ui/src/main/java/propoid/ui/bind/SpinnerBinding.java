@@ -70,7 +70,7 @@ public class SpinnerBinding<T> extends Binding<T> implements
 				android.R.layout.simple_spinner_item,
 				android.R.layout.simple_spinner_dropdown_item, ts) {
 			@Override
-			protected void adaptItem(int position, View view, T item) {
+			protected void bind(int position, View view, T item) {
 				((TextView) view).setText(converter
 						.fromProperty(property, item));
 			}
