@@ -104,4 +104,13 @@ public class Preferences {
 	public String getString(int id) {
 		return preferences.getString(context.getString(id), null);
 	}
+
+	public float getFloat(int id) {
+		try {
+			return preferences.getFloat(context.getString(id), 0f);
+		} catch (ClassCastException ex) {
+			return Float.valueOf(preferences.getString(context.getString(id),
+					"0"));
+		}
+	}
 }
