@@ -56,12 +56,16 @@ public class AlterTable implements Upgrade {
 	@Override
 	public void apply(SQLiteDatabase database) throws SQLException {
 
+		List<Column> existingColumns = Column.get(oldName, database);
+		if (existingColumns.isEmpty()) {
+			// doesn't exist yet
+			return;
+		}
+
 		if (alters.isEmpty()) {
 			renameNew(database, oldName);
 		} else {
 			String temp = oldName + "_" + newName;
-
-			List<Column> existingColumns = Column.get(oldName, database);
 
 			createNew(database, existingColumns, temp);
 
