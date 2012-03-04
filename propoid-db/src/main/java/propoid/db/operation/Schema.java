@@ -15,7 +15,6 @@
  */
 package propoid.db.operation;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import propoid.core.Property;
@@ -24,7 +23,7 @@ import propoid.db.Repository;
 import propoid.db.RepositoryException;
 import propoid.db.SQL;
 import propoid.db.mapping.Mapper;
-import android.database.Cursor;
+import propoid.db.schema.Column;
 
 /**
  * Prepare schema for a {@link Propoid}.
@@ -36,8 +35,10 @@ public class Schema extends Operation {
 	}
 
 	public void now(Propoid propoid) {
+		List<Column> columns = Column.get(
+				repository.naming.table(repository, propoid.getClass()),
+				repository.getDatabase());
 
-		List<Column> columns = existingColumns(propoid);
 		if (columns.isEmpty()) {
 			create(propoid);
 		} else {
@@ -106,37 +107,5 @@ public class Schema extends Operation {
 		sql.raw(type);
 
 		repository.getDatabase().execSQL(sql.toString());
-	}
-
-	private List<Column> existingColumns(Propoid propoid) {
-		SQL sql = new SQL();
-		sql.raw("PRAGMA table_info(");
-		sql.escaped(repository.naming.table(repository, propoid.getClass()));
-		sql.raw(")");
-
-		Cursor cursor = repository.getDatabase().rawQuery(sql.toString(),
-				new String[0]);
-		try {
-			List<Column> columns = new ArrayList<Column>();
-
-			while (cursor.moveToNext()) {
-				columns.add(new Column(cursor.getString(1), cursor.getString(2)));
-			}
-
-			return columns;
-		} finally {
-			cursor.close();
-		}
-	}
-
-	private class Column {
-		public final String name;
-
-		public final String type;
-
-		public Column(String name, String type) {
-			this.name = name;
-			this.type = type;
-		}
 	}
 }
