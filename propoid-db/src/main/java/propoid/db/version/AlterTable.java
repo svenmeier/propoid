@@ -84,7 +84,7 @@ public class AlterTable implements Upgrade {
 
 		sql.raw("CREATE TABLE ");
 		sql.escaped(temp);
-		sql.raw("(");
+		sql.raw(" (");
 		for (Column column : existingColumns) {
 			AlterColumn alter = alter(column);
 			if (alter instanceof DropColumn) {
