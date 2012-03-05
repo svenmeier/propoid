@@ -14,7 +14,7 @@ public class Column {
 
 	public Column(String name, String type) {
 		this.name = name;
-		this.type = type;
+		this.type = "_id".equals(name) ? type + " PRIMARY KEY" : type;
 	}
 
 	public static List<Column> get(String table, SQLiteDatabase database) {
