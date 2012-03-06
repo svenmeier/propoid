@@ -94,12 +94,21 @@ public class AlterTable implements Upgrade {
 			sql.separate(", ");
 			if (alter instanceof RenameColumn) {
 				sql.escaped(((RenameColumn) alter).newName);
-				sql.raw(" ");
-				sql.raw(column.type);
 			} else {
 				sql.escaped(column.name);
-				sql.raw(" ");
-				sql.raw(column.type);
+			}
+			sql.raw(" ");
+			sql.raw(column.type);
+			if (column.notNull) {
+				sql.raw(" NOT  NULL");
+			}
+			if (column.dfltValue != null) {
+				sql.raw(" DEFAULT (");
+				sql.raw(column.dfltValue);
+				sql.raw(")");
+			}
+			if (column.pk) {
+				sql.raw(" PRIMARY KEY");
 			}
 		}
 		sql.raw(")");

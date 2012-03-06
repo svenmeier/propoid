@@ -12,9 +12,19 @@ public class Column {
 
 	public final String type;
 
-	public Column(String name, String type) {
+	public final boolean notNull;
+
+	public final String dfltValue;
+
+	public final boolean pk;
+
+	public Column(String name, String type, boolean notNull, String dfltValue,
+			boolean pk) {
 		this.name = name;
-		this.type = "_id".equals(name) ? type + " PRIMARY KEY" : type;
+		this.type = type;
+		this.notNull = notNull;
+		this.dfltValue = dfltValue;
+		this.pk = pk;
 	}
 
 	public static List<Column> get(String table, SQLiteDatabase database) {
@@ -28,7 +38,10 @@ public class Column {
 			List<Column> columns = new ArrayList<Column>();
 
 			while (cursor.moveToNext()) {
-				columns.add(new Column(cursor.getString(1), cursor.getString(2)));
+				columns.add(new Column(cursor.getString(1),
+						cursor.getString(2), cursor.getInt(3) == 0 ? false
+								: true, cursor.getString(4),
+						cursor.getInt(5) == 0 ? false : true));
 			}
 
 			return columns;

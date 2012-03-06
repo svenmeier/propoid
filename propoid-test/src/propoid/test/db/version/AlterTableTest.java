@@ -35,8 +35,8 @@ public class AlterTableTest extends ApplicationTestCase<Application> {
 	}
 
 	public void test() throws Exception {
-		database.execSQL("CREATE TABLE TEST_TABLE (_id PRIMARY KEY, COLUMN_1 TEXT, COLUMN_2 TEXT, COLUMN_3 TEXT)");
-		database.execSQL("INSERT INTO TEST_TABLE VALUES (42, 'VALUE_1', 'VALUE_2', 'VALUE_3')");
+		database.execSQL("CREATE TABLE TEST_TABLE (_id INTEGER PRIMARY KEY, COLUMN_1 TEXT, COLUMN_2 TEXT COLLATE NOCASE, COLUMN_3 TEXT COLLATE NOCASE)");
+		database.execSQL("INSERT INTO TEST_TABLE (COLUMN_1, COLUMN_2, COLUMN_3) VALUES ('VALUE_1', 'VALUE_2', 'VALUE_3')");
 
 		AlterTable alterTable = new AlterTable("TEST_TABLE", "TEST_TABLE_X");
 		alterTable.add(new DropColumn("COLUMN_1"));
@@ -45,6 +45,8 @@ public class AlterTableTest extends ApplicationTestCase<Application> {
 		alterTable.apply(database);
 
 		assertTrue(Column.get("TEST_TABLE", database).isEmpty());
+
+		database.execSQL("INSERT INTO TEST_TABLE_X (COLUMN_2_X, COLUMN_3) VALUES ('VALUE_2', 'VALUE_3')");
 
 		List<Column> columns = Column.get("TEST_TABLE_X", database);
 		assertEquals(3, columns.size());
@@ -57,6 +59,17 @@ public class AlterTableTest extends ApplicationTestCase<Application> {
 		try {
 			assertTrue(cursor.moveToNext());
 
+			// id from insert in old table
+			assertEquals("1", cursor.getString(cursor.getColumnIndex("_id")));
+			assertEquals("VALUE_2",
+					cursor.getString(cursor.getColumnIndex("COLUMN_2_X")));
+			assertEquals("VALUE_3",
+					cursor.getString(cursor.getColumnIndex("COLUMN_3")));
+
+			assertTrue(cursor.moveToNext());
+
+			// id from insert in new table
+			assertEquals("2", cursor.getString(cursor.getColumnIndex("_id")));
 			assertEquals("VALUE_2",
 					cursor.getString(cursor.getColumnIndex("COLUMN_2_X")));
 			assertEquals("VALUE_3",
