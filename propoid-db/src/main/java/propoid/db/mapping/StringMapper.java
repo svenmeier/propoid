@@ -25,27 +25,13 @@ import android.database.sqlite.SQLiteStatement;
  */
 public class StringMapper implements Mapper<String> {
 
-	private boolean collate;
-
 	@Override
 	public boolean maps(Property<?> property) {
 		return String.class == property.type();
 	}
 
-	public StringMapper() {
-		this(true);
-	}
-
-	public StringMapper(boolean collate) {
-		this.collate = collate;
-	}
-
 	public String type(Property<String> property, Repository repository) {
-		if (collate) {
-			return "TEXT COLLATE NOCASE";
-		} else {
-			return "TEXT";
-		}
+		return "TEXT";
 	}
 
 	@Override

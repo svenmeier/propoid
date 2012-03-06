@@ -45,33 +45,17 @@ public class Order {
 
 		SQL sql = new SQL();
 		sql.escaped(property.name);
+
+		if (property.type == String.class) {
+			sql.raw(" COLLATE NOCASE");
+		}
+
 		if (ascending) {
 			sql.raw(" asc");
 		} else {
 			sql.raw(" desc");
 		}
 		return sql.toString();
-	}
-
-	/**
-	 * Random order.
-	 */
-	public static Order random() {
-		return new Order(null, true);
-	}
-
-	/**
-	 * Ascending by property.
-	 */
-	public static Order ascending(Property<?> property) {
-		return new Order(property.meta(), true);
-	}
-
-	/**
-	 * Descending by property.
-	 */
-	public static Order descending(Property<?> property) {
-		return new Order(property.meta(), false);
 	}
 
 	@Override
@@ -93,5 +77,26 @@ public class Order {
 
 		return other.property == this.property
 				&& other.ascending == this.ascending;
+	}
+
+	/**
+	 * Random order.
+	 */
+	public static Order random() {
+		return new Order(null, true);
+	}
+
+	/**
+	 * Ascending by property.
+	 */
+	public static Order ascending(Property<?> property) {
+		return new Order(property.meta(), true);
+	}
+
+	/**
+	 * Descending by property.
+	 */
+	public static Order descending(Property<?> property) {
+		return new Order(property.meta(), false);
 	}
 }
