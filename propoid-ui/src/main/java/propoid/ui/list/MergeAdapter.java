@@ -19,8 +19,6 @@ import android.widget.TextView;
  */
 public class MergeAdapter implements ListAdapter, OnItemClickListener {
 
-	private final ArrayList<DataSetObserver> observers = new ArrayList<DataSetObserver>();
-
 	private List<ListAdapter> adapters = new ArrayList<ListAdapter>();
 
 	public MergeAdapter(ListAdapter... adapters) {
@@ -130,7 +128,12 @@ public class MergeAdapter implements ListAdapter, OnItemClickListener {
 
 		for (ListAdapter adapter : adapters) {
 			if (position - offset < adapter.getCount()) {
-				return typeCount + adapter.getItemViewType(position - offset);
+				int type = adapter.getItemViewType(position - offset);
+				if (type == ListAdapter.IGNORE_ITEM_VIEW_TYPE) {
+					// cannot ignore
+					type = 0;
+				}
+				return typeCount + type;
 			}
 
 			typeCount += adapter.getViewTypeCount();
@@ -179,12 +182,16 @@ public class MergeAdapter implements ListAdapter, OnItemClickListener {
 
 	@Override
 	public void registerDataSetObserver(DataSetObserver observer) {
-		observers.add(observer);
+		for (ListAdapter adapter : adapters) {
+			adapter.registerDataSetObserver(observer);
+		}
 	}
 
 	@Override
 	public void unregisterDataSetObserver(DataSetObserver observer) {
-		observers.remove(observer);
+		for (ListAdapter adapter : adapters) {
+			adapter.unregisterDataSetObserver(observer);
+		}
 	}
 
 	/**
