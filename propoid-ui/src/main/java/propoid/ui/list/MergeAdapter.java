@@ -40,7 +40,7 @@ public class MergeAdapter implements ListAdapter, OnItemClickListener {
 	}
 
 	/**
-	 * Convenience method to merge a single preference-like category.
+	 * Convenience method to a single preference-like category.
 	 * 
 	 * @param activity
 	 *            owning activity

@@ -3,10 +3,13 @@ package propoid.ui.list;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.R;
+import android.app.Activity;
 import android.database.DataSetObserver;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
+import android.widget.TextView;
 
 /**
  * A list adapter for {@link View}s.
@@ -29,6 +32,21 @@ public class ViewsAdapter implements ListAdapter {
 
 	public void add(View view) {
 		this.views.add(view);
+	}
+
+	/**
+	 * Convenience method to add a single preference-like category.
+	 * 
+	 * @param activity
+	 *            owning activity
+	 * @param textId
+	 *            resource id for the category's text
+	 */
+	public void addCategory(Activity activity, int textId) {
+		View view = activity.getLayoutInflater().inflate(
+				R.layout.preference_category, null);
+		((TextView) view).setText(textId);
+		add(view);
 	}
 
 	@Override
