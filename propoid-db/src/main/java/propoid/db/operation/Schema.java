@@ -60,7 +60,7 @@ public class Schema extends Operation {
 					.getMapper(repository, property);
 
 			sql.raw(", ");
-			sql.escaped(property.name());
+			sql.escaped(property.meta().name);
 			sql.raw(" ");
 			sql.raw(mapper.type((Property<Object>) property, repository));
 		}
@@ -83,7 +83,7 @@ public class Schema extends Operation {
 		}
 
 		for (Column column : columns) {
-			if (column.name.equals(property.name())) {
+			if (column.name.equals(property.meta().name)) {
 				if (type.equals(column.type)) {
 					return;
 				} else {
@@ -92,7 +92,7 @@ public class Schema extends Operation {
 									"column type %s does not match %s for property %s#%s",
 									column.type, type, property.propoid
 											.getClass().getSimpleName(),
-									property.name()));
+									property.meta().name));
 				}
 			}
 		}
@@ -102,7 +102,7 @@ public class Schema extends Operation {
 		sql.escaped(repository.naming.table(repository,
 				property.propoid.getClass()));
 		sql.raw(" ADD COLUMN ");
-		sql.escaped(property.name());
+		sql.escaped(property.meta().name);
 		sql.raw(" ");
 		sql.raw(type);
 

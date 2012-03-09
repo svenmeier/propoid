@@ -28,8 +28,8 @@ public class EnumMapper implements Mapper<Enum> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		return property.type() instanceof Class
-				&& Enum.class.isAssignableFrom((Class<?>) property.type());
+		return property.meta().type instanceof Class
+				&& Enum.class.isAssignableFrom((Class<?>) property.meta().type);
 	}
 
 	public String type(Property<Enum> property, Repository repository) {
@@ -54,7 +54,7 @@ public class EnumMapper implements Mapper<Enum> {
 		if (cursor.isNull(index)) {
 			property.setInternal(null);
 		} else {
-			property.setInternal(Enum.valueOf((Class) property.type(),
+			property.setInternal(Enum.valueOf((Class) property.meta().type,
 					cursor.getString(index)));
 		}
 	}

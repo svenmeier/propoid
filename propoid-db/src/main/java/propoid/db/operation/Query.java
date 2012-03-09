@@ -192,7 +192,7 @@ public class Query extends Operation {
 			sql.raw("SELECT ");
 			sql.raw(function);
 			sql.raw("(");
-			sql.escaped(property.name());
+			sql.escaped(property.meta().name);
 			sql.raw(") FROM ");
 			sql.escaped(repository.naming.table(repository, propoid.getClass()));
 			sql.raw(" ");
@@ -221,7 +221,7 @@ public class Query extends Operation {
 			sql.raw("UPDATE ");
 			sql.escaped(repository.naming.table(repository, propoid.getClass()));
 			sql.raw(" SET ");
-			sql.escaped(property.name());
+			sql.escaped(property.meta().name);
 			sql.raw(" = ? ");
 
 			arguments

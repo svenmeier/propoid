@@ -52,17 +52,17 @@ public class NumberConverter implements Converter<Number> {
 			Number parsed = format.parse(string);
 
 			Property<?> temp = property;
-			if (temp.type() == Byte.class) {
+			if (temp.meta().type == Byte.class) {
 				return parsed.byteValue();
-			} else if (temp.type() == Short.class) {
+			} else if (temp.meta().type == Short.class) {
 				return parsed.shortValue();
-			} else if (temp.type() == Integer.class) {
+			} else if (temp.meta().type == Integer.class) {
 				return parsed.intValue();
-			} else if (temp.type() == Long.class) {
+			} else if (temp.meta().type == Long.class) {
 				return parsed.longValue();
-			} else if (temp.type() == Float.class) {
+			} else if (temp.meta().type == Float.class) {
 				return parsed.floatValue();
-			} else if (temp.type() == Double.class) {
+			} else if (temp.meta().type == Double.class) {
 				return parsed.doubleValue();
 			}
 		} catch (ParseException failed) {

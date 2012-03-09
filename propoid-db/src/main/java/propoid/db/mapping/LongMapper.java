@@ -27,7 +27,7 @@ public class LongMapper implements Mapper<Long> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		return Long.class == property.type() || Long.TYPE == property.type();
+		return Long.class == property.meta().type || Long.TYPE == property.meta().type;
 	}
 
 	public String type(Property<Long> property, Repository repository) {

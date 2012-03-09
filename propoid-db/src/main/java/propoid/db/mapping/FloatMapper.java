@@ -27,7 +27,7 @@ public class FloatMapper implements Mapper<Float> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		return Float.class == property.type() || Float.TYPE == property.type();
+		return Float.class == property.meta().type || Float.TYPE == property.meta().type;
 	}
 
 	public String type(Property<Float> property, Repository repository) {

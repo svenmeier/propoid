@@ -63,7 +63,7 @@ public abstract class Operation {
 			Mapper<Object> mapper = (Mapper<Object>) repository.mapping
 					.getMapper(repository, property);
 
-			int index = cursor.getColumnIndex(property.name());
+			int index = cursor.getColumnIndex(property.meta().name);
 			if (index != -1) {
 				mapper.retrieve((Property<Object>) property, repository,
 						cursor, index);
@@ -80,9 +80,9 @@ public abstract class Operation {
 	protected int bind(SQLiteStatement statement, Propoid propoid, int index) {
 
 		for (Property<?> property : propoid.properties()) {
-			if (property.type() instanceof Class
+			if (property.meta().type instanceof Class
 					&& Propoid.class.isAssignableFrom((Class<?>) property
-							.type())) {
+							.meta().type)) {
 				cascade((Property<Propoid>) property);
 			}
 

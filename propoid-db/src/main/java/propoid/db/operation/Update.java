@@ -48,7 +48,7 @@ public class Update extends Operation {
 		boolean hasProperty = false;
 		for (Property<?> property : propoid.properties()) {
 			sql.separate(", ");
-			sql.escaped(property.name());
+			sql.escaped(property.meta().name);
 			sql.raw(" = ?");
 
 			hasProperty = true;

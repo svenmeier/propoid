@@ -55,20 +55,6 @@ public final class Property<T> implements Serializable {
 	}
 
 	/**
-	 * The name of this property.
-	 */
-	public String name() {
-		return meta().name;
-	}
-
-	/**
-	 * The type of this property.
-	 */
-	public Type type() {
-		return meta().type;
-	}
-
-	/**
 	 * Get the value.
 	 */
 	public T get() {
@@ -89,7 +75,7 @@ public final class Property<T> implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return String.format("%s = %s", name(), value);
+		return String.format("%s = %s", meta().name, value);
 	}
 
 	/**
@@ -156,6 +142,16 @@ public final class Property<T> implements Serializable {
 				throw new IllegalStateException("property " + toString()
 						+ " must be declared final");
 			}
+		}
+
+		@SuppressWarnings("unchecked")
+		public <A> Property<A> get(Propoid propoid) {
+			for (Property<?> property : propoid.properties()) {
+				if (property.meta() == this) {
+					return (Property<A>) property;
+				}
+			}
+			throw new IllegalArgumentException();
 		}
 
 		@Override

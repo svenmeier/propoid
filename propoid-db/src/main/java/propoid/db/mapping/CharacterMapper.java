@@ -28,8 +28,8 @@ public class CharacterMapper implements Mapper<Character> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		return Character.class == property.type()
-				|| Character.TYPE == property.type();
+		return Character.class == property.meta().type
+				|| Character.TYPE == property.meta().type;
 	}
 
 	public String type(Property<Character> property, Repository repository) {

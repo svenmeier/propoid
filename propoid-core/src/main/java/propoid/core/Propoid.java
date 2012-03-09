@@ -84,16 +84,6 @@ public abstract class Propoid implements Aspect {
 		};
 	}
 
-	@SuppressWarnings("unchecked")
-	public <A> Property<A> propertyFor(Property.Meta meta) {
-		for (Property<?> property : properties()) {
-			if (property.meta() == meta) {
-				return (Property<A>) property;
-			}
-		}
-		throw new IllegalArgumentException();
-	}
-
 	private class AspectIterator implements Iterator<Aspect> {
 
 		private Aspect previous;

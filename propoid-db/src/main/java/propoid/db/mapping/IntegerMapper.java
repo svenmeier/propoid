@@ -27,8 +27,8 @@ public class IntegerMapper implements Mapper<Integer> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		return Integer.class == property.type()
-				|| Integer.TYPE == property.type();
+		return Integer.class == property.meta().type
+				|| Integer.TYPE == property.meta().type;
 	}
 
 	public String type(Property<Integer> property, Repository repository) {

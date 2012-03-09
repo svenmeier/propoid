@@ -143,7 +143,7 @@ public class SpinnerBinding<T> extends Binding<T> implements
 	@SuppressWarnings("unchecked")
 	public static <E extends Enum<E>> SpinnerBinding<E> enumeration(
 			Property<E> property, Spinner view) {
-		E[] ts = ((Class<E>) property.type()).getEnumConstants();
+		E[] ts = ((Class<E>) property.meta().type).getEnumConstants();
 
 		return new SpinnerBinding<E>(property, view, new EnumConverter<E>(), ts);
 	}

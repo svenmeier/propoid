@@ -27,8 +27,8 @@ public class BooleanMapper implements Mapper<Boolean> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		return Boolean.class == property.type()
-				|| Boolean.TYPE == property.type();
+		return Boolean.class == property.meta().type
+				|| Boolean.TYPE == property.meta().type;
 	}
 
 	public String type(Property<Boolean> property, Repository repository) {

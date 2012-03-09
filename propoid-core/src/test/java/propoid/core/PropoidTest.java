@@ -12,8 +12,8 @@ public class PropoidTest extends TestCase {
 		Iterator<Property<?>> properties = foo.properties().iterator();
 		assertTrue(properties.hasNext());
 		assertEquals(foo.bar, properties.next());
-		assertEquals("bar", foo.bar.name());
-		assertEquals(String.class, foo.bar.type());
+		assertEquals("bar", foo.bar.meta().name);
+		assertEquals(String.class, foo.bar.meta().type);
 		assertFalse(properties.hasNext());
 
 		foo.bar.set("BAR");
@@ -52,12 +52,12 @@ public class PropoidTest extends TestCase {
 		Iterator<Property<?>> properties = foo.properties().iterator();
 		assertTrue(properties.hasNext());
 		assertSame(foo.baz, properties.next());
-		assertEquals("bar", foo.bar.name());
-		assertEquals(String.class, foo.bar.type());
+		assertEquals("bar", foo.bar.meta().name);
+		assertEquals(String.class, foo.bar.meta().type);
 		assertTrue(properties.hasNext());
 		assertSame(foo.bar, properties.next());
-		assertEquals("baz", foo.baz.name());
-		assertEquals(Integer.class, foo.baz.type());
+		assertEquals("baz", foo.baz.meta().name);
+		assertEquals(Integer.class, foo.baz.meta().type);
 		assertFalse(properties.hasNext());
 	}
 

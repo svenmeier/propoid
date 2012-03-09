@@ -46,7 +46,7 @@ public class Insert extends Operation {
 		int questionMarks = 0;
 		for (Property<?> property : propoid.properties()) {
 			sql.raw(", ");
-			sql.escaped(property.name());
+			sql.escaped(property.meta().name);
 
 			questionMarks++;
 		}

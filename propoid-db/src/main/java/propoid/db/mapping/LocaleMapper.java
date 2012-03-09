@@ -29,7 +29,7 @@ public class LocaleMapper implements Mapper<Locale> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		return Locale.class == property.type();
+		return Locale.class == property.meta().type;
 	}
 
 	public String type(Property<Locale> property, Repository repository) {

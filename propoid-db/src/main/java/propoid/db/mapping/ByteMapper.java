@@ -27,7 +27,7 @@ public class ByteMapper implements Mapper<Byte> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		return Byte.class == property.type() || Byte.TYPE == property.type();
+		return Byte.class == property.meta().type || Byte.TYPE == property.meta().type;
 	}
 
 	public String type(Property<Byte> property, Repository repository) {

@@ -40,9 +40,9 @@ public class Delete extends Operation {
 		}
 
 		for (Property<?> property : propoid.properties()) {
-			if (property.type() instanceof Class
+			if (property.meta().type instanceof Class
 					&& Propoid.class.isAssignableFrom((Class<?>) property
-							.type())) {
+							.meta().type)) {
 				cascade((Property<Propoid>) property);
 			}
 		}

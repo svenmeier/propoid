@@ -71,7 +71,7 @@ public class Relation extends AbstractAspect {
 				throw new RepositoryException("cannot get detached relation");
 			}
 
-			Reference reference = new Reference((Class) this.property.type(),
+			Reference reference = new Reference((Class) this.property.meta().type,
 					id);
 
 			value = (T) new Lookup(repository).now(reference);

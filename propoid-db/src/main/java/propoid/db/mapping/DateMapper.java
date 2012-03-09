@@ -29,7 +29,7 @@ public class DateMapper implements Mapper<Date> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		return Date.class == property.type();
+		return Date.class == property.meta().type;
 	}
 
 	public String type(Property<Date> property, Repository repository) {

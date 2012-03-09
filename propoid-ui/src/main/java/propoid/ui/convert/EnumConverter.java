@@ -41,7 +41,7 @@ public class EnumConverter<E extends Enum<E>> implements Converter<E> {
 	public E toProperty(Property<E> property, String string)
 			throws ConverterException {
 
-		Class<E> type = (Class<E>) property.type();
+		Class<E> type = (Class<E>) property.meta().type;
 
 		try {
 			return Enum.valueOf(type, string);

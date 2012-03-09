@@ -27,7 +27,7 @@ public class StringMapper implements Mapper<String> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		return String.class == property.type();
+		return String.class == property.meta().type;
 	}
 
 	public String type(Property<String> property, Repository repository) {

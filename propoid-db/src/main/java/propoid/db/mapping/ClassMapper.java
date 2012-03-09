@@ -32,7 +32,7 @@ public class ClassMapper implements Mapper<Class> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		Type type = property.type();
+		Type type = property.meta().type;
 		return ParameterizedType.class.isInstance(type);
 	}
 

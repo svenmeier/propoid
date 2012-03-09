@@ -236,7 +236,7 @@ public class Where {
 			sql.raw("._id = ");
 			sql.raw(aliaser.alias(property.propoid));
 			sql.raw(".");
-			sql.escaped(property.name());
+			sql.escaped(property.meta().name);
 			sql.raw(" and ");
 			sql.raw(where.toString(repository, arguments, aliaser));
 			sql.raw(")");
@@ -267,7 +267,7 @@ public class Where {
 
 			sql.raw(aliaser.alias(property.propoid));
 			sql.raw(".");
-			sql.escaped(property.name());
+			sql.escaped(property.meta().name);
 			sql.raw(" ");
 			sql.raw(comparator);
 

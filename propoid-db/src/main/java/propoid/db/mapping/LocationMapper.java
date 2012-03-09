@@ -50,7 +50,7 @@ public class LocationMapper implements Mapper<Location> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		return Location.class == property.type();
+		return Location.class == property.meta().type;
 	}
 
 	public String type(Property<Location> property, Repository repository) {

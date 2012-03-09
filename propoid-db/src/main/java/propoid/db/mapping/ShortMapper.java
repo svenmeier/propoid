@@ -27,7 +27,7 @@ public class ShortMapper implements Mapper<Short> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		return Short.class == property.type() || Short.TYPE == property.type();
+		return Short.class == property.meta().type || Short.TYPE == property.meta().type;
 	}
 
 	public String type(Property<Short> property, Repository repository) {

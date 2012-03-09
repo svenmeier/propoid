@@ -27,8 +27,8 @@ public class DoubleMapper implements Mapper<Double> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		return Double.class == property.type()
-				|| Double.TYPE == property.type();
+		return Double.class == property.meta().type
+				|| Double.TYPE == property.meta().type;
 	}
 
 	public String type(Property<Double> property, Repository repository) {

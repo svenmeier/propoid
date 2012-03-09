@@ -31,8 +31,8 @@ public class PropoidMapper implements Mapper<Propoid> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		return property.type() instanceof Class
-				&& Propoid.class.isAssignableFrom((Class<?>) property.type());
+		return property.meta().type instanceof Class
+				&& Propoid.class.isAssignableFrom((Class<?>) property.meta().type);
 	}
 
 	public String type(Property<Propoid> property, Repository repository) {
