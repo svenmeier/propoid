@@ -56,6 +56,10 @@ public abstract class Propoid implements Aspect {
 		return value;
 	}
 
+	public Meta meta() {
+		return getMeta(this);
+	}
+
 	/**
 	 * All {@link Aspect}s of this propoid.
 	 */
@@ -196,6 +200,16 @@ public abstract class Propoid implements Aspect {
 
 		public Property.Meta get(Property<?> property) {
 			return metas[property.index];
+		}
+
+		public Property.Meta get(String name) {
+			for (Property.Meta meta : metas) {
+				if (meta.name.equals(name)) {
+					return meta;
+				}
+			}
+
+			return null;
 		}
 	}
 }
