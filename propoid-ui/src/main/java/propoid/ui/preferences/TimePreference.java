@@ -15,14 +15,19 @@
  */
 package propoid.ui.preferences;
 
+import java.util.Calendar;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.preference.DialogPreference;
+import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TimePicker;
+import android.widget.TimePicker.OnTimeChangedListener;
 
-public class TimePreference extends DialogPreference {
+public class TimePreference extends DialogPreference implements
+		OnTimeChangedListener {
 
 	private static final int HOUR = 60 * 60 * 1000;
 
@@ -39,7 +44,7 @@ public class TimePreference extends DialogPreference {
 	@Override
 	protected View onCreateDialogView() {
 		picker = new TimePicker(getContext());
-		picker.setIs24HourView(true);
+		picker.setIs24HourView(DateFormat.is24HourFormat(getContext()));
 
 		int value;
 		try {
@@ -47,10 +52,26 @@ public class TimePreference extends DialogPreference {
 		} catch (Exception ex) {
 			value = 0;
 		}
-		picker.setCurrentHour(value / HOUR);
-		picker.setCurrentMinute((value % HOUR) / MINUTE);
+		int hourOfDay = value / HOUR;
+		int minute = (value % HOUR) / MINUTE;
+
+		picker.setCurrentHour(hourOfDay);
+		picker.setCurrentMinute(minute);
+
+		picker.setOnTimeChangedListener(this);
 
 		return picker;
+	}
+
+	@Override
+	public void onTimeChanged(TimePicker picker, int hourOfDay, int minute) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+		calendar.set(Calendar.MINUTE, minute);
+
+		getDialog().setTitle(
+				DateFormat.getTimeFormat(getContext()).format(
+						calendar.getTime()));
 	}
 
 	@Override
