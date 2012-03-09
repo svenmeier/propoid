@@ -84,6 +84,16 @@ public abstract class Propoid implements Aspect {
 		};
 	}
 
+	@SuppressWarnings("unchecked")
+	public <A> Property<A> propertyFor(Property.Meta meta) {
+		for (Property<?> property : properties()) {
+			if (property.meta() == meta) {
+				return (Property<A>) property;
+			}
+		}
+		throw new IllegalArgumentException();
+	}
+
 	private class AspectIterator implements Iterator<Aspect> {
 
 		private Aspect previous;
@@ -162,6 +172,9 @@ public abstract class Propoid implements Aspect {
 		return meta;
 	}
 
+	/**
+	 * Meta information about a {@link Propoid}.
+	 */
 	public static final class Meta {
 
 		private Property.Meta[] metas;
@@ -198,11 +211,14 @@ public abstract class Propoid implements Aspect {
 			throw new IllegalStateException("property not known");
 		}
 
-		public Property.Meta get(Property<?> property) {
+		Property.Meta get(Property<?> property) {
 			return metas[property.index];
 		}
 
-		public Property.Meta get(String name) {
+		/**
+		 * Get meta information for a property.
+		 */
+		public Property.Meta property(String name) {
 			for (Property.Meta meta : metas) {
 				if (meta.name.equals(name)) {
 					return meta;
