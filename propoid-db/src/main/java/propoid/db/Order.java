@@ -26,16 +26,12 @@ import propoid.core.Property;
  */
 public class Order {
 
-	private final Property.Meta property;
-	private final boolean ascending;
+	public final Property.Meta property;
+	public final boolean ascending;
 
 	Order(Property.Meta property, boolean ascending) {
 		this.property = property;
 		this.ascending = ascending;
-	}
-
-	public String toString() {
-		return property.name;
 	}
 
 	public String toString(Repository repository) {
