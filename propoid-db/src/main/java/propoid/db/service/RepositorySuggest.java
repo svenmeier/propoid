@@ -113,9 +113,19 @@ public abstract class RepositorySuggest<P extends Propoid> extends
 
 	@Override
 	public boolean onCreate() {
-		repository = new Repository(getLocator(), getSettings());
+		repository = getRepository();
 
 		return true;
+	}
+
+	/**
+	 * Override if you want to provide a customm repository.
+	 * 
+	 * @see #getLocator()
+	 * @see #getSettings()
+	 */
+	protected Repository getRepository() {
+		return new Repository(getLocator(), getSettings());
 	}
 
 	/**
