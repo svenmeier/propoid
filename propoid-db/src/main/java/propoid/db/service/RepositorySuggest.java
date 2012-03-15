@@ -113,9 +113,14 @@ public abstract class RepositorySuggest<P extends Propoid> extends
 
 	@Override
 	public boolean onCreate() {
-		repository = getRepository();
-
 		return true;
+	}
+
+	private Repository getRepository() {
+		if (repository == null) {
+			repository = createRepository();
+		}
+		return repository;
 	}
 
 	/**
@@ -124,7 +129,7 @@ public abstract class RepositorySuggest<P extends Propoid> extends
 	 * @see #getLocator()
 	 * @see #getSettings()
 	 */
-	protected Repository getRepository() {
+	protected Repository createRepository() {
 		return new Repository(getLocator(), getSettings());
 	}
 
@@ -210,7 +215,7 @@ public abstract class RepositorySuggest<P extends Propoid> extends
 			String query = uri.getLastPathSegment();
 			String limit = uri.getQueryParameter("limit");
 
-			Match<P> match = query(repository, query);
+			Match<P> match = query(getRepository(), query);
 			Range range = (limit == null) ? Range.all() : Range.limit(Integer
 					.parseInt(limit));
 
@@ -284,7 +289,7 @@ public abstract class RepositorySuggest<P extends Propoid> extends
 		private P propoid;
 
 		public ReferenceCursor(Reference<P> reference) {
-			this.propoid = repository.lookup(reference);
+			this.propoid = getRepository().lookup(reference);
 		}
 
 		@Override
