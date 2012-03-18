@@ -67,6 +67,8 @@ public class AlterTable implements Upgrade {
 		} else {
 			String temp = oldName + "_" + newName;
 
+			check(existingColumns);
+
 			createNew(database, existingColumns, temp);
 
 			moveOldToNew(database, existingColumns, temp);
@@ -74,6 +76,18 @@ public class AlterTable implements Upgrade {
 			dropOld(database);
 
 			renameNew(database, temp);
+		}
+	}
+
+	private void check(List<Column> existingColumns) {
+		alter: for (AlterColumn alter : alters) {
+			for (Column column : existingColumns) {
+				if (column.name.equals(alter.oldName)) {
+					continue alter;
+				}
+			}
+
+			throw new SQLException("unkown column " + alter.oldName);
 		}
 	}
 

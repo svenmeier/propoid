@@ -8,6 +8,7 @@ import propoid.db.version.alter.DropColumn;
 import propoid.db.version.alter.RenameColumn;
 import android.app.Application;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.ApplicationTestCase;
 
@@ -35,7 +36,7 @@ public class AlterTableTest extends ApplicationTestCase<Application> {
 	}
 
 	public void test() throws Exception {
-		database.execSQL("CREATE TABLE TEST_TABLE (_id INTEGER PRIMARY KEY, COLUMN_1 TEXT, COLUMN_2 TEXT COLLATE NOCASE, COLUMN_3 TEXT COLLATE NOCASE)");
+		database.execSQL("CREATE TABLE TEST_TABLE (_id INTEGER PRIMARY KEY, COLUMN_1 TEXT, COLUMN_2 TEXT, COLUMN_3 TEXT)");
 		database.execSQL("INSERT INTO TEST_TABLE (COLUMN_1, COLUMN_2, COLUMN_3) VALUES ('VALUE_1', 'VALUE_2', 'VALUE_3')");
 
 		AlterTable alterTable = new AlterTable("TEST_TABLE", "TEST_TABLE_X");
@@ -78,6 +79,20 @@ public class AlterTableTest extends ApplicationTestCase<Application> {
 			assertFalse(cursor.moveToNext());
 		} catch (Exception ex) {
 			cursor.close();
+		}
+	}
+
+	public void testUnknownColumn() throws Exception {
+		database.execSQL("CREATE TABLE TEST_TABLE (_id INTEGER PRIMARY KEY, COLUMN_1 TEXT)");
+
+		AlterTable alterTable = new AlterTable("TEST_TABLE");
+		alterTable.add(new DropColumn("COLUMN_2"));
+
+		try {
+			alterTable.apply(database);
+
+			fail();
+		} catch (SQLException exptected) {
 		}
 	}
 }
