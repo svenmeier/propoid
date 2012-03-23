@@ -3,10 +3,11 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/propoid-core"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/propoid-db"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/propoid-ui"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/propoid-util"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/propoid-validation"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/propoid-core"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/propoid-db"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/propoid-ui"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/propoid-util"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/propoid-validation"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
