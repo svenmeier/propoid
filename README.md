@@ -64,11 +64,11 @@ Bind properties to views:
  
 Bind ListView to matched propoids (backed by a cursor):
 
-    listView.setAdapater(new GenericAdapter(repository.query(Foo.class)) {
+    listView.setAdapater(new GenericAdapter<Foo>(repository.query(Foo.class)) {
         protected void bind(int position, View view, Foo foo) {
-			Index index = Index.get(view);
+            Index index = Index.get(view);
             
-    		TextBinding.string(foo.bar,	index.<TextView>get(R.id.foo_bar));
+            TextBinding.string(foo.bar,	index.<TextView>get(R.id.foo_bar));
         }
     );
 
