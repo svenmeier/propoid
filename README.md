@@ -53,10 +53,6 @@ Add validation to your objects:
 propoid-ui
 ----------
 
-Bind ListView to matched propoids (backed by a cursor):
-
-    listView.setAdapater(new GenericAdapter(repository.query(Foo.class)));
-
 Bind properties to views:
 
     Foo foo = new Foo();
@@ -65,6 +61,16 @@ Bind properties to views:
 - all changes are automatically synced between property and a view, bidirectional!
 - use one of default converters or add your own
 - handles conversion and validation errors automatically
+ 
+Bind ListView to matched propoids (backed by a cursor):
+
+    listView.setAdapter(new GenericAdapter<Foo>(repository.query(new Foo()).list()) {
+        protected void bind(int position, View view, Foo foo) {
+            Index index = Index.get(view);
+            
+            TextBinding.string(foo.bar,	index.<TextView>get(R.id.foo_bar));
+        }
+    );
 
 propoid-core
 ------------
