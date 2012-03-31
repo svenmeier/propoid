@@ -75,11 +75,19 @@ public class Index {
 	 * @return index
 	 */
 	public static Index get(View view) {
-		Index index = (Index) view.getTag();
-		if (index == null) {
+		Index index;
+
+		Object tag = view.getTag();
+		if (tag == null) {
 			index = new Index(view);
 
 			view.setTag(index);
+		} else {
+			if (tag instanceof Index) {
+				index = (Index) tag;
+			} else {
+				throw new IllegalStateException("view tag is already set");
+			}
 		}
 
 		return index;

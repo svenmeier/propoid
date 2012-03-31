@@ -49,10 +49,15 @@ public abstract class Binding<T> extends AbstractAspect {
 
 		this.property = property;
 
-		Binding<?> binding = (Binding<?>) view.getTag();
-		if (binding != null) {
-			binding.unbind();
+		Object tag = view.getTag();
+		if (tag != null) {
+			if (tag instanceof Binding<?>) {
+				((Binding<?>) tag).unbind();
+			} else {
+				throw new IllegalStateException("view tag is already set");
+			}
 		}
+
 		view.setTag(this);
 	}
 
