@@ -63,9 +63,10 @@ public class Preferences {
 	private Context context;
 
 	public Preferences(Context context) {
-		this.context = context;
+		this.context = context.getApplicationContext();
 
-		preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		preferences = PreferenceManager
+				.getDefaultSharedPreferences(this.context);
 	}
 
 	public void registerOnSharedPreferenceChangeListener(
