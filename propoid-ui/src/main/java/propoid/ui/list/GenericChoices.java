@@ -3,13 +3,16 @@ package propoid.ui.list;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Checkable;
 import android.widget.ListView;
 
 /**
+ * A generic listener to checked items in a {@link ListView}.
+ * 
+ * @see ListView#setItemChecked(int, boolean)
+ * @see ListView#isItemChecked(int)
  */
 public class GenericChoices<T> implements OnClickListener {
 
@@ -41,6 +44,14 @@ public class GenericChoices<T> implements OnClickListener {
 		listView.setItemChecked(position, ((Checkable) view).isChecked());
 	}
 
+	public void clearChoices() {
+		if (listView != null) {
+			listView.clearChoices();
+
+			listView.invalidateViews();
+		}
+	}
+
 	public int size() {
 		if (listView == null) {
 			return 0;
@@ -57,9 +68,8 @@ public class GenericChoices<T> implements OnClickListener {
 			return choices;
 		}
 
-		SparseBooleanArray positions = listView.getCheckedItemPositions();
 		for (int position = 0; position < listView.getCount(); position++) {
-			if (positions.get(position)) {
+			if (listView.isItemChecked(position)) {
 				choices.add((T) listView.getAdapter().getItem(position));
 			}
 		}
