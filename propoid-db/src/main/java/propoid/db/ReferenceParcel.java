@@ -80,4 +80,21 @@ public class ReferenceParcel<T extends Propoid> implements Parcelable {
 			return new ReferenceParcel[size];
 		}
 	};
+
+	/**
+	 * Create a parcel of references.
+	 * 
+	 * @param propoids
+	 *            propoids to put into parcel
+	 */
+	public static <S extends Propoid> ReferenceParcel<S> from(List<S> propoids) {
+		List<Reference<S>> references = new ArrayList<Reference<S>>();
+
+		for (S propoid : propoids) {
+			references.add(new Reference<S>(propoid));
+		}
+
+		return new ReferenceParcel<S>(references);
+	}
+
 }
