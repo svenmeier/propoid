@@ -28,9 +28,11 @@ public class CheckableLayout extends FrameLayout implements Checkable {
 	}
 
 	public void setChecked(boolean b) {
-		checked = b;
+		if (checked != b) {
+			checked = b;
 
-		refreshDrawableState();
+			refreshDrawableState();
+		}
 	}
 
 	public boolean isChecked() {
@@ -44,7 +46,7 @@ public class CheckableLayout extends FrameLayout implements Checkable {
 	@Override
 	protected int[] onCreateDrawableState(int extraSpace) {
 		final int[] drawableState = super.onCreateDrawableState(extraSpace + 1);
-		if (isChecked()) {
+		if (checked) {
 			mergeDrawableStates(drawableState, STATES_CHECKED);
 		}
 		return drawableState;

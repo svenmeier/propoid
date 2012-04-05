@@ -16,13 +16,25 @@ import android.widget.ListView;
  */
 public class GenericChoices<T> implements OnClickListener {
 
+	public static int CHOICE_MODE_SINGLE = ListView.CHOICE_MODE_SINGLE;
+
+	public static int CHOICE_MODE_MULTIPLE = ListView.CHOICE_MODE_MULTIPLE;
+
 	private ListView listView;
 
-	public void bind(Checkable checkable, ListView listView, int position) {
-		if (this.listView == null) {
-			this.listView = listView;
+	public GenericChoices(ListView listView, int choiceMode) {
+		if (listView == null) {
+			throw new IllegalArgumentException();
+		}
 
-			listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+		this.listView = listView;
+
+		this.listView.setChoiceMode(choiceMode);
+	}
+
+	public void bind(Checkable checkable, int position) {
+		if (checkable == null) {
+			throw new IllegalArgumentException();
 		}
 
 		View view = (View) checkable;
@@ -45,28 +57,18 @@ public class GenericChoices<T> implements OnClickListener {
 	}
 
 	public void clearChoices() {
-		if (listView != null) {
-			listView.clearChoices();
+		listView.clearChoices();
 
-			listView.invalidateViews();
-		}
+		listView.invalidateViews();
 	}
 
 	public int size() {
-		if (listView == null) {
-			return 0;
-		}
-
 		return listView.getCheckItemIds().length;
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<T> getChoices() {
 		List<T> choices = new ArrayList<T>();
-
-		if (listView == null) {
-			return choices;
-		}
 
 		for (int position = 0; position < listView.getCount(); position++) {
 			if (listView.isItemChecked(position)) {
