@@ -3,6 +3,7 @@ package propoid.ui.list;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Checkable;
@@ -22,6 +23,8 @@ public class GenericChoices<T> implements OnClickListener {
 
 	private ListView listView;
 
+	private SparseBooleanArray choices;
+
 	public GenericChoices(ListView listView, int choiceMode) {
 		if (listView == null) {
 			throw new IllegalArgumentException();
@@ -30,6 +33,12 @@ public class GenericChoices<T> implements OnClickListener {
 		this.listView = listView;
 
 		this.listView.setChoiceMode(choiceMode);
+	}
+
+	public GenericChoices(ListView listView) {
+		this(listView, ListView.CHOICE_MODE_NONE);
+
+		choices = new SparseBooleanArray();
 	}
 
 	public void bind(Checkable checkable, int position) {
@@ -43,9 +52,34 @@ public class GenericChoices<T> implements OnClickListener {
 
 		view.setTag(position);
 
-		checkable.setChecked(listView.isItemChecked(position));
+		checkable.setChecked(isChosen(listView, position));
 
 		view.setOnClickListener(this);
+	}
+
+	private boolean isChosen(ListView listView, int position) {
+		if (choices == null) {
+			return listView.isItemChecked(position);
+		} else {
+			return choices.get(position);
+		}
+	}
+
+	private void setChosen(ListView listView, int position, boolean chosen) {
+		if (choices == null) {
+			listView.setItemChecked(position, chosen);
+		} else {
+			if (chosen) {
+				choices.put(position, true);
+			} else {
+				choices.delete(position);
+			}
+		}
+
+		changed();
+	}
+
+	protected void changed() {
 	}
 
 	@Override
@@ -53,17 +87,25 @@ public class GenericChoices<T> implements OnClickListener {
 
 		int position = (Integer) view.getTag();
 
-		listView.setItemChecked(position, ((Checkable) view).isChecked());
+		setChosen(listView, position, ((Checkable) view).isChecked());
 	}
 
 	public void clearChoices() {
-		listView.clearChoices();
+		if (choices == null) {
+			listView.clearChoices();
+		} else {
+			choices.clear();
+		}
 
 		listView.invalidateViews();
 	}
 
 	public int size() {
-		return listView.getCheckItemIds().length;
+		if (choices == null) {
+			return listView.getCheckItemIds().length;
+		} else {
+			return choices.size();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -71,7 +113,7 @@ public class GenericChoices<T> implements OnClickListener {
 		List<T> choices = new ArrayList<T>();
 
 		for (int position = 0; position < listView.getCount(); position++) {
-			if (listView.isItemChecked(position)) {
+			if (isChosen(listView, position)) {
 				choices.add((T) listView.getAdapter().getItem(position));
 			}
 		}
