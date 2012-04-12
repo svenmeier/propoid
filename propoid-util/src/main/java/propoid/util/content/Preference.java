@@ -17,12 +17,10 @@ package propoid.util.content;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 
 /**
- * Simple preferences wrapper offering typed access to preferences via string
- * ids.
+ * Simple preference wrapper offering typed access via string id.
  * <p>
  * Declare preference key in strings.xml with:
  * 
@@ -49,69 +47,83 @@ import android.preference.PreferenceManager;
  * 
  * <pre>
  * {@code
- *   new Preferences(context).getBoolean(R.string.my_preference);
+ *   new Preferences(context, R.string.my_preference).getBoolean();
  * }
  * </pre>
  * 
- * Note that default values are automagically converted to the right type. Use
+ * Note that default value is automagically converted to the requested type. Use
  * {@link PreferenceManager#setDefaultValues(Context, int, boolean)} to
  * initialize defaults.
  */
-public class Preferences {
+public class Preference {
+
+	private String key;
 
 	private SharedPreferences preferences;
-	private Context context;
 
-	public Preferences(Context context) {
-		this.context = context.getApplicationContext();
+	/**
+	 * Get access to the preference with the given string id in the given
+	 * context.
+	 * 
+	 * @param context
+	 * @param id
+	 */
+	public Preference(Context context, int id) {
+		this.key = context.getString(id);
 
-		preferences = PreferenceManager
-				.getDefaultSharedPreferences(this.context);
+		preferences = PreferenceManager.getDefaultSharedPreferences(context);
 	}
 
-	public void registerOnSharedPreferenceChangeListener(
-			OnSharedPreferenceChangeListener listener) {
-		preferences.registerOnSharedPreferenceChangeListener(listener);
-	}
-
-	public boolean getBoolean(int id) {
+	public boolean getBoolean() {
 		try {
-			return preferences.getBoolean(context.getString(id), false);
+			return preferences.getBoolean(key, false);
 		} catch (ClassCastException ex) {
-			return Boolean.valueOf(preferences.getString(context.getString(id),
-					"false"));
+			return Boolean.valueOf(preferences.getString(key, "false"));
 		}
 	}
 
-	public int getInteger(int id) {
+	public int getInteger() {
 		try {
-			String foo = context.getString(id);
+			String foo = key;
 			return preferences.getInt(foo, 0);
 		} catch (ClassCastException ex) {
-			return Integer.valueOf(preferences.getString(context.getString(id),
-					"0"));
+			return Integer.valueOf(preferences.getString(key, "0"));
 		}
 	}
 
-	public long getLong(int id) {
+	public long getLong() {
 		try {
-			return preferences.getLong(context.getString(id), 0);
+			return preferences.getLong(key, 0);
 		} catch (ClassCastException ex) {
-			return Long.valueOf(preferences.getString(context.getString(id),
-					"0"));
+			return Long.valueOf(preferences.getString(key, "0"));
 		}
 	}
 
-	public String getString(int id) {
-		return preferences.getString(context.getString(id), null);
-	}
-
-	public float getFloat(int id) {
+	public float getFloat() {
 		try {
-			return preferences.getFloat(context.getString(id), 0f);
+			return preferences.getFloat(key, 0f);
 		} catch (ClassCastException ex) {
-			return Float.valueOf(preferences.getString(context.getString(id),
-					"0"));
+			return Float.valueOf(preferences.getString(key, "0"));
 		}
+	}
+
+	public String getString() {
+		return preferences.getString(key, null);
+	}
+
+	public void setBoolean(boolean value) {
+		preferences.edit().putBoolean(key, value).commit();
+	}
+
+	public void setInteger(int value) {
+		preferences.edit().putInt(key, value).commit();
+	}
+
+	public void setLong(long value) {
+		preferences.edit().putLong(key, value).commit();
+	}
+
+	public void setFloat(float value) {
+		preferences.edit().putFloat(key, value).commit();
 	}
 }
