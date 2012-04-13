@@ -76,10 +76,10 @@ public class GenericChoices<T> implements OnClickListener {
 			}
 		}
 
-		changed();
+		changed(listView, position);
 	}
 
-	protected void changed() {
+	protected void changed(ListView listView, int position) {
 	}
 
 	@Override

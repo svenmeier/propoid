@@ -42,7 +42,7 @@ import android.widget.SpinnerAdapter;
  * For convenience this adapter implements listener interfaces, see
  * {@link #onItemClick(AdapterView, View, int, long)} and
  * {@link #onClick(DialogInterface, int)} both delegating to
- * {@link #onItem(Object)}.
+ * {@link #onItem(Object, int)}.
  */
 public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 		OnItemClickListener, OnClickListener {
@@ -195,7 +195,7 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 	@Override
 	public final void onItemClick(AdapterView<?> arg0, View arg1, int item,
 			long arg3) {
-		onItem(getItem(item));
+		onItem(getItem(item), item);
 	}
 
 	/**
@@ -208,7 +208,7 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 	 */
 	@Override
 	public final void onClick(DialogInterface dialog, int item) {
-		onItem(getItem(item));
+		onItem(getItem(item), item);
 
 		dialog.dismiss();
 	}
@@ -218,8 +218,9 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 	 * 
 	 * @param item
 	 *            clicked item
+	 * @param position
 	 */
-	protected void onItem(T item) {
+	protected void onItem(T item, int position) {
 	}
 
 	/**
