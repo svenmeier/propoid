@@ -126,7 +126,7 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 
 	@Override
 	public int getItemViewType(int position) {
-		return IGNORE_ITEM_VIEW_TYPE;
+		return 0;
 	}
 
 	@Override
