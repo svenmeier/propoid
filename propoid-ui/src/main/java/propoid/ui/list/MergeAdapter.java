@@ -130,8 +130,7 @@ public class MergeAdapter implements ListAdapter, OnItemClickListener {
 			if (position - offset < adapter.getCount()) {
 				int type = adapter.getItemViewType(position - offset);
 				if (type == ListAdapter.IGNORE_ITEM_VIEW_TYPE) {
-					// cannot ignore
-					type = 0;
+					return type;
 				}
 				return typeCount + type;
 			}
