@@ -1,8 +1,9 @@
-package propoid.db;
+package propoid.test.db;
 
 import junit.framework.TestCase;
 import propoid.core.Property;
 import propoid.core.Propoid;
+import propoid.db.Order;
 
 public class OrderTest extends TestCase {
 

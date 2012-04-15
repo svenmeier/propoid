@@ -1,8 +1,9 @@
-package propoid.db;
+package propoid.test.db;
 
 import junit.framework.TestCase;
 import propoid.core.Property;
 import propoid.core.Propoid;
+import propoid.db.Where;
 
 public class WhereTest extends TestCase {
 

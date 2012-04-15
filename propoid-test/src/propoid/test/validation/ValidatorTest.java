@@ -1,8 +1,11 @@
-package propoid.validation;
+package propoid.test.validation;
 
 import junit.framework.TestCase;
 import propoid.core.Property;
 import propoid.core.Propoid;
+import propoid.validation.MaxLengthValidator;
+import propoid.validation.MinLengthValidator;
+import propoid.validation.ValidatorException;
 
 public class ValidatorTest extends TestCase {
 

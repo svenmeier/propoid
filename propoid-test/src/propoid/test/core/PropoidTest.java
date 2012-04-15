@@ -1,6 +1,11 @@
-package propoid.core;
+package propoid.test.core;
 
 import java.util.Iterator;
+
+import propoid.core.AbstractAspect;
+import propoid.core.Aspect;
+import propoid.core.Property;
+import propoid.core.Propoid;
 
 import junit.framework.TestCase;
 

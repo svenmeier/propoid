@@ -1,8 +1,20 @@
-package propoid.db.mapping;
+package propoid.test.db;
 
 import junit.framework.TestCase;
 import propoid.core.Property;
 import propoid.core.Propoid;
+import propoid.db.mapping.ByteMapper;
+import propoid.db.mapping.BytesMapper;
+import propoid.db.mapping.CharacterMapper;
+import propoid.db.mapping.ClassMapper;
+import propoid.db.mapping.DoubleMapper;
+import propoid.db.mapping.EnumMapper;
+import propoid.db.mapping.FloatMapper;
+import propoid.db.mapping.IntegerMapper;
+import propoid.db.mapping.LongMapper;
+import propoid.db.mapping.PropoidMapper;
+import propoid.db.mapping.ShortMapper;
+import propoid.db.mapping.StringMapper;
 
 public class DefaultMappingTest extends TestCase {
 

@@ -1,8 +1,9 @@
-package propoid.db.naming;
+package propoid.test.db;
 
 import junit.framework.TestCase;
 import propoid.core.Propoid;
 import propoid.db.Repository;
+import propoid.db.naming.DefaultNaming;
 
 public class DefaultNamingTest extends TestCase {
 
@@ -23,10 +24,10 @@ public class DefaultNamingTest extends TestCase {
 				naming.decodeType(repository, Foo.class, "FooExtended"));
 		assertEquals(FooExtended.class,
 				naming.decodeType(repository, FooExtended.class, "FooExtended"));
-		assertEquals(FooExtended.class, naming.decodeType(repository, Foo.class,
-				"propoid.db.naming.FooExtended"));
 		assertEquals(FooExtended.class, naming.decodeType(repository,
-				FooExtended.class, "propoid.db.naming.FooExtended"));
+				Foo.class, "propoid.test.db.FooExtended"));
+		assertEquals(FooExtended.class, naming.decodeType(repository,
+				FooExtended.class, "propoid.test.db.FooExtended"));
 	}
 }
 

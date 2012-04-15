@@ -1,8 +1,9 @@
-package propoid.ui.convert;
+package propoid.test.ui;
 
 import junit.framework.TestCase;
 import propoid.core.Property;
 import propoid.core.Propoid;
+import propoid.ui.convert.EnumConverter;
 import android.util.Xml.Encoding;
 
 /**

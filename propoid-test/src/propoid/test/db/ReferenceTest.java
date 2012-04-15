@@ -1,7 +1,8 @@
-package propoid.db;
+package propoid.test.db;
 
 import junit.framework.TestCase;
 import propoid.core.Propoid;
+import propoid.db.Reference;
 import propoid.db.aspect.Row;
 
 public class ReferenceTest extends TestCase {
@@ -25,12 +26,12 @@ public class ReferenceTest extends TestCase {
 
 		Row.setID(foo, 1l);
 
-		assertEquals("propoid://propoid.db.ReferenceTest$Foo/1",
+		assertEquals("propoid://propoid.test.db.ReferenceTest$Foo/1",
 				new Reference<Foo>(foo).toString());
 	}
 
 	public void testFromString() throws Exception {
-		Reference.from("propoid://propoid.db.ReferenceTest$Foo/1");
+		Reference.from("propoid://propoid.test.db.ReferenceTest$Foo/1");
 	}
 
 	public void testFromStringNull() throws Exception {
@@ -38,7 +39,7 @@ public class ReferenceTest extends TestCase {
 	}
 
 	public void testFromInvalid() throws Exception {
-		assertNull(Reference.from("propoid.db.Foo/1"));
+		assertNull(Reference.from("propoid.test.db.Foo/1"));
 	}
 
 	public static class Foo extends Propoid {

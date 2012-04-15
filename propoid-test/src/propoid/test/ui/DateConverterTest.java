@@ -1,4 +1,4 @@
-package propoid.ui.convert;
+package propoid.test.ui;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -6,6 +6,7 @@ import java.util.Date;
 import junit.framework.TestCase;
 import propoid.core.Property;
 import propoid.core.Propoid;
+import propoid.ui.convert.DateConverter;
 
 /**
  * Test for {@link DateConverter}.
