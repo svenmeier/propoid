@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import android.util.SparseArray;
+
 /**
  * An owner of properties.
  */
@@ -167,6 +169,8 @@ public abstract class Propoid implements Aspect {
 	 */
 	public static final class Meta {
 
+		private SparseArray<Object> tags = new SparseArray<Object>();
+
 		private Property.Meta[] metas;
 
 		Meta(Propoid propoid) {
@@ -216,6 +220,14 @@ public abstract class Propoid implements Aspect {
 			}
 
 			return null;
+		}
+
+		public void putTag(int key, Object value) {
+			tags.put(key, value);
+		}
+
+		public Object getTag(int key) {
+			return tags.get(key);
 		}
 	}
 }

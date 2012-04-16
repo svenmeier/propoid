@@ -23,6 +23,8 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.util.SparseArray;
+
 /**
  * A property of a {@link Propoid}.
  * 
@@ -130,6 +132,8 @@ public final class Property<T> implements Serializable {
 		public final String name;
 		public final Type type;
 
+		private SparseArray<Object> tags = new SparseArray<Object>();
+
 		Meta(Field field) {
 			owner = field.getDeclaringClass();
 
@@ -152,6 +156,14 @@ public final class Property<T> implements Serializable {
 				}
 			}
 			throw new IllegalArgumentException();
+		}
+
+		public void putTag(int key, Object value) {
+			tags.put(key, value);
+		}
+
+		public Object getTag(int key) {
+			return tags.get(key);
 		}
 
 		@Override
