@@ -65,8 +65,6 @@ public class GenericChoices<T> implements OnClickListener {
 
 		view.setOnClickListener(null);
 
-		view.setTag(position);
-
 		checkable.setChecked(isChosen(listView, position));
 
 		view.setOnClickListener(this);
@@ -99,9 +97,10 @@ public class GenericChoices<T> implements OnClickListener {
 	@Override
 	public void onClick(View view) {
 
-		int position = (Integer) view.getTag();
-
-		setChosen(listView, position, ((Checkable) view).isChecked());
+		int position = listView.getPositionForView(view);
+		if (position != ListView.INVALID_POSITION) {
+			setChosen(listView, position, ((Checkable) view).isChecked());
+		}
 	}
 
 	public void clearChoices() {
