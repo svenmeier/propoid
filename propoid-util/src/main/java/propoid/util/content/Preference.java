@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 /**
  * Simple preference wrapper offering typed access via string id.
@@ -61,35 +62,81 @@ import android.preference.PreferenceManager;
  * @see #get()
  * @see #set(Object)
  */
-public abstract class Preference<T> {
+public abstract class Preference<T extends Comparable<T>> {
 
 	protected String key;
 
 	protected SharedPreferences preferences;
 
-	protected Preference(Context context, int id) {
+	protected T fallback;
+
+	protected T min;
+
+	protected T max;
+
+	protected Preference(Context context, int id, T fallback) {
 		this.key = context.getString(id);
 
 		this.preferences = PreferenceManager
 				.getDefaultSharedPreferences(context);
+
+		this.fallback = fallback;
+	}
+
+	public Preference<T> fallback(T fallback) {
+		this.fallback = fallback;
+
+		return this;
+	}
+
+	public Preference<T> range(T min, T max) {
+		this.min = min;
+		this.max = max;
+
+		return this;
+	}
+
+	public Preference<T> minimum(T min) {
+		this.min = min;
+
+		return this;
+	}
+
+	public Preference<T> maximum(T max) {
+		this.max = max;
+
+		return this;
 	}
 
 	/**
 	 * Get the value.
 	 */
 	public T get() {
+		T value;
 		try {
-			return getImpl();
+			value = getImpl();
 		} catch (ClassCastException valueFromPreferenceIsString) {
 			String fromPreferences = preferences.getString(key, null);
 
-			return parse(fromPreferences);
+			value = parse(fromPreferences);
 		}
+
+		if (min != null && min.compareTo(value) == 1) {
+			Log.w("propoid-util", key + " < " + min);
+			value = min;
+		}
+
+		if (max != null && max.compareTo(value) == -1) {
+			Log.w("propoid-util", key + " > " + max);
+			value = max;
+		}
+
+		return value;
 	}
 
 	/**
-	 * Parse a default value if the preference was initialized with a string
-	 * from <code>preferences.xml</code>
+	 * Parse a value if the preference was initialized with a string from
+	 * <code>preferences.xml</code>
 	 * 
 	 * @see PreferenceManager#setDefaultValues(Context, int, boolean)
 	 */
@@ -118,26 +165,10 @@ public abstract class Preference<T> {
 	 * @return preference
 	 */
 	public static Preference<String> getString(Context context, int id) {
-		return getString(context, id, null);
-	}
-
-	/**
-	 * Get a {@link String} preference.
-	 * 
-	 * @param context
-	 *            context
-	 * @param id
-	 *            string id of preference
-	 * @param defaultValue
-	 *            default value
-	 * @return preference
-	 */
-	public static Preference<String> getString(Context context, int id,
-			final String defaultValue) {
-		return new Preference<String>(context, id) {
+		return new Preference<String>(context, id, null) {
 			@Override
 			protected String getImpl() {
-				return preferences.getString(key, defaultValue);
+				return preferences.getString(key, fallback);
 			}
 
 			@Override
@@ -162,31 +193,19 @@ public abstract class Preference<T> {
 	 * @return preference
 	 */
 	public static Preference<Integer> getInteger(Context context, int id) {
-		return getInteger(context, id, 0);
-	}
-
-	/**
-	 * Get an {@link Integer} preference.
-	 * 
-	 * @param context
-	 *            context
-	 * @param id
-	 *            string id of preference
-	 * @param defaultValue
-	 *            default value
-	 * @return preference
-	 */
-	public static Preference<Integer> getInteger(Context context, int id,
-			final int defaultValue) {
-		return new Preference<Integer>(context, id) {
+		return new Preference<Integer>(context, id, 0) {
 			@Override
 			protected Integer getImpl() {
-				return preferences.getInt(key, defaultValue);
+				return preferences.getInt(key, fallback);
 			}
 
 			@Override
 			protected Integer parse(String fromPreferences) {
-				return Integer.valueOf(fromPreferences);
+				try {
+					return Integer.valueOf(fromPreferences);
+				} catch (NumberFormatException ex) {
+					return fallback;
+				}
 			}
 
 			@Override
@@ -206,31 +225,19 @@ public abstract class Preference<T> {
 	 * @return preference
 	 */
 	public static Preference<Long> getLong(Context context, int id) {
-		return getLong(context, id, 0);
-	}
-
-	/**
-	 * Get an {@link Integer} preference.
-	 * 
-	 * @param context
-	 *            context
-	 * @param id
-	 *            string id of preference
-	 * @param defaultValue
-	 *            default value
-	 * @return preference
-	 */
-	public static Preference<Long> getLong(Context context, int id,
-			final long defaultValue) {
-		return new Preference<Long>(context, id) {
+		return new Preference<Long>(context, id, 0l) {
 			@Override
 			protected Long getImpl() {
-				return preferences.getLong(key, defaultValue);
+				return preferences.getLong(key, fallback);
 			}
 
 			@Override
 			protected Long parse(String fromPreferences) {
-				return Long.valueOf(fromPreferences);
+				try {
+					return Long.valueOf(fromPreferences);
+				} catch (NumberFormatException ex) {
+					return fallback;
+				}
 			}
 
 			@Override
@@ -250,31 +257,19 @@ public abstract class Preference<T> {
 	 * @return preference
 	 */
 	public static Preference<Float> getFloat(Context context, int id) {
-		return getFloat(context, id, 0f);
-	}
-
-	/**
-	 * Get a {@link Float} preference.
-	 * 
-	 * @param context
-	 *            context
-	 * @param id
-	 *            string id of preference
-	 * @param defaultValue
-	 *            default value
-	 * @return preference
-	 */
-	public static Preference<Float> getFloat(Context context, int id,
-			final float defaultValue) {
-		return new Preference<Float>(context, id) {
+		return new Preference<Float>(context, id, 0f) {
 			@Override
 			protected Float getImpl() {
-				return preferences.getFloat(key, defaultValue);
+				return preferences.getFloat(key, fallback);
 			}
 
 			@Override
 			protected Float parse(String fromPreferences) {
-				return Float.valueOf(fromPreferences);
+				try {
+					return Float.valueOf(fromPreferences);
+				} catch (NumberFormatException ex) {
+					return fallback;
+				}
 			}
 
 			@Override
@@ -294,26 +289,10 @@ public abstract class Preference<T> {
 	 * @return preference
 	 */
 	public static Preference<Boolean> getBoolean(Context context, int id) {
-		return getBoolean(context, id, false);
-	}
-
-	/**
-	 * Get a {@link Boolean} preference.
-	 * 
-	 * @param context
-	 *            context
-	 * @param id
-	 *            string id of preference
-	 * @param defaultValue
-	 *            default value
-	 * @return preference
-	 */
-	public static Preference<Boolean> getBoolean(Context context, int id,
-			final boolean defaultValue) {
-		return new Preference<Boolean>(context, id) {
+		return new Preference<Boolean>(context, id, false) {
 			@Override
 			protected Boolean getImpl() {
-				return preferences.getBoolean(key, defaultValue);
+				return preferences.getBoolean(key, fallback);
 			}
 
 			@Override

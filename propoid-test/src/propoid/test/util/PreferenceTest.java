@@ -37,6 +37,10 @@ public class PreferenceTest extends InstrumentationTestCase {
 		preference.set(1);
 
 		assertEquals(Integer.valueOf(1), preference.get());
+
+		preference.range(2, 2);
+
+		assertEquals(Integer.valueOf(2), preference.get());
 	}
 
 	public void testLong() {
@@ -48,6 +52,10 @@ public class PreferenceTest extends InstrumentationTestCase {
 		preference.set(1l);
 
 		assertEquals(Long.valueOf(1), preference.get());
+
+		preference.range(2l, 2l);
+
+		assertEquals(Long.valueOf(2), preference.get());
 	}
 
 	public void testFloat() {
@@ -59,6 +67,10 @@ public class PreferenceTest extends InstrumentationTestCase {
 		preference.set(1f);
 
 		assertEquals(Float.valueOf(1), preference.get());
+
+		preference.range(2f, 2f);
+
+		assertEquals(Float.valueOf(2), preference.get());
 	}
 
 	public void testString() {
