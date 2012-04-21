@@ -1,7 +1,6 @@
 package propoid.test.validation;
 
 import junit.framework.TestCase;
-import propoid.validation.WildcardValidator;
 import propoid.validation.WildcardValidator.Transformer;
 
 public class TransformerTest extends TestCase {

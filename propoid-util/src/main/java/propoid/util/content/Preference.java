@@ -17,6 +17,7 @@ package propoid.util.content;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.preference.PreferenceManager;
 
 /**
@@ -43,87 +44,287 @@ import android.preference.PreferenceManager;
  * }
  * </pre>
  * 
+ * If you specify a default value, it will automagically be converted to the
+ * requested type. Use
+ * {@link PreferenceManager#setDefaultValues(Context, int, boolean)} to
+ * initialize the defaults.
+ * <p>
  * Now you can get access to the actual preference with:
  * 
  * <pre>
- * {@code
- *   new Preferences(context, R.string.my_preference).getBoolean();
+ * @code{
+ * 	Preference&lt;Boolean&gt; myPreference = Preference.getBoolean(context,
+ * 			R.string.my_preference);
  * }
  * </pre>
  * 
- * Note that default value is automagically converted to the requested type. Use
- * {@link PreferenceManager#setDefaultValues(Context, int, boolean)} to
- * initialize defaults.
+ * @see #get()
+ * @see #set(Object)
  */
-public class Preference {
+public abstract class Preference<T> {
 
-	private String key;
+	protected String key;
 
-	private SharedPreferences preferences;
+	protected SharedPreferences preferences;
 
-	/**
-	 * Get access to the preference with the given string id in the given
-	 * context.
-	 * 
-	 * @param context
-	 * @param id
-	 */
-	public Preference(Context context, int id) {
+	protected Preference(Context context, int id) {
 		this.key = context.getString(id);
 
-		preferences = PreferenceManager.getDefaultSharedPreferences(context);
+		this.preferences = PreferenceManager
+				.getDefaultSharedPreferences(context);
 	}
 
-	public boolean getBoolean() {
+	/**
+	 * Get the value.
+	 */
+	public T get() {
 		try {
-			return preferences.getBoolean(key, false);
+			return getImpl();
 		} catch (ClassCastException ex) {
-			return Boolean.valueOf(preferences.getString(key, "false"));
+			String fromPreferences = preferences.getString(key, null);
+
+			return parse(fromPreferences);
 		}
 	}
 
-	public int getInteger() {
-		try {
-			String foo = key;
-			return preferences.getInt(foo, 0);
-		} catch (ClassCastException ex) {
-			return Integer.valueOf(preferences.getString(key, "0"));
-		}
+	/**
+	 * Parse a default value if the preference was initialized with a string
+	 * from <code>preferences.xml</code>
+	 * 
+	 * @see PreferenceManager#setDefaultValues(Context, int, boolean)
+	 */
+	protected abstract T parse(String fromPreferences);
+
+	protected abstract T getImpl();
+
+	/**
+	 * Set the value.
+	 */
+	public void set(T t) {
+		Editor edit = preferences.edit();
+		setImpl(edit, t);
+		edit.commit();
 	}
 
-	public long getLong() {
-		try {
-			return preferences.getLong(key, 0);
-		} catch (ClassCastException ex) {
-			return Long.valueOf(preferences.getString(key, "0"));
-		}
+	protected abstract void setImpl(Editor edit, T t);
+
+	/**
+	 * Get a {@link String} preference.
+	 * 
+	 * @param context
+	 *            context
+	 * @param id
+	 *            string id of preference
+	 * @return preference
+	 */
+	public static Preference<String> getString(Context context, int id) {
+		return getString(context, id, null);
 	}
 
-	public float getFloat() {
-		try {
-			return preferences.getFloat(key, 0f);
-		} catch (ClassCastException ex) {
-			return Float.valueOf(preferences.getString(key, "0"));
-		}
+	/**
+	 * Get a {@link String} preference.
+	 * 
+	 * @param context
+	 *            context
+	 * @param id
+	 *            string id of preference
+	 * @param defaultValue
+	 *            default value
+	 * @return preference
+	 */
+	public static Preference<String> getString(Context context, int id,
+			final String defaultValue) {
+		return new Preference<String>(context, id) {
+			@Override
+			protected String getImpl() {
+				return preferences.getString(key, defaultValue);
+			}
+
+			@Override
+			protected String parse(String fromPreferences) {
+				return fromPreferences;
+			}
+
+			@Override
+			protected void setImpl(Editor edit, String value) {
+				edit.putString(key, value);
+			}
+		};
 	}
 
-	public String getString() {
-		return preferences.getString(key, null);
+	/**
+	 * Get an {@link Integer} preference.
+	 * 
+	 * @param context
+	 *            context
+	 * @param id
+	 *            string id of preference
+	 * @return preference
+	 */
+	public static Preference<Integer> getInteger(Context context, int id) {
+		return getInteger(context, id, 0);
 	}
 
-	public void setBoolean(boolean value) {
-		preferences.edit().putBoolean(key, value).commit();
+	/**
+	 * Get an {@link Integer} preference.
+	 * 
+	 * @param context
+	 *            context
+	 * @param id
+	 *            string id of preference
+	 * @param defaultValue
+	 *            default value
+	 * @return preference
+	 */
+	public static Preference<Integer> getInteger(Context context, int id,
+			final int defaultValue) {
+		return new Preference<Integer>(context, id) {
+			@Override
+			protected Integer getImpl() {
+				return preferences.getInt(key, defaultValue);
+			}
+
+			@Override
+			protected Integer parse(String fromPreferences) {
+				return Integer.valueOf(fromPreferences);
+			}
+
+			@Override
+			protected void setImpl(Editor edit, Integer value) {
+				edit.putInt(key, value);
+			}
+		};
 	}
 
-	public void setInteger(int value) {
-		preferences.edit().putInt(key, value).commit();
+	/**
+	 * Get a {@link Long} preference.
+	 * 
+	 * @param context
+	 *            context
+	 * @param id
+	 *            string id of preference
+	 * @return preference
+	 */
+	public static Preference<Long> getLong(Context context, int id) {
+		return getLong(context, id, 0);
 	}
 
-	public void setLong(long value) {
-		preferences.edit().putLong(key, value).commit();
+	/**
+	 * Get an {@link Integer} preference.
+	 * 
+	 * @param context
+	 *            context
+	 * @param id
+	 *            string id of preference
+	 * @param defaultValue
+	 *            default value
+	 * @return preference
+	 */
+	public static Preference<Long> getLong(Context context, int id,
+			final long defaultValue) {
+		return new Preference<Long>(context, id) {
+			@Override
+			protected Long getImpl() {
+				return preferences.getLong(key, defaultValue);
+			}
+
+			@Override
+			protected Long parse(String fromPreferences) {
+				return Long.valueOf(fromPreferences);
+			}
+
+			@Override
+			protected void setImpl(Editor edit, Long value) {
+				edit.putLong(key, value);
+			}
+		};
 	}
 
-	public void setFloat(float value) {
-		preferences.edit().putFloat(key, value).commit();
+	/**
+	 * Get a {@link Float} preference.
+	 * 
+	 * @param context
+	 *            context
+	 * @param id
+	 *            string id of preference
+	 * @return preference
+	 */
+	public static Preference<Float> getFloat(Context context, int id) {
+		return getFloat(context, id, 0f);
+	}
+
+	/**
+	 * Get a {@link Float} preference.
+	 * 
+	 * @param context
+	 *            context
+	 * @param id
+	 *            string id of preference
+	 * @param defaultValue
+	 *            default value
+	 * @return preference
+	 */
+	public static Preference<Float> getFloat(Context context, int id,
+			final float defaultValue) {
+		return new Preference<Float>(context, id) {
+			@Override
+			protected Float getImpl() {
+				return preferences.getFloat(key, defaultValue);
+			}
+
+			@Override
+			protected Float parse(String fromPreferences) {
+				return Float.valueOf(fromPreferences);
+			}
+
+			@Override
+			protected void setImpl(Editor edit, Float value) {
+				edit.putFloat(key, value);
+			}
+		};
+	}
+
+	/**
+	 * Get a {@link Boolean} preference.
+	 * 
+	 * @param context
+	 *            context
+	 * @param id
+	 *            string id of preference
+	 * @return preference
+	 */
+	public static Preference<Boolean> getBoolean(Context context, int id) {
+		return getBoolean(context, id, false);
+	}
+
+	/**
+	 * Get a {@link Boolean} preference.
+	 * 
+	 * @param context
+	 *            context
+	 * @param id
+	 *            string id of preference
+	 * @param defaultValue
+	 *            default value
+	 * @return preference
+	 */
+	public static Preference<Boolean> getBoolean(Context context, int id,
+			final boolean defaultValue) {
+		return new Preference<Boolean>(context, id) {
+			@Override
+			protected Boolean getImpl() {
+				return preferences.getBoolean(key, defaultValue);
+			}
+
+			@Override
+			protected Boolean parse(String fromPreferences) {
+				return Boolean.valueOf(fromPreferences);
+			}
+
+			@Override
+			protected void setImpl(Editor edit, Boolean value) {
+				edit.putBoolean(key, value);
+			}
+		};
 	}
 }
