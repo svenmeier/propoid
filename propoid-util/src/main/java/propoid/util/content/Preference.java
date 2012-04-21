@@ -80,7 +80,7 @@ public abstract class Preference<T> {
 	public T get() {
 		try {
 			return getImpl();
-		} catch (ClassCastException ex) {
+		} catch (ClassCastException valueFromPreferenceIsString) {
 			String fromPreferences = preferences.getString(key, null);
 
 			return parse(fromPreferences);
