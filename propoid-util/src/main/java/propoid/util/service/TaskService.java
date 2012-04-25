@@ -192,7 +192,7 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 		 * @param other
 		 *            task to append
 		 */
-		public final void append(Task other) {
+		public synchronized final void append(Task other) {
 			if (next == null) {
 				next = other;
 			} else {
@@ -206,14 +206,14 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 		/**
 		 * Initiate notification for all registered listeners.
 		 * 
-		 * @see #onNotify(TaskListener)
+		 * @see #onNotifyListener(TaskListener)
 		 */
 		public final void notifyListeners() {
 			for (final L listener : listeners) {
 				listener.post(new Runnable() {
 					@Override
 					public void run() {
-						onNotify(listener);
+						onNotifyListener(listener);
 					}
 				});
 			}
@@ -225,7 +225,7 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 		 * @param listener
 		 *            listener
 		 */
-		public void onNotify(L listener) {
+		public void onNotifyListener(L listener) {
 		}
 	}
 
