@@ -2,6 +2,7 @@ package propoid.util.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -16,7 +17,7 @@ import android.util.Log;
 /**
  * A service mediating between {@link Task}s and {@link TaskListener}s.
  * 
- * @see #resolveTask(Intent)
+ * @see #resolveTask(Class, Intent)
  */
 public abstract class TaskService<L extends TaskListener> extends Service {
 
@@ -26,8 +27,16 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 
 	private List<Execution> executions = new ArrayList<Execution>();
 
-	private ThreadPoolExecutor executor = new ThreadPoolExecutor(2, 4, 10,
-			TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+	private ExecutorService executor;
+
+	protected TaskService() {
+		this(new ThreadPoolExecutor(2, 4, 10, TimeUnit.SECONDS,
+				new LinkedBlockingQueue<Runnable>()));
+	}
+
+	public TaskService(ExecutorService executor) {
+		this.executor = executor;
+	}
 
 	@Override
 	public void onCreate() {
@@ -60,6 +69,12 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 		return START_NOT_STICKY;
 	}
 
+	/**
+	 * Schedule a new {@link Task}.
+	 * 
+	 * @param task
+	 *            task to schedule
+	 */
 	public void schedule(Task task) {
 		schedule(new Execution(task));
 	}
@@ -68,7 +83,7 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 		for (int w = 0; w < executions.size(); w++) {
 			Execution candidate = executions.get(w);
 
-			if (candidate.task.add(execution.task)) {
+			if (candidate.task.includes(execution.task)) {
 				return;
 			}
 		}
@@ -86,16 +101,28 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 	 * Resolve a task for the given intent.
 	 * 
 	 * @param action
+	 *            the requested task
 	 * @param intent
+	 *            the initiating intent
 	 * 
 	 * @see #schedule(Task)
 	 */
 	protected abstract void resolveTask(Class<? extends Task> action,
 			Intent intent);
 
+	/**
+	 * Hook method to be notified of a newly registered listener.
+	 * 
+	 * @param listener
+	 */
 	protected void onRegistered(L listener) {
 	}
 
+	/**
+	 * Hook method to be notified of a newly deregistered listener.
+	 * 
+	 * @param listener
+	 */
 	protected void onDeregistered(L listener) {
 	}
 
@@ -120,6 +147,10 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 			task.onExecute();
 
 			deschedule(Execution.this);
+
+			if (task.next != null) {
+				schedule(task.next);
+			}
 		}
 	}
 
@@ -128,13 +159,55 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 	 */
 	public abstract class Task {
 
-		public boolean add(Task other) {
+		/**
+		 * Optional next task.
+		 * 
+		 * @see #append(Task)
+		 */
+		Task next;
+
+		/**
+		 * Does this task include the other task.
+		 * <p>
+		 * Overriden methods may
+		 * <ul>
+		 * <li>return {@code false} for unrelated tasks</li>
+		 * <li>drop the task silently and return {@code true}, e.g. if its
+		 * purpose is already served by this task</li>
+		 * <li>append the task and return {@code true} to let it be scheduled
+		 * after this task has finished</li>
+		 * </ul>
+		 * 
+		 * @param other
+		 * 
+		 * @see #append(Task)
+		 */
+		public boolean includes(Task other) {
 			return false;
 		}
 
-		public void onExecute() {
+		/**
+		 * Append another task to be scheduled after this one.
+		 * 
+		 * @param other
+		 *            task to append
+		 */
+		public final void append(Task other) {
+			if (next == null) {
+				next = other;
+			} else {
+				next.append(other);
+			}
 		}
 
+		protected void onExecute() {
+		}
+
+		/**
+		 * Initiate notification for all registered listeners.
+		 * 
+		 * @see #onNotify(TaskListener)
+		 */
 		public final void notifyListeners() {
 			for (final L listener : listeners) {
 				listener.post(new Runnable() {
@@ -146,6 +219,12 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 			}
 		}
 
+		/**
+		 * Notify the given listener.
+		 * 
+		 * @param listener
+		 *            listener
+		 */
 		public void onNotify(L listener) {
 		}
 	}
@@ -153,12 +232,18 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 	class ListenerBinder extends Binder {
 
 		void register(L listener) {
-			listeners.add(listener);
+			synchronized (listeners) {
+				listeners.add(listener);
+			}
+
 			onRegistered(listener);
 		}
 
 		void deregister(L listener) {
-			listeners.remove(listener);
+			synchronized (listeners) {
+				listeners.remove(listener);
+			}
+
 			onDeregistered(listener);
 		}
 	}

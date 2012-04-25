@@ -1,7 +1,6 @@
 package propoid.util.service;
 
 import propoid.util.service.TaskService.ListenerBinder;
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -14,13 +13,16 @@ import android.os.IBinder;
  * 
  * <pre>
  * @code{
- * 	FooListener listener = new FooListener() {
+ * 	FooTaskListener listener = new FooTaskListener() {
  * 		public void onBar() {
  * 		}
  * 	};
  * 	listener.register(context, FooTaskService.class);
  * }
  * </pre>
+ * 
+ * A {@link TaskListener} will always be notified on the same {@link Thread} on
+ * which the listener was registered.
  */
 @SuppressWarnings("rawtypes")
 public abstract class TaskListener implements ServiceConnection {
@@ -32,9 +34,9 @@ public abstract class TaskListener implements ServiceConnection {
 	private Handler handler;
 
 	/**
-	 * Register with the given {@link ListenableService}.
+	 * Register with the given {@link TaskService}.
 	 */
-	public void register(Context context, Class<? extends Service> service) {
+	public void register(Context context, Class<? extends TaskService> service) {
 		if (this.context != null) {
 			throw new IllegalStateException();
 		}
@@ -48,7 +50,7 @@ public abstract class TaskListener implements ServiceConnection {
 	}
 
 	/**
-	 * Deregister from the previously registered {@link ListenableService}.
+	 * Deregister from the previously registered {@link TaskService}.
 	 */
 	@SuppressWarnings("unchecked")
 	public void deregister() {
