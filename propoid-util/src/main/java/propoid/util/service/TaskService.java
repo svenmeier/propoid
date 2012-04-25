@@ -248,6 +248,17 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 		}
 	}
 
+	/**
+	 * Utility method to create an {@link Intent} for the given service's
+	 * {@link Task}.
+	 * 
+	 * @param context
+	 *            context of intent
+	 * @param service
+	 *            service
+	 * @param action
+	 *            action of intent
+	 */
 	public static <L extends TaskListener> Intent createIntent(Context context,
 			Class<? extends TaskService<L>> service,
 			Class<? extends TaskService<L>.Task> action) {
