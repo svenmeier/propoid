@@ -7,9 +7,11 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 /**
  * A service mediating between {@link Task}s and {@link TaskListener}s.
@@ -43,8 +45,17 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (intent != null) {
-			resolveTask(intent);
+		if (intent != null && intent.getAction() != null) {
+			try {
+				@SuppressWarnings("unchecked")
+				Class<? extends Task> action = (Class<? extends Task>) Class
+						.forName(intent.getAction());
+
+				resolveTask(action, intent);
+			} catch (ClassNotFoundException ec) {
+				Log.i("propoid-util", "invalid action '" + intent.getAction()
+						+ "'");
+			}
 		}
 		return START_NOT_STICKY;
 	}
@@ -74,9 +85,13 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 	/**
 	 * Resolve a task for the given intent.
 	 * 
+	 * @param action
+	 * @param intent
+	 * 
 	 * @see #schedule(Task)
 	 */
-	protected abstract void resolveTask(Intent intent);
+	protected abstract void resolveTask(Class<? extends Task> action,
+			Intent intent);
 
 	protected void onRegistered(L listener) {
 	}
@@ -89,6 +104,9 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 		return binder;
 	}
 
+	/**
+	 * The execution of a {@link Task}.
+	 */
 	private class Execution implements Runnable {
 
 		public Task task;
@@ -143,5 +161,13 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 			listeners.remove(listener);
 			onDeregistered(listener);
 		}
+	}
+
+	public static <L extends TaskListener> Intent createIntent(Context context,
+			Class<? extends TaskService<L>> service,
+			Class<? extends TaskService<L>.Task> action) {
+		Intent intent = new Intent(context, service);
+		intent.setAction(action.getName());
+		return intent;
 	}
 }
