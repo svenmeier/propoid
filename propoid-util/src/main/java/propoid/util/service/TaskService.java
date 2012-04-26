@@ -1,7 +1,10 @@
 package propoid.util.service;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -27,6 +30,8 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	private ObserverBinder binder;
 
 	private List<L> observers = new ArrayList<L>();
+
+	private Map<Class<? extends Task>, Constructor<?>> constructors = new HashMap<Class<? extends Task>, Constructor<?>>();
 
 	/**
 	 * Currently executed tasks.
@@ -65,15 +70,9 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if (intent != null && intent.getAction() != null) {
-			try {
-				@SuppressWarnings("unchecked")
-				Class<? extends Task> action = (Class<? extends Task>) Class
-						.forName(intent.getAction());
-
-				resolveTask(action, intent);
-			} catch (ClassNotFoundException ec) {
-				Log.i("propoid-util", "invalid action '" + intent.getAction()
-						+ "'");
+			Task task = resolveTask(intent);
+			if (task != null) {
+				schedule(task);
 			}
 		}
 		return START_NOT_STICKY;
@@ -85,11 +84,13 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	 * @param task
 	 *            task to schedule
 	 */
-	public void schedule(Task task) {
+	public synchronized final void schedule(Task task) {
+		task.onBeforeSchedule();
+
 		schedule(new Execution(task));
 	}
 
-	private synchronized void schedule(Execution execution) {
+	synchronized final void schedule(Execution execution) {
 		for (int w = 0; w < executions.size(); w++) {
 			Execution candidate = executions.get(w);
 
@@ -106,20 +107,74 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 
 	synchronized void deschedule(Execution execution) {
 		executions.remove(execution);
+
+		if (execution.successors != null) {
+			for (Task successor : execution.successors) {
+				// onBeforeSchedule() must not be called again!
+				schedule(new Execution(successor));
+			}
+		}
 	}
 
 	/**
 	 * Resolve a task for the given intent.
 	 * 
-	 * @param action
-	 *            the requested task
 	 * @param intent
 	 *            the initiating intent
+	 * @return
 	 * 
 	 * @see #schedule(Task)
 	 */
-	protected abstract void resolveTask(Class<? extends Task> action,
-			Intent intent);
+	@SuppressWarnings("unchecked")
+	protected Task resolveTask(Intent intent) {
+		String action = intent.getAction();
+
+		try {
+			Class<? extends Task> clazz = (Class<? extends Task>) Class
+					.forName(action);
+
+			Constructor<?> constructor = getConstructor(clazz);
+
+			if (constructor.getParameterTypes().length == 1) {
+				return (Task) constructor.newInstance(this);
+			} else {
+				return (Task) constructor.newInstance(this, intent);
+			}
+		} catch (Exception ex) {
+			onInvalidAction(action, ex);
+		}
+
+		return null;
+	}
+
+	protected void onInvalidAction(String action, Exception ex) {
+		Log.i("propoid-util", "invalid action '" + action + "'");
+	}
+
+	private Constructor<?> getConstructor(Class<? extends Task> clazz) {
+		Constructor<?> constructor = constructors.get(clazz);
+
+		if (constructor == null) {
+			try {
+				constructor = clazz.getDeclaredConstructor(getClass(),
+						Intent.class);
+
+				constructors.put(clazz, constructor);
+			} catch (Exception ex) {
+			}
+		}
+
+		if (constructor == null) {
+			try {
+				constructor = clazz.getDeclaredConstructor(getClass());
+
+				constructors.put(clazz, constructor);
+			} catch (Exception ex) {
+			}
+		}
+
+		return constructor;
+	}
 
 	/**
 	 * Hook method to be notified of a newly subscribed {@link TaskObserver}s.
@@ -150,7 +205,7 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	}
 
 	/**
-	 * The execution of a {@link Task}.
+	 * A schedule of a {@link Task}.
 	 */
 	class Execution implements Callable<Void>, Runnable {
 
@@ -168,7 +223,7 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		public Execution(Task task) {
 			this.task = task;
 
-			task.execution = this;
+			task.schedule = this;
 		}
 
 		/**
@@ -185,12 +240,6 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 			}
 
 			deschedule(this);
-
-			if (successors != null) {
-				for (Task successor : successors) {
-					schedule(successor);
-				}
-			}
 
 			return null;
 		}
@@ -259,7 +308,7 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	 */
 	public abstract class Task {
 
-		Execution execution;
+		Execution schedule;
 
 		/**
 		 * Does this task include the other task.
@@ -288,12 +337,15 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		 *            task to append
 		 */
 		public final void append(Task other) {
-			if (execution == null) {
+			if (schedule == null) {
 				throw new IllegalStateException(
 						"call append() from onExecute() only");
 			}
 
-			execution.append(other);
+			schedule.append(other);
+		}
+
+		protected void onBeforeSchedule() {
 		}
 
 		/**
@@ -308,12 +360,12 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		 * @see #onPublish()
 		 */
 		public final void publish() {
-			if (execution == null) {
+			if (schedule == null) {
 				throw new IllegalStateException(
 						"call publish() from onExecute() only");
 			}
 
-			execution.publish();
+			schedule.publish();
 		}
 
 		/**
