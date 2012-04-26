@@ -2,6 +2,7 @@ package propoid.util.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -11,30 +12,34 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Process;
 import android.util.Log;
 
 /**
- * A service mediating between {@link Task}s and {@link TaskListener}s.
+ * A service mediating between {@link Task}s and {@link TaskObserver}s.
  * 
  * @see #resolveTask(Class, Intent)
  */
-public abstract class TaskService<L extends TaskListener> extends Service {
+public abstract class TaskService<L extends TaskObserver> extends Service {
 
-	private ListenerBinder binder;
+	private ObserverBinder binder;
 
-	private List<L> listeners = new ArrayList<L>();
+	private List<L> observers = new ArrayList<L>();
 
 	private List<Execution> executions = new ArrayList<Execution>();
 
-	private ExecutorService executor;
+	private Executor executor;
+
+	private Handler handler;
 
 	protected TaskService() {
 		this(new ThreadPoolExecutor(2, 4, 10, TimeUnit.SECONDS,
 				new LinkedBlockingQueue<Runnable>()));
 	}
 
-	public TaskService(ExecutorService executor) {
+	protected TaskService(Executor executor) {
 		this.executor = executor;
 	}
 
@@ -42,12 +47,16 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 	public void onCreate() {
 		super.onCreate();
 
-		binder = new ListenerBinder();
+		handler = new Handler(getMainLooper());
+
+		binder = new ObserverBinder();
 	}
 
 	@Override
 	public void onDestroy() {
-		executor.shutdown();
+		if (executor instanceof ExecutorService) {
+			((ExecutorService) executor).shutdown();
+		}
 
 		super.onDestroy();
 	}
@@ -111,19 +120,26 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 			Intent intent);
 
 	/**
-	 * Hook method to be notified of a newly registered listener.
+	 * Hook method to be notified of a newly subscribed {@link TaskObserver}s.
 	 * 
-	 * @param listener
+	 * @param observer
 	 */
-	protected void onRegistered(L listener) {
+	protected void onSubscribed(L observer) {
 	}
 
 	/**
-	 * Hook method to be notified of a newly deregistered listener.
+	 * Hook method to be notified of a newly unsubscribed {@link TaskObserver}s.
 	 * 
-	 * @param listener
+	 * @param observer
 	 */
-	protected void onDeregistered(L listener) {
+	protected void onUnsubscribed(L observer) {
+	}
+
+	/**
+	 * Hook method to be notified of an unhandled exception.
+	 */
+	protected void onUnhandledException(Exception ex) {
+		Log.e("propoid-util", "unhandled exception" + ex.getMessage() + "'", ex);
 	}
 
 	@Override
@@ -144,7 +160,13 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 
 		@Override
 		public void run() {
-			task.onExecute();
+			Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+
+			try {
+				task.onExecute();
+			} catch (Exception ex) {
+				onUnhandledException(ex);
+			}
 
 			deschedule(Execution.this);
 
@@ -204,47 +226,74 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 		}
 
 		/**
-		 * Initiate notification for all registered listeners.
+		 * Initiate publishing.
 		 * 
-		 * @see #onNotifyListener(TaskListener)
+		 * @see #onPublish()
 		 */
-		public final void notifyListeners() {
-			for (final L listener : listeners) {
-				listener.post(new Runnable() {
-					@Override
-					public void run() {
-						onNotifyListener(listener);
+		public final void publish() {
+			Publisher publisher = new Publisher();
+
+			handler.post(publisher);
+
+			synchronized (publisher) {
+				while (!publisher.done) {
+					try {
+						publisher.wait();
+					} catch (InterruptedException interrupted) {
 					}
-				});
+				}
+			}
+		}
+
+		private class Publisher implements Runnable {
+			public boolean done = false;
+
+			@Override
+			public synchronized void run() {
+				onPublish();
+
+				done = true;
+
+				notifyAll();
 			}
 		}
 
 		/**
-		 * Notify the given listener.
-		 * 
-		 * @param listener
-		 *            listener
+		 * Publish delegates to {@link #onPublish(TaskObserver)} for each
+		 * subscribed observer.
 		 */
-		public void onNotifyListener(L listener) {
+		public void onPublish() {
+			for (L observer : observers) {
+				onPublish(observer);
+			}
+		}
+
+		/**
+		 * Publish to the given observer.
+		 * 
+		 * @param observer
+		 *            observer
+		 */
+		public void onPublish(L observer) {
 		}
 	}
 
-	class ListenerBinder extends Binder {
+	class ObserverBinder extends Binder {
 
-		void register(L listener) {
-			synchronized (listeners) {
-				listeners.add(listener);
+		void subscribe(L observer) {
+			synchronized (observers) {
+				observers.add(observer);
 			}
 
-			onRegistered(listener);
+			onSubscribed(observer);
 		}
 
-		void deregister(L listener) {
-			synchronized (listeners) {
-				listeners.remove(listener);
+		void unsubscribe(L observer) {
+			synchronized (observers) {
+				observers.remove(observer);
 			}
 
-			onDeregistered(listener);
+			onUnsubscribed(observer);
 		}
 	}
 
@@ -259,7 +308,7 @@ public abstract class TaskService<L extends TaskListener> extends Service {
 	 * @param action
 	 *            action of intent
 	 */
-	public static <L extends TaskListener> Intent createIntent(Context context,
+	public static <L extends TaskObserver> Intent createIntent(Context context,
 			Class<? extends TaskService<L>> service,
 			Class<? extends TaskService<L>.Task> action) {
 		Intent intent = new Intent(context, service);
