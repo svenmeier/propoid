@@ -221,10 +221,6 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		public synchronized void run() {
 			task.onPublish();
 
-			for (L observer : observers) {
-				task.onPublish(observer);
-			}
-
 			publishing = false;
 
 			notifyAll();
@@ -321,9 +317,13 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		}
 
 		/**
-		 * Publish.
+		 * Publish, forwards to {@link #onPublish(TaskObserver)} for each
+		 * subscribed observer.
 		 */
 		protected void onPublish() {
+			for (L observer : observers) {
+				onPublish(observer);
+			}
 		}
 
 		/**
