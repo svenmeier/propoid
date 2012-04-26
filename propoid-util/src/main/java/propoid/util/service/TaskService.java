@@ -2,7 +2,7 @@ package propoid.util.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -28,9 +28,12 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 
 	private List<L> observers = new ArrayList<L>();
 
+	/**
+	 * Currently executed tasks.
+	 */
 	private List<Execution> executions = new ArrayList<Execution>();
 
-	private Executor executor;
+	private ExecutorService executor;
 
 	private Handler handler;
 
@@ -39,7 +42,7 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 				new LinkedBlockingQueue<Runnable>()));
 	}
 
-	protected TaskService(Executor executor) {
+	protected TaskService(ExecutorService executor) {
 		this.executor = executor;
 	}
 
@@ -54,9 +57,7 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 
 	@Override
 	public void onDestroy() {
-		if (executor instanceof ExecutorService) {
-			((ExecutorService) executor).shutdown();
-		}
+		executor.shutdown();
 
 		super.onDestroy();
 	}
@@ -93,17 +94,18 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 			Execution candidate = executions.get(w);
 
 			if (candidate.task.includes(execution.task)) {
+				// included
 				return;
 			}
 		}
 
 		executions.add(execution);
 
-		executor.execute(execution);
+		executor.submit((Callable<Void>) execution);
 	}
 
-	synchronized void deschedule(Execution wrapper) {
-		executions.remove(wrapper);
+	synchronized void deschedule(Execution execution) {
+		executions.remove(execution);
 	}
 
 	/**
@@ -150,16 +152,30 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	/**
 	 * The execution of a {@link Task}.
 	 */
-	private class Execution implements Runnable {
+	class Execution implements Callable<Void>, Runnable {
 
-		public Task task;
+		Task task;
+
+		boolean publishing;
+
+		/**
+		 * Optional successive task.
+		 * 
+		 * @see #append(Task)
+		 */
+		List<Task> successors;
 
 		public Execution(Task task) {
 			this.task = task;
+
+			task.execution = this;
 		}
 
+		/**
+		 * Called by the {@link ExecutorService}.
+		 */
 		@Override
-		public void run() {
+		public Void call() throws Exception {
 			Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
 
 			try {
@@ -168,11 +184,77 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 				onUnhandledException(ex);
 			}
 
-			deschedule(Execution.this);
+			deschedule(this);
 
-			if (task.next != null) {
-				schedule(task.next);
+			if (successors != null) {
+				for (Task successor : successors) {
+					schedule(successor);
+				}
 			}
+
+			return null;
+		}
+
+		/**
+		 * Called by the {@link Task}.
+		 */
+		public synchronized void publish() {
+			if (publishing) {
+				throw new IllegalStateException("already publishing");
+			}
+			publishing = true;
+
+			handler.post(this);
+
+			while (publishing) {
+				try {
+					wait();
+				} catch (InterruptedException interrupted) {
+				}
+			}
+		}
+
+		/**
+		 * Called by the {@link Handler}.
+		 */
+		@Override
+		public synchronized void run() {
+			task.onPublish();
+
+			for (L observer : observers) {
+				task.onPublish(observer);
+			}
+
+			publishing = false;
+
+			notifyAll();
+		}
+
+		public void append(Task successor) {
+			if (successors == null) {
+				successors = new ArrayList<Task>();
+			}
+			successors.add(successor);
+		}
+
+	}
+
+	class ObserverBinder extends Binder {
+
+		void subscribe(L observer) {
+			synchronized (observers) {
+				observers.add(observer);
+			}
+
+			onSubscribed(observer);
+		}
+
+		void unsubscribe(L observer) {
+			synchronized (observers) {
+				observers.remove(observer);
+			}
+
+			onUnsubscribed(observer);
 		}
 	}
 
@@ -181,12 +263,7 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	 */
 	public abstract class Task {
 
-		/**
-		 * Optional next task.
-		 * 
-		 * @see #append(Task)
-		 */
-		Task next;
+		Execution execution;
 
 		/**
 		 * Does this task include the other task.
@@ -214,14 +291,18 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		 * @param other
 		 *            task to append
 		 */
-		public synchronized final void append(Task other) {
-			if (next == null) {
-				next = other;
-			} else {
-				next.append(other);
+		public final void append(Task other) {
+			if (execution == null) {
+				throw new IllegalStateException(
+						"call append() from onExecute() only");
 			}
+
+			execution.append(other);
 		}
 
+		/**
+		 * Execute the actual task.
+		 */
 		protected void onExecute() {
 		}
 
@@ -231,41 +312,18 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		 * @see #onPublish()
 		 */
 		public final void publish() {
-			Publisher publisher = new Publisher();
-
-			handler.post(publisher);
-
-			synchronized (publisher) {
-				while (!publisher.done) {
-					try {
-						publisher.wait();
-					} catch (InterruptedException interrupted) {
-					}
-				}
+			if (execution == null) {
+				throw new IllegalStateException(
+						"call publish() from onExecute() only");
 			}
-		}
 
-		private class Publisher implements Runnable {
-			public boolean done = false;
-
-			@Override
-			public synchronized void run() {
-				onPublish();
-
-				done = true;
-
-				notifyAll();
-			}
+			execution.publish();
 		}
 
 		/**
-		 * Publish delegates to {@link #onPublish(TaskObserver)} for each
-		 * subscribed observer.
+		 * Publish.
 		 */
-		public void onPublish() {
-			for (L observer : observers) {
-				onPublish(observer);
-			}
+		protected void onPublish() {
 		}
 
 		/**
@@ -274,26 +332,7 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		 * @param observer
 		 *            observer
 		 */
-		public void onPublish(L observer) {
-		}
-	}
-
-	class ObserverBinder extends Binder {
-
-		void subscribe(L observer) {
-			synchronized (observers) {
-				observers.add(observer);
-			}
-
-			onSubscribed(observer);
-		}
-
-		void unsubscribe(L observer) {
-			synchronized (observers) {
-				observers.remove(observer);
-			}
-
-			onUnsubscribed(observer);
+		protected void onPublish(L observer) {
 		}
 	}
 
