@@ -85,20 +85,16 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	 *            task to schedule
 	 */
 	public synchronized final void schedule(Task task) {
-		task.onBeforeSchedule();
-
-		schedule(new Execution(task));
-	}
-
-	synchronized final void schedule(Execution execution) {
 		for (int w = 0; w < executions.size(); w++) {
 			Execution candidate = executions.get(w);
 
-			if (candidate.task.includes(execution.task)) {
+			if (candidate.task.includes(task)) {
 				// included
 				return;
 			}
 		}
+
+		Execution execution = new Execution(task);
 
 		executions.add(execution);
 
@@ -110,8 +106,7 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 
 		if (execution.successors != null) {
 			for (Task successor : execution.successors) {
-				// onBeforeSchedule() must not be called again!
-				schedule(new Execution(successor));
+				schedule(successor);
 			}
 		}
 	}
@@ -343,9 +338,6 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 			}
 
 			schedule.append(other);
-		}
-
-		protected void onBeforeSchedule() {
 		}
 
 		/**
