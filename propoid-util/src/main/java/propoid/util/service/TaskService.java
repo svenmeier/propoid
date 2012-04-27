@@ -104,9 +104,9 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	synchronized void deschedule(Execution execution) {
 		executions.remove(execution);
 
-		if (execution.successors != null) {
-			for (Task successor : execution.successors) {
-				schedule(successor);
+		if (execution.delayed != null) {
+			for (Task task : execution.delayed) {
+				schedule(task);
 			}
 		}
 	}
@@ -143,7 +143,7 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	}
 
 	protected void onInvalidAction(String action, Exception ex) {
-		Log.i("propoid-util", "invalid action '" + action + "'");
+		Log.d("propoid-util", "invalid action '" + action + "'", ex);
 	}
 
 	private Constructor<?> getConstructor(Class<? extends Task> clazz) {
@@ -168,6 +168,10 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 			}
 		}
 
+		if (constructor == null) {
+			throw new IllegalArgumentException("no valid constructor");
+		}
+
 		return constructor;
 	}
 
@@ -188,9 +192,11 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	}
 
 	/**
-	 * Hook method to be notified of an unhandled exception.
+	 * Hook method to be notified of an execution failure.
+	 * 
+	 * @see Task#onExecute()
 	 */
-	protected void onUnhandledException(Exception ex) {
+	protected void onExecutionFailure(Exception ex) {
 		Log.e("propoid-util", "unhandled exception" + ex.getMessage() + "'", ex);
 	}
 
@@ -200,7 +206,7 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	}
 
 	/**
-	 * A schedule of a {@link Task}.
+	 * An execution of a {@link Task}.
 	 */
 	class Execution implements Callable<Void>, Runnable {
 
@@ -211,14 +217,14 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		/**
 		 * Optional successive task.
 		 * 
-		 * @see #append(Task)
+		 * @see #delay(Task)
 		 */
-		List<Task> successors;
+		List<Task> delayed;
 
 		public Execution(Task task) {
 			this.task = task;
 
-			task.schedule = this;
+			task.execution = this;
 		}
 
 		/**
@@ -231,7 +237,7 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 			try {
 				task.onExecute();
 			} catch (Exception ex) {
-				onUnhandledException(ex);
+				onExecutionFailure(ex);
 			}
 
 			deschedule(this);
@@ -270,11 +276,11 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 			notifyAll();
 		}
 
-		public void append(Task successor) {
-			if (successors == null) {
-				successors = new ArrayList<Task>();
+		public void delay(Task task) {
+			if (delayed == null) {
+				delayed = new ArrayList<Task>();
 			}
-			successors.add(successor);
+			delayed.add(task);
 		}
 
 	}
@@ -303,47 +309,47 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	 */
 	public abstract class Task {
 
-		Execution schedule;
+		Execution execution;
 
 		/**
-		 * Does this task include the other task.
+		 * Called by the service to allow this task to include another task to
+		 * be scheduled.
 		 * <p>
 		 * Overriden methods may
 		 * <ul>
-		 * <li>return {@code false} for unrelated tasks</li>
-		 * <li>drop the task silently and return {@code true}, e.g. if its
+		 * <li>return {@code false} for unrelated tasks to be run in parallel</li>
+		 * <li>return {@code true} while dropping the task silently, e.g. if its
 		 * purpose is already served by this task</li>
-		 * <li>append the task and return {@code true} to let it be scheduled
-		 * after this task has finished</li>
+		 * <li>{@code true} and delay the task to let it be scheduled after this
+		 * task has finished</li>
 		 * </ul>
 		 * 
 		 * @param other
 		 * 
-		 * @see #append(Task)
+		 * @see #delay(Task)
 		 */
 		public boolean includes(Task other) {
 			return false;
 		}
 
 		/**
-		 * Append another task to be scheduled after this one.
+		 * Delay another task to be scheduled after this one.
 		 * 
 		 * @param other
-		 *            task to append
+		 *            task to delay
 		 */
-		public final void append(Task other) {
-			if (schedule == null) {
-				throw new IllegalStateException(
-						"call append() from onExecute() only");
+		public final void delay(Task other) {
+			if (execution == null) {
+				throw new IllegalStateException("not executing");
 			}
 
-			schedule.append(other);
+			execution.delay(other);
 		}
 
 		/**
 		 * Execute the actual task.
 		 */
-		protected void onExecute() {
+		protected void onExecute() throws Exception {
 		}
 
 		/**
@@ -352,12 +358,11 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		 * @see #onPublish()
 		 */
 		public final void publish() {
-			if (schedule == null) {
-				throw new IllegalStateException(
-						"call publish() from onExecute() only");
+			if (execution == null) {
+				throw new IllegalStateException("not executing");
 			}
 
-			schedule.publish();
+			execution.publish();
 		}
 
 		/**
