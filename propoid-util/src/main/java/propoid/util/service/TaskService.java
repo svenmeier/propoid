@@ -96,7 +96,11 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 
 		Execution execution = new Execution(task);
 
+		task.onBeforeSchedule();
+
 		executions.add(execution);
+
+		task.onAfterSchedule();
 
 		executor.submit((Callable<Void>) execution);
 	}
@@ -122,11 +126,9 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	 */
 	@SuppressWarnings("unchecked")
 	protected Task resolveTask(Intent intent) {
-		String action = intent.getAction();
-
 		try {
 			Class<? extends Task> clazz = (Class<? extends Task>) Class
-					.forName(action);
+					.forName(intent.getAction());
 
 			Constructor<?> constructor = getConstructor(clazz);
 
@@ -136,14 +138,15 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 				return (Task) constructor.newInstance(this, intent);
 			}
 		} catch (Exception ex) {
-			onInvalidAction(action, ex);
+			onUnresolvedTask(intent, ex);
 		}
 
 		return null;
 	}
 
-	protected void onInvalidAction(String action, Exception ex) {
-		Log.d("propoid-util", "invalid action '" + action + "'", ex);
+	protected void onUnresolvedTask(Intent intent, Exception ex) {
+		Log.d("propoid-util", "unresolved task '" + intent.getAction() + "'",
+				ex);
 	}
 
 	private Constructor<?> getConstructor(Class<? extends Task> clazz) {
@@ -312,6 +315,24 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		Execution execution;
 
 		/**
+		 * Hook method called before this task is scheduled.
+		 */
+		protected void onBeforeSchedule() {
+		}
+
+		/**
+		 * Hook method called after this task was scheduled.
+		 */
+		protected void onAfterSchedule() {
+		}
+
+		/**
+		 * Execute the actual task.
+		 */
+		protected void onExecute() throws Exception {
+		}
+
+		/**
 		 * Called by the service to allow this task to include another task to
 		 * be scheduled.
 		 * <p>
@@ -344,12 +365,6 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 			}
 
 			execution.delay(other);
-		}
-
-		/**
-		 * Execute the actual task.
-		 */
-		protected void onExecute() throws Exception {
 		}
 
 		/**
