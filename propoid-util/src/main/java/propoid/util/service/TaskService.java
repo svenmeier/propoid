@@ -96,11 +96,7 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 
 		Execution execution = new Execution(task);
 
-		task.onBeforeSchedule();
-
 		executions.add(execution);
-
-		task.onAfterSchedule();
 
 		executor.submit((Callable<Void>) execution);
 	}
@@ -313,18 +309,6 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	public abstract class Task {
 
 		Execution execution;
-
-		/**
-		 * Hook method called before this task is scheduled.
-		 */
-		protected void onBeforeSchedule() {
-		}
-
-		/**
-		 * Hook method called after this task was scheduled.
-		 */
-		protected void onAfterSchedule() {
-		}
 
 		/**
 		 * Execute the actual task.
