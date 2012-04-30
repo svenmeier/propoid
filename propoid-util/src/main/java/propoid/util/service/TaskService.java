@@ -385,20 +385,17 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	}
 
 	/**
-	 * Utility method to create an {@link Intent} for the given service's
-	 * {@link Task}.
+	 * Utility method to create an {@link Intent} for a service's {@link Task}.
 	 * 
 	 * @param context
 	 *            context of intent
-	 * @param service
-	 *            service
-	 * @param action
+	 * @param task
 	 *            action of intent
 	 */
 	public static <L extends TaskObserver> Intent createIntent(Context context,
-			Class<? extends TaskService<L>> service,
 			Class<? extends TaskService<L>.Task> action) {
-		Intent intent = new Intent(context, service);
+
+		Intent intent = new Intent(context, action.getEnclosingClass());
 		intent.setAction(action.getName());
 		return intent;
 	}

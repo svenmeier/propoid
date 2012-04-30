@@ -16,5 +16,7 @@
 	    <activity android:name=".ui.TestActivity" />
 	    
 	    <service android:name="propoid.test.db.service.TestRepositoryService" />
+	    
+	    <service android:name="propoid.test.util.FooService" />
 	</application>
 </manifest>
