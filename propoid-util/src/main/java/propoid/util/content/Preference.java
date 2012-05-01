@@ -192,7 +192,7 @@ public abstract class Preference<T extends Comparable<T>> {
 	 *            string id of preference
 	 * @return preference
 	 */
-	public static Preference<Integer> getInteger(Context context, int id) {
+	public static Preference<Integer> getInt(Context context, int id) {
 		return new Preference<Integer>(context, id, 0) {
 			@Override
 			protected Integer getImpl() {

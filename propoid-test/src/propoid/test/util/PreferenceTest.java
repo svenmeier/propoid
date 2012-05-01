@@ -29,7 +29,7 @@ public class PreferenceTest extends InstrumentationTestCase {
 	}
 
 	public void testInteger() {
-		Preference<Integer> preference = Preference.getInteger(
+		Preference<Integer> preference = Preference.getInt(
 				getInstrumentation().getContext(), R.string.preference_test);
 
 		assertEquals(Integer.valueOf(0), preference.get());
