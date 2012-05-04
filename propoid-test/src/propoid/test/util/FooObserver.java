@@ -6,4 +6,7 @@ public class FooObserver extends TaskObserver {
 
 	public void onBar(int current) {
 	}
+
+	public void onBaz() {
+	}
 }

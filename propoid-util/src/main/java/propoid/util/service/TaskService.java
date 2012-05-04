@@ -93,8 +93,8 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		for (int w = 0; w < executions.size(); w++) {
 			Execution candidate = executions.get(w);
 
-			if (candidate.task.includes(task)) {
-				// included
+			if (candidate.task.onScheduling(task)) {
+				// handled by task
 				return;
 			}
 		}
@@ -333,23 +333,24 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		}
 
 		/**
-		 * Called by the service to allow this task to include another task to
-		 * be scheduled.
+		 * Called by the service to allow this task to handle another task to be
+		 * scheduled.
 		 * <p>
 		 * Overriden methods may
 		 * <ul>
-		 * <li>return {@code false} for unrelated tasks to be run in parallel</li>
+		 * <li>return {@code false} for unrelated tasks to be scheduled
+		 * normally, this running in parallel</li>
 		 * <li>return {@code true} while dropping the task silently, e.g. if its
 		 * purpose is already served by this task</li>
-		 * <li>{@code true} and delay the task to let it be scheduled after this
-		 * task has finished</li>
+		 * <li>return {@code true} and delay the task to let it be scheduled
+		 * after this task has finished</li>
 		 * </ul>
 		 * 
 		 * @param other
 		 * 
 		 * @see #delay(Task)
 		 */
-		public boolean includes(Task other) {
+		public boolean onScheduling(Task other) {
 			return false;
 		}
 
