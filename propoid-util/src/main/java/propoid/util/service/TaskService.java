@@ -339,7 +339,7 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		 * Overriden methods may
 		 * <ul>
 		 * <li>return {@code false} for unrelated tasks to be scheduled
-		 * normally, this running in parallel</li>
+		 * normally, thus running in parallel</li>
 		 * <li>return {@code true} while dropping the task silently, e.g. if its
 		 * purpose is already served by this task</li>
 		 * <li>return {@code true} and delay the task to let it be scheduled
