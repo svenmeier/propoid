@@ -78,6 +78,11 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		return START_NOT_STICKY;
 	}
 
+	@Override
+	public final IBinder onBind(Intent intent) {
+		return binder;
+	}
+
 	/**
 	 * Schedule a new {@link Task}.
 	 * 
@@ -103,12 +108,6 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 
 	synchronized void deschedule(Execution execution) {
 		executions.remove(execution);
-
-		if (execution.delayed != null) {
-			for (Task task : execution.delayed) {
-				schedule(task);
-			}
-		}
 	}
 
 	/**
@@ -133,16 +132,55 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 			} else {
 				return (Task) constructor.newInstance(this, intent);
 			}
-		} catch (Exception ex) {
-			onUnresolvedTask(intent, ex);
+		} catch (Throwable ex) {
+			onTaskUnresolved(intent, ex);
 		}
 
 		return null;
 	}
 
-	protected void onUnresolvedTask(Intent intent, Exception ex) {
+	/**
+	 * Hook method for handling tasks which could not be resolved.
+	 * 
+	 * @param intent
+	 *            intent that triggered the task
+	 * @param throwable
+	 */
+	protected void onTaskUnresolved(Intent intent, Throwable throwable) {
 		Log.d("propoid-util", "unresolved task '" + intent.getAction() + "'",
-				ex);
+				throwable);
+	}
+
+	/**
+	 * Hook method for handling task failures.
+	 * 
+	 * @param task
+	 * @param throwable
+	 * @return should delayed tasks still be scheduled
+	 * 
+	 * @see Task#onExecute()
+	 */
+	protected boolean onTaskFailed(Task task, Throwable throwable) {
+		Log.e("propoid-util", "failed task '" + throwable.getMessage() + "'",
+				throwable);
+
+		return false;
+	}
+
+	/**
+	 * Hook method to be notified of a newly subscribed {@link TaskObserver}s.
+	 * 
+	 * @param observer
+	 */
+	protected void onSubscribed(L observer) {
+	}
+
+	/**
+	 * Hook method to be notified of a newly unsubscribed {@link TaskObserver}s.
+	 * 
+	 * @param observer
+	 */
+	protected void onUnsubscribed(L observer) {
 	}
 
 	private Constructor<?> getConstructor(Class<? extends Task> clazz) {
@@ -172,36 +210,6 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 		}
 
 		return constructor;
-	}
-
-	/**
-	 * Hook method to be notified of a newly subscribed {@link TaskObserver}s.
-	 * 
-	 * @param observer
-	 */
-	protected void onSubscribed(L observer) {
-	}
-
-	/**
-	 * Hook method to be notified of a newly unsubscribed {@link TaskObserver}s.
-	 * 
-	 * @param observer
-	 */
-	protected void onUnsubscribed(L observer) {
-	}
-
-	/**
-	 * Hook method to be notified of an execution failure.
-	 * 
-	 * @see Task#onExecute()
-	 */
-	protected void onExecutionFailure(Exception ex) {
-		Log.e("propoid-util", "unhandled exception" + ex.getMessage() + "'", ex);
-	}
-
-	@Override
-	public final IBinder onBind(Intent intent) {
-		return binder;
 	}
 
 	/**
@@ -235,11 +243,19 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 
 			try {
 				task.onExecute();
-			} catch (Exception ex) {
-				onExecutionFailure(ex);
+			} catch (Throwable ex) {
+				if (!onTaskFailed(task, ex)) {
+					delayed = null;
+				}
 			}
 
 			deschedule(this);
+
+			if (delayed != null) {
+				for (Task task : delayed) {
+					schedule(task);
+				}
+			}
 
 			return null;
 		}

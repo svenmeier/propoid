@@ -1,6 +1,8 @@
 package propoid.test.util;
 
 import propoid.test.util.FooService.BarTask;
+import propoid.test.util.FooService.FailingTask;
+import propoid.test.util.FooService.UnresolvingTask;
 import propoid.util.service.TaskService;
 import android.os.Looper;
 import android.test.InstrumentationTestCase;
@@ -19,9 +21,29 @@ public class TaskServiceTest extends InstrumentationTestCase {
 				FooService.createIntent(getInstrumentation().getContext(),
 						BarTask.class));
 
-		Thread.sleep(2000);
+		synchronized (observer) {
+			observer.wait();
+		}
 
 		assertTrue(observer.onBarCalled);
+	}
+
+	public void testFailed() throws Exception {
+		getInstrumentation().getContext().startService(
+				FooService.createIntent(getInstrumentation().getContext(),
+						FailingTask.class));
+
+		assertEquals(IllegalStateException.class, FooService.queue.take()
+				.getClass());
+	}
+
+	public void testUnresolved() throws Exception {
+		getInstrumentation().getContext().startService(
+				FooService.createIntent(getInstrumentation().getContext(),
+						UnresolvingTask.class));
+
+		assertEquals(IllegalAccessException.class, FooService.queue.take()
+				.getClass());
 	}
 
 	private class TestFooObserver extends FooObserver {
@@ -33,6 +55,10 @@ public class TaskServiceTest extends InstrumentationTestCase {
 					Thread.currentThread());
 
 			onBarCalled = true;
+
+			synchronized (this) {
+				notifyAll();
+			}
 		}
 	}
 }

@@ -1,9 +1,26 @@
 package propoid.test.util;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
 import propoid.util.service.TaskService;
 import android.content.Intent;
 
 public class FooService extends TaskService<FooObserver> {
+
+	public static final BlockingQueue<Object> queue = new ArrayBlockingQueue<Object>(
+			1);
+
+	@Override
+	protected void onTaskUnresolved(Intent intent, Throwable ex) {
+		queue.add(ex);
+	}
+
+	protected boolean onTaskFailed(Task task, Throwable ex) {
+		queue.add(ex);
+
+		return false;
+	}
 
 	// must be public
 	public class BarTask extends Task {
@@ -34,6 +51,17 @@ public class FooService extends TaskService<FooObserver> {
 		// publish on main thread
 		protected void onPublish(FooObserver observer) {
 			observer.onBar(current);
+		}
+	}
+
+	public class UnresolvingTask extends Task {
+		private UnresolvingTask() {
+		}
+	}
+
+	public class FailingTask extends Task {
+		protected void onExecute() {
+			throw new IllegalStateException();
 		}
 	}
 }
