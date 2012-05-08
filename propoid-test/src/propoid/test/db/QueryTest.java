@@ -77,8 +77,10 @@ public class QueryTest extends ApplicationTestCase<Application> {
 		Foo foo = new Foo();
 		Bar bar = new Bar();
 
-		assertEquals(1,
-				repository.query(foo, Where.hasNot(foo.barP, bar, Where.any()))
+		assertEquals(
+				1,
+				repository.query(foo,
+						Where.not(Where.has(foo.barP, bar, Where.any())))
 						.count());
 	}
 

@@ -57,7 +57,7 @@ public class Where {
 	 *            value
 	 * @return where expression
 	 */
-	public static <T> Where notEqual(Property<T> property, final T value) {
+	public static <T> Where unequal(Property<T> property, final T value) {
 		return new Comparison(property, value == null ? "is not null" : "<> ?",
 				value);
 	}
@@ -129,6 +129,17 @@ public class Where {
 	}
 
 	/**
+	 * ... condition is not met.
+	 * 
+	 * @param where
+	 *            where condition
+	 * @return where expression
+	 */
+	public static Where not(Where where) {
+		return new Not(where);
+	}
+
+	/**
 	 * ... all conditions are met.
 	 * 
 	 * @param where
@@ -160,20 +171,28 @@ public class Where {
 	 */
 	public static <P extends Propoid> Where has(Property<P> property, P value,
 			Where where) {
-		return new Has<P>(property, value, "exists ", where);
+		return new Has<P>(property, value, where);
 	}
 
-	/**
-	 * ... property doesn't have a {@link Propoid} where a condition is met.
-	 * 
-	 * @param property
-	 * @param value
-	 * @param where
-	 * @return this
-	 */
-	public static <P extends Propoid> Where hasNot(Property<P> property,
-			P value, Where where) {
-		return new Has<P>(property, value, "not exists ", where);
+	private static class Not extends Where {
+
+		private final Where where;
+
+		public Not(Where where) {
+			this.where = where;
+		}
+
+		@Override
+		public String toString(Repository repository, Arguments arguments,
+				Aliaser aliaser) {
+			SQL sql = new SQL();
+
+			sql.raw("(not ");
+			sql.raw(where.toString(repository, arguments, aliaser));
+			sql.raw(")");
+
+			return sql.toString();
+		}
 	}
 
 	private static class Operation extends Where {
@@ -211,13 +230,11 @@ public class Where {
 
 		private Property<P> property;
 		private P value;
-		private String comparand;
 		private Where where;
 
-		public Has(Property<P> property, P value, String comparand, Where where) {
+		public Has(Property<P> property, P value, Where where) {
 			this.property = property;
 			this.value = value;
-			this.comparand = comparand;
 			this.where = where;
 		}
 
@@ -226,8 +243,7 @@ public class Where {
 				Aliaser aliaser) {
 			SQL sql = new SQL();
 
-			sql.raw(comparand);
-			sql.raw("(select null from ");
+			sql.raw("exists (select null from ");
 			sql.escaped(repository.naming.table(repository, value.getClass()));
 			sql.raw(" ");
 			sql.raw(aliaser.alias(value));
