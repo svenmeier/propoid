@@ -2,6 +2,7 @@ package propoid.test.db;
 
 import java.util.Iterator;
 
+import propoid.db.Order;
 import propoid.db.Repository;
 import propoid.db.RepositoryException;
 import propoid.db.Where;
@@ -62,6 +63,35 @@ public class QueryTest extends ApplicationTestCase<Application> {
 		assertTrue(foos.hasNext());
 		assertTrue(foos.next().getClass() == FooEx.class);
 		assertFalse(foos.hasNext());
+	}
+
+	public void testFooOrdered() {
+		Foo foo = new Foo();
+		Bar bar = new Bar();
+
+		Iterator<Foo> descending = repository.query(foo)
+				.list(Order.descending(foo.barP, bar.stringP)).iterator();
+		assertTrue(descending.hasNext());
+		assertTrue(descending.next().getClass() == Foo.class);
+		assertTrue(descending.hasNext());
+		assertTrue(descending.next().getClass() == FooEx.class);
+		assertFalse(descending.hasNext());
+
+		Iterator<Foo> ascending = repository.query(foo)
+				.list(Order.ascending(foo.barP, bar.stringP)).iterator();
+		assertTrue(ascending.hasNext());
+		assertTrue(ascending.next().getClass() == FooEx.class);
+		assertTrue(ascending.hasNext());
+		assertTrue(ascending.next().getClass() == Foo.class);
+		assertFalse(ascending.hasNext());
+	}
+
+	public void testFooHasBarOrdered() {
+		Foo foo = new Foo();
+		Bar bar = new Bar();
+
+		repository.query(foo, Where.has(foo.barP, bar, Where.any())).first(
+				Order.ascending(foo.barP, bar.stringP));
 	}
 
 	public void testFooHasBar() {

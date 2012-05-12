@@ -29,7 +29,16 @@ public class Where {
 	Where() {
 	}
 
-	public String toString(Repository repository, Arguments arguments,
+	/**
+	 * Prepare schema for this where condition.
+	 */
+	public void schema(Repository repository) {
+	}
+
+	/**
+	 * Get SQL representation of this where condition.
+	 */
+	public String sql(Repository repository, Arguments arguments,
 			Aliaser aliases) {
 		return "1 = 1";
 	}
@@ -183,12 +192,17 @@ public class Where {
 		}
 
 		@Override
-		public String toString(Repository repository, Arguments arguments,
+		public void schema(Repository repository) {
+			where.schema(repository);
+		}
+
+		@Override
+		public String sql(Repository repository, Arguments arguments,
 				Aliaser aliaser) {
 			SQL sql = new SQL();
 
 			sql.raw("(not ");
-			sql.raw(where.toString(repository, arguments, aliaser));
+			sql.raw(where.sql(repository, arguments, aliaser));
 			sql.raw(")");
 
 			return sql.toString();
@@ -207,20 +221,28 @@ public class Where {
 		}
 
 		@Override
-		public String toString(Repository repository, Arguments arguments,
+		public void schema(Repository repository) {
+			for (Where where : operands) {
+				where.schema(repository);
+			}
+			super.schema(repository);
+		}
+
+		@Override
+		public String sql(Repository repository, Arguments arguments,
 				Aliaser aliaser) {
 			SQL sql = new SQL();
 
-			sql.raw("(");
 			if (operands.length == 0) {
 				sql.raw("1 = 1");
 			} else {
+				sql.raw("(");
 				for (Where where : this.operands) {
 					sql.separate(op);
-					sql.raw(where.toString(repository, arguments, aliaser));
+					sql.raw(where.sql(repository, arguments, aliaser));
 				}
+				sql.raw(")");
 			}
-			sql.raw(")");
 
 			return sql.toString();
 		}
@@ -233,13 +255,21 @@ public class Where {
 		private Where where;
 
 		public Has(Property<P> property, P value, Where where) {
+			if (value == null) {
+				throw new IllegalArgumentException("value must no be null");
+			}
 			this.property = property;
 			this.value = value;
 			this.where = where;
 		}
 
 		@Override
-		public String toString(Repository repository, Arguments arguments,
+		public void schema(Repository repository) {
+			repository.schema(value);
+		}
+
+		@Override
+		public String sql(Repository repository, Arguments arguments,
 				Aliaser aliaser) {
 			SQL sql = new SQL();
 
@@ -254,7 +284,7 @@ public class Where {
 			sql.raw(".");
 			sql.escaped(property.meta().name);
 			sql.raw(" and ");
-			sql.raw(where.toString(repository, arguments, aliaser));
+			sql.raw(where.sql(repository, arguments, aliaser));
 			sql.raw(")");
 
 			return sql.toString();
@@ -277,7 +307,7 @@ public class Where {
 		}
 
 		@Override
-		public String toString(Repository repository, Arguments arguments,
+		public String sql(Repository repository, Arguments arguments,
 				Aliaser aliaser) {
 			SQL sql = new SQL();
 

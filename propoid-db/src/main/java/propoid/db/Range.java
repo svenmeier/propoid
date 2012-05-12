@@ -39,7 +39,10 @@ public class Range {
 		this.limit = limit;
 	}
 
-	public String toString(Repository repository) {
+	/**
+	 * Get SQL representation of this range.
+	 */
+	public String sql(Repository repository) {
 		if (offset == 0 && limit == Integer.MAX_VALUE) {
 			return "";
 		}

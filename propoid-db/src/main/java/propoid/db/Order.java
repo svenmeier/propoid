@@ -16,6 +16,7 @@
 package propoid.db;
 
 import propoid.core.Property;
+import propoid.db.operation.Operation.Aliaser;
 
 /**
  * Order of an index or query.
@@ -26,23 +27,78 @@ import propoid.core.Property;
  */
 public class Order {
 
-	public final Property.Meta property;
+	public final Property<?>[] property;
 	public final boolean ascending;
 
-	Order(Property.Meta property, boolean ascending) {
-		this.property = property;
+	Order(boolean ascending, Property<?>... property) {
 		this.ascending = ascending;
+		this.property = property;
 	}
 
-	public String toString(Repository repository) {
-		if (property == null) {
+	/**
+	 * Get DDL representation of this order to be used to create indices.
+	 * 
+	 * @see Repository#index(propoid.core.Propoid, boolean, Order...)
+	 */
+	public String ddl(Repository repository) {
+		if (property.length != 1) {
+			throw new IllegalStateException();
+		}
+
+		Property<?> last = property[property.length - 1];
+
+		SQL sql = new SQL();
+		sql.escaped(last.meta().name);
+
+		if (last.meta().type == String.class) {
+			sql.raw(" COLLATE NOCASE");
+		}
+
+		if (ascending) {
+			sql.raw(" asc");
+		} else {
+			sql.raw(" desc");
+		}
+		return sql.toString();
+	}
+
+	/**
+	 * Get SQL representation of this range.
+	 */
+	public String sql(Repository repository, Aliaser aliaser) {
+		SQL sql = new SQL();
+
+		for (int p = 0; p < property.length - 1; p++) {
+			sql.raw(" LEFT JOIN ");
+			sql.escaped(repository.naming.table(repository,
+					property[p + 1].propoid.getClass()));
+			sql.raw(" ");
+			sql.raw(aliaser.alias(property[p + 1].propoid));
+			sql.raw(" ON ");
+			sql.raw(aliaser.alias(property[p + 1].propoid));
+			sql.raw("._id");
+			sql.raw(" = ");
+			sql.raw(aliaser.alias(property[p].propoid));
+			sql.raw(".");
+			sql.escaped(property[p].meta().name);
+		}
+
+		return sql.toString();
+	}
+
+	public String toString(Repository repository, Aliaser aliaser) {
+		if (property.length == 0) {
 			return "random()";
 		}
 
-		SQL sql = new SQL();
-		sql.escaped(property.name);
+		Property<?> last = property[property.length - 1];
 
-		if (property.type == String.class) {
+		SQL sql = new SQL();
+		sql.raw(aliaser.alias(last.propoid));
+		sql.raw(".");
+		sql.escaped(last.meta().name);
+
+		if (last.meta().type == String.class) {
 			sql.raw(" COLLATE NOCASE");
 		}
 
@@ -56,11 +112,13 @@ public class Order {
 
 	@Override
 	public int hashCode() {
-		if (property == null) {
-			return 42;
-		} else {
-			return property.hashCode();
+		int code = 13;
+
+		for (Property<?> property : this.property) {
+			code = code * 13 + property.meta().hashCode();
 		}
+
+		return code;
 	}
 
 	@Override
@@ -71,28 +129,41 @@ public class Order {
 
 		Order other = (Order) o;
 
-		return other.property == this.property
-				&& other.ascending == this.ascending;
+		if (other.ascending != this.ascending) {
+			return false;
+		}
+
+		if (other.property.length != this.property.length) {
+			return false;
+		}
+
+		for (int p = 0; p < this.property.length; p++) {
+			if (this.property[p].meta() != other.property[p].meta()) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
 	 * Random order.
 	 */
 	public static Order random() {
-		return new Order(null, true);
+		return new Order(true);
 	}
 
 	/**
 	 * Ascending by property.
 	 */
-	public static Order ascending(Property<?> property) {
-		return new Order(property.meta(), true);
+	public static Order ascending(Property<?>... property) {
+		return new Order(true, property);
 	}
 
 	/**
 	 * Descending by property.
 	 */
-	public static Order descending(Property<?> property) {
-		return new Order(property.meta(), false);
+	public static Order descending(Property<?>... property) {
+		return new Order(false, property);
 	}
 }

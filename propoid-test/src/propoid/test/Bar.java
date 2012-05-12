@@ -8,5 +8,6 @@ public class Bar extends Propoid {
 	public final Property<String> stringP = property();
 
 	public Bar() {
+		stringP.set("stringP");
 	}
 }

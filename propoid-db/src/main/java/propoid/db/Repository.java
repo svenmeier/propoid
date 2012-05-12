@@ -308,10 +308,12 @@ public class Repository {
 	public <P extends Propoid> Match<P> query(P propoid, Where where) {
 		schema(propoid);
 
+		where.schema(this);
+
 		return (Match<P>) new Query(this).now(propoid, where);
 	}
 
-	private void schema(Propoid propoid) {
+	protected void schema(Propoid propoid) {
 		if (!schemas.contains(propoid.getClass())) {
 			new Schema(this).now(propoid);
 

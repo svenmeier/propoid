@@ -57,7 +57,22 @@ public class Query extends Operation {
 			this.where = where;
 		}
 
-		private String where(Arguments arguments, Aliaser aliaser) {
+		private String from(Aliaser aliaser, Arguments arguments,
+				Order... ordering) {
+			SQL sql = new SQL();
+
+			sql.raw(" FROM ");
+			sql.escaped(repository.naming.table(repository, propoid.getClass()));
+			sql.raw(" ");
+			sql.raw(aliaser.alias(propoid));
+			for (Order order : ordering) {
+				sql.raw(order.sql(repository, aliaser));
+			}
+
+			return sql.toString();
+		}
+
+		private String where(Aliaser aliaser, Arguments arguments) {
 			SQL sql = new SQL();
 
 			sql.raw(" WHERE ");
@@ -69,8 +84,20 @@ public class Query extends Operation {
 				arguments.add(type);
 			}
 
-			sql.raw(where.toString(repository, arguments, aliaser));
+			sql.raw(where.sql(repository, arguments, aliaser));
 
+			return sql.toString();
+		}
+
+		private String ordering(Aliaser aliaser, Order... ordering) {
+			SQL sql = new SQL();
+			if (ordering.length > 0) {
+				sql.raw(" ORDER BY ");
+				for (Order order : ordering) {
+					sql.separate(", ");
+					sql.raw(order.toString(repository, aliaser));
+				}
+			}
 			return sql.toString();
 		}
 
@@ -123,19 +150,13 @@ public class Query extends Operation {
 			final Arguments arguments = new Arguments();
 			final Aliaser aliaser = new Aliaser();
 
-			sql.raw("SELECT * FROM ");
-			sql.escaped(repository.naming.table(repository, propoid.getClass()));
-			sql.raw(" ");
+			sql.raw("SELECT ");
 			sql.raw(aliaser.alias(propoid));
-			sql.raw(where(arguments, aliaser));
-			if (ordering.length > 0) {
-				sql.raw(" ORDER BY ");
-				for (Order order : ordering) {
-					sql.separate(", ");
-					sql.raw(order.toString(repository));
-				}
-			}
-			sql.raw(range.toString(repository));
+			sql.raw(".*");
+			sql.raw(from(aliaser, arguments, ordering));
+			sql.raw(where(aliaser, arguments));
+			sql.raw(ordering(aliaser, ordering));
+			sql.raw(range.sql(repository));
 
 			return new PropoidList(propoid.getClass(), repository.getDatabase()
 					.rawQuery(sql.toString(), arguments.get()));
@@ -147,11 +168,9 @@ public class Query extends Operation {
 			final Arguments arguments = new Arguments();
 			final Aliaser aliaser = new Aliaser();
 
-			sql.raw("SELECT COUNT(*) FROM ");
-			sql.escaped(repository.naming.table(repository, propoid.getClass()));
-			sql.raw(" ");
-			sql.raw(aliaser.alias(propoid));
-			sql.raw(where(arguments, aliaser));
+			sql.raw("SELECT COUNT(*)");
+			sql.raw(from(aliaser, arguments));
+			sql.raw(where(aliaser, arguments));
 
 			Cursor cursor = repository.getDatabase().rawQuery(sql.toString(),
 					arguments.get());
@@ -193,11 +212,9 @@ public class Query extends Operation {
 			sql.raw(function);
 			sql.raw("(");
 			sql.escaped(property.meta().name);
-			sql.raw(") FROM ");
-			sql.escaped(repository.naming.table(repository, propoid.getClass()));
-			sql.raw(" ");
-			sql.raw(aliaser.alias(propoid));
-			sql.raw(where(arguments, aliaser));
+			sql.raw(")");
+			sql.raw(from(aliaser, arguments));
+			sql.raw(where(aliaser, arguments));
 
 			Cursor cursor = repository.getDatabase().rawQuery(sql.toString(),
 					arguments.get());
@@ -231,11 +248,9 @@ public class Query extends Operation {
 
 			sql.raw(" WHERE _id IN (");
 
-			sql.raw("SELECT _id FROM ");
-			sql.escaped(repository.naming.table(repository, propoid.getClass()));
-			sql.raw(" ");
-			sql.raw(aliaser.alias(propoid));
-			sql.raw(where(arguments, aliaser));
+			sql.raw("SELECT _id");
+			sql.raw(from(aliaser, arguments));
+			sql.raw(where(aliaser, arguments));
 			sql.raw(")");
 
 			repository.getDatabase().execSQL(sql.toString(), arguments.get());
@@ -251,11 +266,9 @@ public class Query extends Operation {
 			sql.escaped(repository.naming.table(repository, propoid.getClass()));
 			sql.raw(" WHERE _id IN (");
 
-			sql.raw("SELECT _id FROM ");
-			sql.escaped(repository.naming.table(repository, propoid.getClass()));
-			sql.raw(" ");
-			sql.raw(aliaser.alias(propoid));
-			sql.raw(where(arguments, aliaser));
+			sql.raw("SELECT _id");
+			sql.raw(from(aliaser, arguments));
+			sql.raw(where(aliaser, arguments));
 			sql.raw(")");
 
 			repository.getDatabase().execSQL(sql.toString(), arguments.get());
