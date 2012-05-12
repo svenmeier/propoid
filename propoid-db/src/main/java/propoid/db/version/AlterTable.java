@@ -21,8 +21,7 @@ import java.util.List;
 import propoid.db.SQL;
 import propoid.db.schema.Column;
 import propoid.db.version.alter.AlterColumn;
-import propoid.db.version.alter.DropColumn;
-import propoid.db.version.alter.RenameColumn;
+import propoid.db.version.alter.CreateColumn;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -57,72 +56,47 @@ public class AlterTable implements Upgrade {
 	public void apply(SQLiteDatabase database) throws SQLException {
 
 		List<Column> existingColumns = Column.get(oldName, database);
-		if (existingColumns.isEmpty()) {
-			// doesn't exist yet
-			return;
-		}
 
 		if (alters.isEmpty()) {
-			renameNew(database, oldName);
-		} else {
-			String temp = oldName + "_" + newName;
-
-			check(existingColumns);
-
-			createNew(database, existingColumns, temp);
-
-			moveOldToNew(database, existingColumns, temp);
-
-			dropOld(database);
-
-			renameNew(database, temp);
-		}
-	}
-
-	private void check(List<Column> existingColumns) {
-		alter: for (AlterColumn alter : alters) {
-			for (Column column : existingColumns) {
-				if (column.name.equals(alter.oldName)) {
-					continue alter;
-				}
+			if (!existingColumns.isEmpty()) {
+				renameTable(database, oldName, newName);
 			}
+		} else {
+			if (existingColumns.isEmpty()) {
+				createTable(database, existingColumns, newName);
+			} else {
+				String temp = oldName + "_" + newName;
 
-			throw new SQLException("unkown column " + alter.oldName);
+				createTable(database, existingColumns, temp);
+
+				moveRows(database, existingColumns, oldName, temp);
+
+				dropTable(database, oldName);
+
+				renameTable(database, temp, newName);
+			}
 		}
 	}
 
-	private void createNew(SQLiteDatabase database,
-			List<Column> existingColumns, String temp) {
+	private void createTable(SQLiteDatabase database,
+			List<Column> existingColumns, String name) {
 
 		SQL sql = new SQL();
 
 		sql.raw("CREATE TABLE ");
-		sql.escaped(temp);
+		sql.escaped(name);
 		sql.raw(" (");
 		for (Column column : existingColumns) {
-			AlterColumn alter = alter(column);
-			if (alter instanceof DropColumn) {
-				continue;
+			Column altered = alter(column);
+			if (altered != null) {
+				sql.separate(", ");
+				sql.raw(altered.ddl());
 			}
-
-			sql.separate(", ");
-			if (alter instanceof RenameColumn) {
-				sql.escaped(((RenameColumn) alter).newName);
-			} else {
-				sql.escaped(column.name);
-			}
-			sql.raw(" ");
-			sql.raw(column.type);
-			if (column.notNull) {
-				sql.raw(" NOT  NULL");
-			}
-			if (column.dfltValue != null) {
-				sql.raw(" DEFAULT (");
-				sql.raw(column.dfltValue);
-				sql.raw(")");
-			}
-			if (column.pk) {
-				sql.raw(" PRIMARY KEY");
+		}
+		for (AlterColumn alter : alters) {
+			if (alter instanceof CreateColumn) {
+				sql.separate(", ");
+				sql.raw(alter.alter(null).ddl());
 			}
 		}
 		sql.raw(")");
@@ -130,34 +104,28 @@ public class AlterTable implements Upgrade {
 		database.execSQL(sql.toString());
 	}
 
-	private AlterColumn alter(Column column) {
+	private Column alter(Column column) {
 		for (AlterColumn alter : alters) {
-			if (alter.oldName.equals(column.name)) {
-				return alter;
+			if (alter.alters(column)) {
+				return alter.alter(column);
 			}
 		}
-		return null;
+		return column;
 	}
 
-	private void moveOldToNew(SQLiteDatabase database,
-			List<Column> existingColumns, String temp) {
+	private void moveRows(SQLiteDatabase database,
+			List<Column> existingColumns, String from, String to) {
 
 		SQL sql = new SQL();
 
 		sql.raw("INSERT INTO ");
-		sql.escaped(temp);
+		sql.escaped(to);
 		sql.raw(" (");
 		for (Column column : existingColumns) {
-			AlterColumn alter = alter(column);
-			if (alter instanceof DropColumn) {
-				continue;
-			}
-
-			sql.separate(", ");
-			if (alter instanceof RenameColumn) {
-				sql.escaped(((RenameColumn) alter).newName);
-			} else {
-				sql.escaped(column.name);
+			Column altered = alter(column);
+			if (altered != null) {
+				sql.separate(", ");
+				sql.escaped(altered.name);
 			}
 		}
 		sql.raw(")");
@@ -166,36 +134,34 @@ public class AlterTable implements Upgrade {
 
 		sql.raw(" SELECT ");
 		for (Column column : existingColumns) {
-			AlterColumn alter = alter(column);
-			if (alter instanceof DropColumn) {
-				continue;
+			Column altered = alter(column);
+			if (altered != null) {
+				sql.separate(", ");
+				sql.escaped(column.name);
 			}
-
-			sql.separate(", ");
-			sql.escaped(column.name);
 		}
 		sql.raw(" FROM ");
-		sql.escaped(oldName);
+		sql.escaped(from);
 
 		database.execSQL(sql.toString());
 	}
 
-	private void dropOld(SQLiteDatabase database) {
+	private void dropTable(SQLiteDatabase database, String name) {
 		SQL sql = new SQL();
 
 		sql.raw("DROP TABLE ");
-		sql.escaped(oldName);
+		sql.escaped(name);
 
 		database.execSQL(sql.toString());
 	}
 
-	private void renameNew(SQLiteDatabase database, String temp) {
+	private void renameTable(SQLiteDatabase database, String from, String to) {
 		SQL sql = new SQL();
 
 		sql.raw("ALTER TABLE ");
-		sql.escaped(temp);
+		sql.escaped(from);
 		sql.raw(" RENAME TO ");
-		sql.escaped(newName);
+		sql.escaped(to);
 
 		database.execSQL(sql.toString());
 	}

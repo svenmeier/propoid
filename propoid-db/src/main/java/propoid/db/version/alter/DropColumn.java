@@ -15,9 +15,23 @@
  */
 package propoid.db.version.alter;
 
+import propoid.db.schema.Column;
+
 public class DropColumn extends AlterColumn {
 
+	private String name;
+
 	public DropColumn(String name) {
-		super(name);
+		this.name = name;
+	}
+
+	@Override
+	public boolean alters(Column column) {
+		return column.name.equals(this.name);
+	}
+
+	@Override
+	public Column alter(Column column) {
+		return null;
 	}
 }

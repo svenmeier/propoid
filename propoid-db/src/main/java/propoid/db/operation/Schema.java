@@ -24,6 +24,7 @@ import propoid.db.RepositoryException;
 import propoid.db.SQL;
 import propoid.db.mapping.Mapper;
 import propoid.db.schema.Column;
+import android.database.sqlite.SQLiteStatement;
 
 /**
  * Prepare schema for a {@link Propoid}.
@@ -97,15 +98,33 @@ public class Schema extends Operation {
 			}
 		}
 
-		SQL sql = new SQL();
-		sql.raw("ALTER TABLE ");
-		sql.escaped(repository.naming.table(repository,
+		SQL alter = new SQL();
+		alter.raw("ALTER TABLE ");
+		alter.escaped(repository.naming.table(repository,
 				property.propoid.getClass()));
-		sql.raw(" ADD COLUMN ");
-		sql.escaped(property.meta().name);
-		sql.raw(" ");
-		sql.raw(type);
+		alter.raw(" ADD COLUMN ");
+		alter.escaped(property.meta().name);
+		alter.raw(" ");
+		alter.raw(type);
 
-		repository.getDatabase().execSQL(sql.toString());
+		repository.getDatabase().execSQL(alter.toString());
+
+		SQL update = new SQL();
+		update.raw("UPDATE ");
+		update.escaped(repository.naming.table(repository,
+				property.propoid.getClass()));
+		update.raw(" SET  ");
+		update.escaped(property.meta().name);
+		update.raw(" = ?");
+
+		SQLiteStatement statement = repository.getDatabase().compileStatement(
+				update.toString());
+		try {
+			mapper.bind((Property<Object>) property, repository, statement, 1);
+
+			statement.execute();
+		} finally {
+			statement.close();
+		}
 	}
 }

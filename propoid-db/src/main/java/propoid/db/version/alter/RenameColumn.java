@@ -15,13 +15,27 @@
  */
 package propoid.db.version.alter;
 
+import propoid.db.schema.Column;
+
 public class RenameColumn extends AlterColumn {
+
+	public final String oldName;
 
 	public final String newName;
 
 	public RenameColumn(String oldName, String newName) {
-		super(oldName);
-
+		this.oldName = oldName;
 		this.newName = newName;
+	}
+
+	@Override
+	public boolean alters(Column column) {
+		return column.name.equals(this.oldName);
+	}
+
+	@Override
+	public Column alter(Column column) {
+		return new Column(newName, column.type, column.notNull,
+				column.dfltValue, column.pk);
 	}
 }

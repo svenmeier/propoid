@@ -15,10 +15,11 @@
  */
 package propoid.db.version.alter;
 
-public abstract class AlterColumn {
-	public final String oldName;
+import propoid.db.schema.Column;
 
-	public AlterColumn(String oldName) {
-		this.oldName = oldName;
-	}
+public abstract class AlterColumn {
+
+	public abstract boolean alters(Column column);
+
+	public abstract Column alter(Column column);
 }
