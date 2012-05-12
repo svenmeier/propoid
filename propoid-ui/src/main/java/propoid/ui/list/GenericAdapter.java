@@ -22,10 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.R;
-import android.app.AlertDialog.Builder;
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,13 +35,12 @@ import android.widget.SpinnerAdapter;
 /**
  * A generified adapter which can be used for {@link ListView}s.
  * <p>
- * For convenience this adapter implements listener interfaces, see
- * {@link #onItemClick(AdapterView, View, int, long)} and
- * {@link #onClick(DialogInterface, int)} both delegating to
+ * For convenience this adapter implements
+ * {@link #onItemClick(AdapterView, View, int, long)} delegating to
  * {@link #onItem(Object, int)}.
  */
 public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
-		OnItemClickListener, OnClickListener {
+		OnItemClickListener {
 
 	private final ArrayList<DataSetObserver> observers = new ArrayList<DataSetObserver>();
 
@@ -196,21 +191,6 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 	public final void onItemClick(AdapterView<?> arg0, View arg1, int item,
 			long arg3) {
 		onItem(getItem(item), item);
-	}
-
-	/**
-	 * Handle a click on a {@link Dialog}.
-	 * <p>
-	 * Dismisses the dialog explicitely since this isn't done automatically.
-	 * 
-	 * @see Builder#setSingleChoiceItems(android.widget.ListAdapter, int,
-	 *      DialogInterface.OnClickListener)
-	 */
-	@Override
-	public final void onClick(DialogInterface dialog, int item) {
-		onItem(getItem(item), item);
-
-		dialog.dismiss();
 	}
 
 	/**
