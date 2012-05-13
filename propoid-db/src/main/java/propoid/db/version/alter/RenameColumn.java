@@ -29,6 +29,11 @@ public class RenameColumn extends AlterColumn {
 	}
 
 	@Override
+	public String toString() {
+		return "rename column '" + oldName + "'";
+	}
+
+	@Override
 	public boolean alters(Column column) {
 		return column.name.equals(this.oldName);
 	}

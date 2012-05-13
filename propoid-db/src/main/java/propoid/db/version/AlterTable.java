@@ -16,6 +16,7 @@
 package propoid.db.version;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import propoid.db.SQL;
@@ -81,69 +82,64 @@ public class AlterTable implements Upgrade {
 	private void createTable(SQLiteDatabase database,
 			List<Column> existingColumns, String name) {
 
+		ColumnConsumer consumer = new ColumnConsumer();
+
 		SQL sql = new SQL();
 
 		sql.raw("CREATE TABLE ");
 		sql.escaped(name);
 		sql.raw(" (");
 		for (Column column : existingColumns) {
-			Column altered = alter(column);
-			if (altered != null) {
+			Column consumed = consumer.alter(column);
+			if (consumed != null) {
 				sql.separate(", ");
-				sql.raw(altered.ddl());
+				sql.raw(consumed.ddl());
 			}
 		}
-		for (AlterColumn alter : alters) {
+		for (AlterColumn alter : consumer.alters) {
 			if (alter instanceof CreateColumn) {
 				sql.separate(", ");
 				sql.raw(alter.alter(null).ddl());
+			} else {
+				throw new SQLException(alter.toString());
 			}
 		}
 		sql.raw(")");
 
 		database.execSQL(sql.toString());
-	}
-
-	private Column alter(Column column) {
-		for (AlterColumn alter : alters) {
-			if (alter.alters(column)) {
-				return alter.alter(column);
-			}
-		}
-		return column;
 	}
 
 	private void moveRows(SQLiteDatabase database,
 			List<Column> existingColumns, String from, String to) {
 
-		SQL sql = new SQL();
+		ColumnConsumer consumer = new ColumnConsumer();
 
-		sql.raw("INSERT INTO ");
-		sql.escaped(to);
-		sql.raw(" (");
+		SQL insertInto = new SQL();
+		SQL select = new SQL();
+
+		insertInto.raw("INSERT INTO ");
+		insertInto.escaped(to);
+		insertInto.raw(" (");
+
+		select.raw("SELECT ");
+
 		for (Column column : existingColumns) {
-			Column altered = alter(column);
-			if (altered != null) {
-				sql.separate(", ");
-				sql.escaped(altered.name);
+			Column consumed = consumer.alter(column);
+			if (consumed != null) {
+				insertInto.separate(", ");
+				insertInto.escaped(consumed.name);
+
+				select.separate(", ");
+				select.escaped(column.name);
 			}
 		}
-		sql.raw(")");
 
-		sql.separate(" ");
+		insertInto.raw(")");
 
-		sql.raw(" SELECT ");
-		for (Column column : existingColumns) {
-			Column altered = alter(column);
-			if (altered != null) {
-				sql.separate(", ");
-				sql.escaped(column.name);
-			}
-		}
-		sql.raw(" FROM ");
-		sql.escaped(from);
+		select.raw(" FROM ");
+		select.escaped(from);
 
-		database.execSQL(sql.toString());
+		database.execSQL(insertInto.toString() + select.toString());
 	}
 
 	private void dropTable(SQLiteDatabase database, String name) {
@@ -164,5 +160,24 @@ public class AlterTable implements Upgrade {
 		sql.escaped(to);
 
 		database.execSQL(sql.toString());
+	}
+
+	private class ColumnConsumer {
+		public final List<AlterColumn> alters;
+
+		public ColumnConsumer() {
+			this.alters = new LinkedList<AlterColumn>(AlterTable.this.alters);
+		}
+
+		private Column alter(Column column) {
+			for (AlterColumn alter : this.alters) {
+				if (alter.alters(column)) {
+					this.alters.remove(alter);
+
+					return alter.alter(column);
+				}
+			}
+			return column;
+		}
 	}
 }

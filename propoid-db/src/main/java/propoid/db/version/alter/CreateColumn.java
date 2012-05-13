@@ -17,26 +17,30 @@ package propoid.db.version.alter;
 
 import propoid.db.schema.Column;
 
-public class DropColumn extends AlterColumn {
+public class CreateColumn extends AlterColumn {
 
-	private String name;
+	private Column column;
 
-	public DropColumn(String name) {
-		this.name = name;
+	public CreateColumn(Column column) {
+		this.column = column;
 	}
 
 	@Override
 	public String toString() {
-		return "drop column '" + name + "'";
+		return "create column '" + column.name + "'";
 	}
 
 	@Override
 	public boolean alters(Column column) {
-		return column.name.equals(this.name);
+		return false;
 	}
 
 	@Override
 	public Column alter(Column column) {
-		return null;
+		if (column != null) {
+			throw new IllegalArgumentException();
+		}
+
+		return this.column;
 	}
 }
