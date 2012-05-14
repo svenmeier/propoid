@@ -103,7 +103,6 @@ public class SpinnerBinding<T> extends Binding<T> implements
 	}
 
 	protected void onChange(T value) {
-		getView().setSelection(AdapterView.INVALID_POSITION);
 		for (int i = 0; i < adapter.getCount(); i++) {
 			Object item = adapter.getItem(i);
 			if ((value == null && item == null)

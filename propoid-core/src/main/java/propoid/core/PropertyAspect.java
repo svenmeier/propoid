@@ -44,7 +44,7 @@ public abstract class PropertyAspect<T> extends AbstractAspect {
 			return (U) onGet((T) value);
 		}
 
-		return super.onSet(property, value);
+		return super.onGet(property, value);
 	}
 
 	/**

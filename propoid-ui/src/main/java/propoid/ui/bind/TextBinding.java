@@ -60,6 +60,7 @@ public class TextBinding<T> extends Binding<T> implements TextWatcher,
 		this.converter = converter;
 
 		onChange(property.get());
+		safeChange(property.get());
 
 		if (getView() instanceof EditText) {
 			getView().addTextChangedListener(this);
@@ -111,14 +112,17 @@ public class TextBinding<T> extends Binding<T> implements TextWatcher,
 			return;
 		}
 
+		safeChange(value);
+	}
+
+	private void safeChange(T value) {
 		try {
 			change(value);
+
+			getView().setError(null);
 		} catch (ValidatorException ex) {
 			getView().setError(ex.getMessage(getView().getContext()));
-			return;
 		}
-
-		getView().setError(null);
 	}
 
 	@Override
