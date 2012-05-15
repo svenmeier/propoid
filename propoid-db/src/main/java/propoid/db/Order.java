@@ -40,7 +40,7 @@ public class Order {
 	 * 
 	 * @see Repository#index(propoid.core.Propoid, boolean, Order...)
 	 */
-	public String ddl(Repository repository) {
+	public SQL toIndex(Repository repository) {
 		if (property.length != 1) {
 			throw new IllegalStateException();
 		}
@@ -59,13 +59,13 @@ public class Order {
 		} else {
 			sql.raw(" desc");
 		}
-		return sql.toString();
+		return sql;
 	}
 
 	/**
 	 * Get SQL representation of this range.
 	 */
-	public String sql(Repository repository, Aliaser aliaser) {
+	public SQL toJoin(Repository repository, Aliaser aliaser) {
 		SQL sql = new SQL();
 
 		for (int p = 0; p < property.length - 1; p++) {
@@ -83,12 +83,12 @@ public class Order {
 			sql.escaped(property[p].meta().name);
 		}
 
-		return sql.toString();
+		return sql;
 	}
 
-	public String toString(Repository repository, Aliaser aliaser) {
+	public SQL toOrderBy(Aliaser aliaser) {
 		if (property.length == 0) {
-			return "random()";
+			return new SQL("random()");
 		}
 
 		Property<?> last = property[property.length - 1];
@@ -107,7 +107,7 @@ public class Order {
 		} else {
 			sql.raw(" desc");
 		}
-		return sql.toString();
+		return sql;
 	}
 
 	@Override

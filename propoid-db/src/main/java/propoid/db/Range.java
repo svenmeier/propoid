@@ -42,9 +42,9 @@ public class Range {
 	/**
 	 * Get SQL representation of this range.
 	 */
-	public String sql(Repository repository) {
+	public SQL toLimit(Repository repository) {
 		if (offset == 0 && limit == Integer.MAX_VALUE) {
-			return "";
+			return new SQL("");
 		}
 
 		SQL sql = new SQL();
@@ -54,7 +54,7 @@ public class Range {
 		sql.raw(",");
 		sql.raw(Integer.toString(limit));
 
-		return sql.toString();
+		return sql;
 	}
 
 	/**

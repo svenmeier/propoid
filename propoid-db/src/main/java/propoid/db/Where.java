@@ -38,9 +38,8 @@ public class Where {
 	/**
 	 * Get SQL representation of this where condition.
 	 */
-	public String sql(Repository repository, Arguments arguments,
-			Aliaser aliases) {
-		return "1 = 1";
+	public SQL toWhere(Repository repository, Arguments arguments, Aliaser aliases) {
+		return new SQL("1 = 1");
 	}
 
 	/**
@@ -197,15 +196,15 @@ public class Where {
 		}
 
 		@Override
-		public String sql(Repository repository, Arguments arguments,
+		public SQL toWhere(Repository repository, Arguments arguments,
 				Aliaser aliaser) {
 			SQL sql = new SQL();
 
 			sql.raw("(not ");
-			sql.raw(where.sql(repository, arguments, aliaser));
+			sql.append(where.toWhere(repository, arguments, aliaser));
 			sql.raw(")");
 
-			return sql.toString();
+			return sql;
 		}
 	}
 
@@ -229,7 +228,7 @@ public class Where {
 		}
 
 		@Override
-		public String sql(Repository repository, Arguments arguments,
+		public SQL toWhere(Repository repository, Arguments arguments,
 				Aliaser aliaser) {
 			SQL sql = new SQL();
 
@@ -239,12 +238,12 @@ public class Where {
 				sql.raw("(");
 				for (Where where : this.operands) {
 					sql.separate(op);
-					sql.raw(where.sql(repository, arguments, aliaser));
+					sql.append(where.toWhere(repository, arguments, aliaser));
 				}
 				sql.raw(")");
 			}
 
-			return sql.toString();
+			return sql;
 		}
 	}
 
@@ -269,7 +268,7 @@ public class Where {
 		}
 
 		@Override
-		public String sql(Repository repository, Arguments arguments,
+		public SQL toWhere(Repository repository, Arguments arguments,
 				Aliaser aliaser) {
 			SQL sql = new SQL();
 
@@ -284,10 +283,10 @@ public class Where {
 			sql.raw(".");
 			sql.escaped(property.meta().name);
 			sql.raw(" and ");
-			sql.raw(where.sql(repository, arguments, aliaser));
+			sql.append(where.toWhere(repository, arguments, aliaser));
 			sql.raw(")");
 
-			return sql.toString();
+			return sql;
 		}
 	}
 
@@ -307,7 +306,7 @@ public class Where {
 		}
 
 		@Override
-		public String sql(Repository repository, Arguments arguments,
+		public SQL toWhere(Repository repository, Arguments arguments,
 				Aliaser aliaser) {
 			SQL sql = new SQL();
 
@@ -323,7 +322,7 @@ public class Where {
 				arguments.add(constrain);
 			}
 
-			return sql.toString();
+			return sql;
 		}
 	}
 }

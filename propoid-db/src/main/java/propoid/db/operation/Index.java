@@ -46,7 +46,7 @@ public class Index extends Operation {
 		sql.raw(" (");
 		for (Order order : ordering) {
 			sql.separate(", ");
-			sql.raw(order.ddl(repository));
+			sql.append(order.toIndex(repository));
 		}
 		sql.raw(")");
 

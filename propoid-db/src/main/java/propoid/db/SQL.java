@@ -63,6 +63,10 @@ public class SQL {
 		this.separator = separator;
 	}
 
+	public void append(SQL sql) {
+		builder.append(sql.builder);
+	}
+
 	/**
 	 * Get the SQL.
 	 */

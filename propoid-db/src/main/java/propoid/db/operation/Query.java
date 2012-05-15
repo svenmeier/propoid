@@ -57,7 +57,7 @@ public class Query extends Operation {
 			this.where = where;
 		}
 
-		private String from(Aliaser aliaser, Arguments arguments,
+		private SQL from(Aliaser aliaser, Arguments arguments,
 				Order... ordering) {
 			SQL sql = new SQL();
 
@@ -66,13 +66,13 @@ public class Query extends Operation {
 			sql.raw(" ");
 			sql.raw(aliaser.alias(propoid));
 			for (Order order : ordering) {
-				sql.raw(order.sql(repository, aliaser));
+				sql.append(order.toJoin(repository, aliaser));
 			}
 
-			return sql.toString();
+			return sql;
 		}
 
-		private String where(Aliaser aliaser, Arguments arguments) {
+		private SQL where(Aliaser aliaser, Arguments arguments) {
 			SQL sql = new SQL();
 
 			sql.raw(" WHERE ");
@@ -84,21 +84,21 @@ public class Query extends Operation {
 				arguments.add(type);
 			}
 
-			sql.raw(where.sql(repository, arguments, aliaser));
+			sql.append(where.toWhere(repository, arguments, aliaser));
 
-			return sql.toString();
+			return sql;
 		}
 
-		private String ordering(Aliaser aliaser, Order... ordering) {
+		private SQL orderBy(Aliaser aliaser, Order... ordering) {
 			SQL sql = new SQL();
 			if (ordering.length > 0) {
 				sql.raw(" ORDER BY ");
 				for (Order order : ordering) {
 					sql.separate(", ");
-					sql.raw(order.toString(repository, aliaser));
+					sql.append(order.toOrderBy(aliaser));
 				}
 			}
-			return sql.toString();
+			return sql;
 		}
 
 		@Override
@@ -153,10 +153,10 @@ public class Query extends Operation {
 			sql.raw("SELECT ");
 			sql.raw(aliaser.alias(propoid));
 			sql.raw(".*");
-			sql.raw(from(aliaser, arguments, ordering));
-			sql.raw(where(aliaser, arguments));
-			sql.raw(ordering(aliaser, ordering));
-			sql.raw(range.sql(repository));
+			sql.append(from(aliaser, arguments, ordering));
+			sql.append(where(aliaser, arguments));
+			sql.append(orderBy(aliaser, ordering));
+			sql.append(range.toLimit(repository));
 
 			return new PropoidList(propoid.getClass(), repository.getDatabase()
 					.rawQuery(sql.toString(), arguments.get()));
@@ -169,8 +169,8 @@ public class Query extends Operation {
 			final Aliaser aliaser = new Aliaser();
 
 			sql.raw("SELECT COUNT(*)");
-			sql.raw(from(aliaser, arguments));
-			sql.raw(where(aliaser, arguments));
+			sql.append(from(aliaser, arguments));
+			sql.append(where(aliaser, arguments));
 
 			Cursor cursor = repository.getDatabase().rawQuery(sql.toString(),
 					arguments.get());
@@ -213,8 +213,8 @@ public class Query extends Operation {
 			sql.raw("(");
 			sql.escaped(property.meta().name);
 			sql.raw(")");
-			sql.raw(from(aliaser, arguments));
-			sql.raw(where(aliaser, arguments));
+			sql.append(from(aliaser, arguments));
+			sql.append(where(aliaser, arguments));
 
 			Cursor cursor = repository.getDatabase().rawQuery(sql.toString(),
 					arguments.get());
@@ -249,8 +249,8 @@ public class Query extends Operation {
 			sql.raw(" WHERE _id IN (");
 
 			sql.raw("SELECT _id");
-			sql.raw(from(aliaser, arguments));
-			sql.raw(where(aliaser, arguments));
+			sql.append(from(aliaser, arguments));
+			sql.append(where(aliaser, arguments));
 			sql.raw(")");
 
 			repository.getDatabase().execSQL(sql.toString(), arguments.get());
@@ -267,8 +267,8 @@ public class Query extends Operation {
 			sql.raw(" WHERE _id IN (");
 
 			sql.raw("SELECT _id");
-			sql.raw(from(aliaser, arguments));
-			sql.raw(where(aliaser, arguments));
+			sql.append(from(aliaser, arguments));
+			sql.append(where(aliaser, arguments));
 			sql.raw(")");
 
 			repository.getDatabase().execSQL(sql.toString(), arguments.get());
