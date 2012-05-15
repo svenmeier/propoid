@@ -70,7 +70,9 @@ public class QueryTest extends ApplicationTestCase<Application> {
 		Bar bar = new Bar();
 
 		Iterator<Foo> descending = repository.query(foo)
-				.list(Order.descending(foo.barP, bar.stringP)).iterator();
+				.list(Order.descending(foo.barP, bar.intP), //
+						Order.descending(foo.barP, bar.stringP)) //
+				.iterator();
 		assertTrue(descending.hasNext());
 		assertTrue(descending.next().getClass() == Foo.class);
 		assertTrue(descending.hasNext());
@@ -78,7 +80,9 @@ public class QueryTest extends ApplicationTestCase<Application> {
 		assertFalse(descending.hasNext());
 
 		Iterator<Foo> ascending = repository.query(foo)
-				.list(Order.ascending(foo.barP, bar.stringP)).iterator();
+				.list(Order.ascending(foo.barP, bar.intP), //
+						Order.ascending(foo.barP, bar.stringP)) //
+				.iterator();
 		assertTrue(ascending.hasNext());
 		assertTrue(ascending.next().getClass() == FooEx.class);
 		assertTrue(ascending.hasNext());

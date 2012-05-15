@@ -17,9 +17,11 @@ package propoid.db.operation;
 
 import java.io.Closeable;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 import propoid.core.Property;
 import propoid.core.Propoid;
@@ -65,8 +67,10 @@ public class Query extends Operation {
 			sql.escaped(repository.naming.table(repository, propoid.getClass()));
 			sql.raw(" ");
 			sql.raw(aliaser.alias(propoid));
+
+			Set<Propoid> joined = new HashSet<Propoid>();
 			for (Order order : ordering) {
-				sql.append(order.toJoin(repository, aliaser));
+				sql.append(order.toJoin(repository, aliaser, joined));
 			}
 
 			return sql;

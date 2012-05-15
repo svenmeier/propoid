@@ -15,7 +15,10 @@
  */
 package propoid.db;
 
+import java.util.Set;
+
 import propoid.core.Property;
+import propoid.core.Propoid;
 import propoid.db.operation.Operation.Aliaser;
 
 /**
@@ -65,10 +68,17 @@ public class Order {
 	/**
 	 * Get SQL representation of this range.
 	 */
-	public SQL toJoin(Repository repository, Aliaser aliaser) {
+	public SQL toJoin(Repository repository, Aliaser aliaser,
+			Set<Propoid> joined) {
 		SQL sql = new SQL();
 
 		for (int p = 0; p < property.length - 1; p++) {
+			if (joined.contains(property[p + 1].propoid)) {
+				continue;
+			}
+
+			joined.add(property[p + 1].propoid);
+
 			sql.raw(" LEFT JOIN ");
 			sql.escaped(repository.naming.table(repository,
 					property[p + 1].propoid.getClass()));
