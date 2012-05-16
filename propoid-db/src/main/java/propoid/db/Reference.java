@@ -39,6 +39,10 @@ public class Reference<P extends Propoid> {
 	}
 
 	public Reference(Class<P> type, long id) {
+		if (id == Row.TRANSIENT) {
+			throw new IllegalArgumentException(
+					"cannot reference transient propoid");
+		}
 		this.type = type;
 		this.id = id;
 	}

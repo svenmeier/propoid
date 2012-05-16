@@ -42,6 +42,13 @@ public class ReferenceTest extends TestCase {
 		assertNull(Reference.from("propoid.test.db.Foo/1"));
 	}
 
+	public void testTransient() {
+		try {
+			new Reference<Foo>(Foo.class, Row.TRANSIENT);
+		} catch (IllegalArgumentException expected) {
+		}
+	}
+
 	public static class Foo extends Propoid {
 
 	}
