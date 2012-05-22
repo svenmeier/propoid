@@ -16,7 +16,7 @@
 package propoid.ui.convert;
 
 import java.text.NumberFormat;
-import java.text.ParseException;
+import java.text.ParsePosition;
 
 import propoid.core.Property;
 
@@ -47,10 +47,13 @@ public class NumberConverter implements Converter<Number> {
 		if (string.length() == 0) {
 			return null;
 		}
+		string = string.trim();
 
-		try {
-			Number parsed = format.parse(string);
+		ParsePosition position = new ParsePosition(0);
 
+		Number parsed = (Number) format.parse(string, position);
+
+		if (position.getIndex() == string.length()) {
 			Property<?> temp = property;
 			if (temp.meta().type == Byte.class) {
 				return parsed.byteValue();
@@ -65,7 +68,6 @@ public class NumberConverter implements Converter<Number> {
 			} else if (temp.meta().type == Double.class) {
 				return parsed.doubleValue();
 			}
-		} catch (ParseException failed) {
 		}
 
 		throw new ConverterException(resId);

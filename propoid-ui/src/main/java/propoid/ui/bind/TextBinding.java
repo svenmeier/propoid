@@ -24,6 +24,7 @@ import propoid.validation.ValidatorException;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
@@ -166,6 +167,14 @@ public class TextBinding<T> extends Binding<T> implements TextWatcher,
 	@SuppressWarnings("unchecked")
 	public static <T extends Number> TextBinding<T> number(
 			Property<T> property, View view, int resId) {
+
+		if (view instanceof EditText) {
+			TextView editText = (TextView) view;
+
+			editText.setKeyListener(DigitsKeyListener
+					.getInstance("0123456789-,."));
+		}
+
 		return new TextBinding<T>(property, view,
 				(Converter<T>) new NumberConverter(resId));
 	}
