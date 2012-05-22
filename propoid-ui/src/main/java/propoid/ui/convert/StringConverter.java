@@ -15,18 +15,16 @@
  */
 package propoid.ui.convert;
 
-import propoid.core.Property;
 
 public class StringConverter implements Converter<String> {
 
 	@Override
-	public String fromProperty(Property<String> property, String value) {
+	public String toString(String value) {
 		return value;
 	}
 
 	@Override
-	public String toProperty(Property<String> property, String string)
-			throws ConverterException {
+	public String fromString(String string) throws ConverterException {
 		return string;
 	}
 }

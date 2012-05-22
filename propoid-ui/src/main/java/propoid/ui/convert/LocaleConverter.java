@@ -17,12 +17,10 @@ package propoid.ui.convert;
 
 import java.util.Locale;
 
-import propoid.core.Property;
-
 public class LocaleConverter implements Converter<Locale> {
 
 	@Override
-	public String fromProperty(Property<Locale> property, Locale value) {
+	public String toString(Locale value) {
 		if (value == null) {
 			return "";
 		}
@@ -31,7 +29,7 @@ public class LocaleConverter implements Converter<Locale> {
 	}
 
 	@Override
-	public Locale toProperty(Property<Locale> property, String string) {
+	public Locale fromString(String string) {
 		if (string.length() == 0) {
 			return null;
 		}

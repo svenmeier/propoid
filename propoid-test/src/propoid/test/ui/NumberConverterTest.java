@@ -12,52 +12,33 @@ import propoid.ui.convert.NumberConverter;
 public class NumberConverterTest extends TestCase {
 
 	public void testFromProperty() throws Exception {
-		assertEquals("0",
-				this.<Byte> converter().fromProperty(new Foo().byteP, (byte) 0));
-		assertEquals(
-				"0",
-				this.<Short> converter().fromProperty(new Foo().shortP,
-						(short) 0));
-		assertEquals(
-				"0",
-				this.<Integer> converter().fromProperty(new Foo().integerP,
-						(int) 0));
-		assertEquals("0",
-				this.<Long> converter().fromProperty(new Foo().longP, (long) 0));
-		assertEquals(
-				"0",
-				this.<Float> converter().fromProperty(new Foo().floatP,
-						(float) 0));
-		assertEquals(
-				"0",
-				this.<Double> converter().fromProperty(new Foo().doubleP,
-						(double) 0));
+		assertEquals("0", converter(new Foo().byteP).toString((byte) 0));
+		assertEquals("0", converter(new Foo().shortP).toString((short) 0));
+		assertEquals("0", converter(new Foo().integerP).toString((int) 0));
+		assertEquals("0", converter(new Foo().longP).toString((long) 0));
+		assertEquals("0", converter(new Foo().floatP).toString((float) 0));
+		assertEquals("0", converter(new Foo().doubleP).toString((double) 0));
 
-		assertEquals("",
-				this.<Double> converter().fromProperty(new Foo().doubleP, null));
+		assertEquals("", converter(new Foo().doubleP).toString(null));
 	}
 
 	public void testToProperty() throws Exception {
-		assertEquals(Byte.valueOf((byte) 0), this.<Byte> converter()
-				.toProperty(new Foo().byteP, "0"));
-		assertEquals(Short.valueOf((short) 0), this.<Short> converter()
-				.toProperty(new Foo().shortP, "0"));
-		assertEquals(Integer.valueOf(0),
-				this.<Integer> converter().toProperty(new Foo().integerP, "0"));
+		assertEquals(Byte.valueOf((byte) 0), converter(new Foo().byteP)
+				.fromString("0"));
+		assertEquals(Short.valueOf((short) 0), converter(new Foo().shortP)
+				.fromString("0"));
+		assertEquals(Integer.valueOf(0), converter(new Foo().integerP)
+				.fromString("0"));
 		assertEquals(Long.valueOf(0l),
-				this.<Long> converter().toProperty(new Foo().longP, "0"));
-		assertEquals((float) 0,
-				this.<Float> converter().toProperty(new Foo().floatP, "0"));
-		assertEquals((double) 0,
-				this.<Double> converter().toProperty(new Foo().doubleP, "0"));
+				converter(new Foo().longP).fromString("0"));
+		assertEquals((float) 0, converter(new Foo().floatP).fromString("0"));
+		assertEquals((double) 0, converter(new Foo().doubleP).fromString("0"));
 
-		assertEquals(null,
-				this.<Double> converter().toProperty(new Foo().doubleP, ""));
+		assertEquals(null, converter(new Foo().doubleP).fromString(""));
 	}
 
-	@SuppressWarnings("unchecked")
-	private <T extends Number> Converter<T> converter() {
-		return (Converter<T>) new NumberConverter(0);
+	private <N extends Number> Converter<N> converter(Property<N> property) {
+		return new NumberConverter<N>(property, 0);
 	}
 
 	public static class Foo extends Propoid {

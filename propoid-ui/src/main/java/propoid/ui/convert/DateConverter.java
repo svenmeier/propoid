@@ -19,7 +19,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 
-import propoid.core.Property;
 import android.content.Context;
 
 public class DateConverter implements Converter<Date> {
@@ -37,7 +36,7 @@ public class DateConverter implements Converter<Date> {
 	}
 
 	@Override
-	public String fromProperty(Property<Date> property, Date value) {
+	public String toString(Date value) {
 		if (value == null) {
 			return "";
 		}
@@ -46,7 +45,7 @@ public class DateConverter implements Converter<Date> {
 	}
 
 	@Override
-	public Date toProperty(Property<Date> property, String string) {
+	public Date fromString(String string) {
 		if (string.length() == 0) {
 			return null;
 		}

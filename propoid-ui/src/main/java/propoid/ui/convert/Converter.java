@@ -15,12 +15,10 @@
  */
 package propoid.ui.convert;
 
-import propoid.core.Property;
 
 public interface Converter<T> {
 
-	public String fromProperty(Property<T> property, T value);
+	public String toString(T value);
 
-	public T toProperty(Property<T> property, String string)
-			throws ConverterException;
+	public T fromString(String string) throws ConverterException;
 }

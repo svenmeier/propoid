@@ -23,18 +23,26 @@ import propoid.core.Property;
 /**
  * Converter for {@link Number}s.
  */
-public class NumberConverter implements Converter<Number> {
+public class NumberConverter<N extends Number> implements Converter<N> {
+
+	private Property<N> property;
 
 	private int resId;
 
 	private NumberFormat format = NumberFormat.getInstance();
 
-	public NumberConverter(int resId) {
+	public NumberConverter(Property<N> property, int resId) {
+		this.property = property;
 		this.resId = resId;
+
+		if (property.meta().type == Integer.class
+				|| property.meta().type == Long.class) {
+			format.setParseIntegerOnly(true);
+		}
 	}
 
 	@Override
-	public String fromProperty(Property<Number> property, Number value) {
+	public String toString(N value) {
 		if (value == null) {
 			return "";
 		}
@@ -42,8 +50,9 @@ public class NumberConverter implements Converter<Number> {
 		return format.format(value);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public Number toProperty(Property<Number> property, String string) {
+	public N fromString(String string) {
 		if (string.length() == 0) {
 			return null;
 		}
@@ -53,23 +62,29 @@ public class NumberConverter implements Converter<Number> {
 
 		Number parsed = (Number) format.parse(string, position);
 
-		if (position.getIndex() == string.length()) {
-			Property<?> temp = property;
-			if (temp.meta().type == Byte.class) {
-				return parsed.byteValue();
-			} else if (temp.meta().type == Short.class) {
-				return parsed.shortValue();
-			} else if (temp.meta().type == Integer.class) {
-				return parsed.intValue();
-			} else if (temp.meta().type == Long.class) {
-				return parsed.longValue();
-			} else if (temp.meta().type == Float.class) {
-				return parsed.floatValue();
-			} else if (temp.meta().type == Double.class) {
-				return parsed.doubleValue();
-			}
+		if (position.getIndex() != string.length()) {
+			throw new ConverterException(resId);
 		}
 
-		throw new ConverterException(resId);
+		Object number;
+		Property<?> temp = property;
+		if (temp.meta().type == Byte.class) {
+			number = parsed.byteValue();
+		} else if (temp.meta().type == Short.class) {
+			number = parsed.shortValue();
+		} else if (temp.meta().type == Integer.class) {
+			number = parsed.intValue();
+		} else if (temp.meta().type == Long.class) {
+			number = parsed.longValue();
+		} else if (temp.meta().type == Float.class) {
+			number = parsed.floatValue();
+		} else if (temp.meta().type == Double.class) {
+			number = parsed.doubleValue();
+		} else {
+			throw new IllegalArgumentException("unexpected number subclass '"
+					+ temp.meta().type + "'");
+		}
+
+		return (N) number;
 	}
 }

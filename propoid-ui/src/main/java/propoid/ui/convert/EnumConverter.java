@@ -23,23 +23,24 @@ import propoid.core.Property;
 public class EnumConverter<E extends Enum<E>> implements Converter<E> {
 
 	private int resId;
+	private Property<E> property;
 
-	public EnumConverter() {
-		this(-1);
+	public EnumConverter(Property<E> property) {
+		this(property, -1);
 	}
 
-	public EnumConverter(int resId) {
+	public EnumConverter(Property<E> property, int resId) {
+		this.property = property;
 		this.resId = resId;
 	}
 
-	public String fromProperty(Property<E> property, E value) {
+	public String toString(E value) {
 		return value.toString();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public E toProperty(Property<E> property, String string)
-			throws ConverterException {
+	public E fromString(String string) throws ConverterException {
 
 		Class<E> type = (Class<E>) property.meta().type;
 

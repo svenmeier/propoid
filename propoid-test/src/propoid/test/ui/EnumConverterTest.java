@@ -12,17 +12,17 @@ import android.util.Xml.Encoding;
 public class EnumConverterTest extends TestCase {
 
 	public void testFromProperty() throws Exception {
-		EnumConverter<Encoding> converter = new EnumConverter<Encoding>();
+		EnumConverter<Encoding> converter = new EnumConverter<Encoding>(
+				new Foo().enumP);
 
-		assertEquals("UTF_8",
-				converter.fromProperty(new Foo().enumP, Encoding.UTF_8));
+		assertEquals("UTF_8", converter.toString(Encoding.UTF_8));
 	}
 
 	public void testToProperty() throws Exception {
-		EnumConverter<Encoding> converter = new EnumConverter<Encoding>();
+		EnumConverter<Encoding> converter = new EnumConverter<Encoding>(
+				new Foo().enumP);
 
-		assertEquals(Encoding.UTF_8,
-				converter.toProperty(new Foo().enumP, "UTF_8"));
+		assertEquals(Encoding.UTF_8, converter.fromString("UTF_8"));
 	}
 
 	public static class Foo extends Propoid {

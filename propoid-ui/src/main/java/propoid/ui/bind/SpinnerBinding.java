@@ -71,8 +71,7 @@ public class SpinnerBinding<T> extends Binding<T> implements
 				android.R.layout.simple_spinner_dropdown_item, ts) {
 			@Override
 			protected void bind(int position, View view, T item) {
-				((TextView) view).setText(converter
-						.fromProperty(property, item));
+				((TextView) view).setText(converter.toString(item));
 			}
 		});
 	}
@@ -144,7 +143,8 @@ public class SpinnerBinding<T> extends Binding<T> implements
 			Property<E> property, Spinner view) {
 		E[] ts = ((Class<E>) property.meta().type).getEnumConstants();
 
-		return new SpinnerBinding<E>(property, view, new EnumConverter<E>(), ts);
+		return new SpinnerBinding<E>(property, view, new EnumConverter<E>(
+				property), ts);
 	}
 
 	/**
@@ -168,20 +168,18 @@ public class SpinnerBinding<T> extends Binding<T> implements
 	/**
 	 * Convenience factory for binding of number {@link Property}s.
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T extends Number> SpinnerBinding<T> number(
 			Property<T> property, View view, int resId, T... ts) {
-		return new SpinnerBinding<T>(property, view,
-				(Converter<T>) new NumberConverter(resId), Arrays.asList(ts));
+		return new SpinnerBinding<T>(property, view, new NumberConverter<T>(
+				property, resId), Arrays.asList(ts));
 	}
 
 	/**
 	 * Convenience factory for binding of number {@link Property}s.
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T extends Number> SpinnerBinding<T> number(
 			Property<T> property, View view, int resId, List<T> ts) {
-		return new SpinnerBinding<T>(property, view,
-				(Converter<T>) new NumberConverter(resId), ts);
+		return new SpinnerBinding<T>(property, view, new NumberConverter<T>(
+				property, resId), ts);
 	}
 }

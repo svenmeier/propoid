@@ -70,7 +70,7 @@ public class TextBinding<T> extends Binding<T> implements TextWatcher,
 	}
 
 	protected void onChange(T value) {
-		getView().setText(converter.fromProperty(property, value));
+		getView().setText(converter.toString(value));
 	}
 
 	@Override
@@ -107,7 +107,7 @@ public class TextBinding<T> extends Binding<T> implements TextWatcher,
 		T value;
 
 		try {
-			value = converter.toProperty(property, string);
+			value = converter.fromString(string);
 		} catch (ConverterException ex) {
 			getView().setError(ex.getMessage(getView().getContext()));
 			return;
@@ -164,7 +164,6 @@ public class TextBinding<T> extends Binding<T> implements TextWatcher,
 	 * 
 	 * @return binding
 	 */
-	@SuppressWarnings("unchecked")
 	public static <T extends Number> TextBinding<T> number(
 			Property<T> property, View view, int resId) {
 
@@ -175,7 +174,7 @@ public class TextBinding<T> extends Binding<T> implements TextWatcher,
 					.getInstance("0123456789-,."));
 		}
 
-		return new TextBinding<T>(property, view,
-				(Converter<T>) new NumberConverter(resId));
+		return new TextBinding<T>(property, view, new NumberConverter<T>(
+				property, resId));
 	}
 }
