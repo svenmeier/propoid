@@ -69,12 +69,8 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (intent != null && intent.getAction() != null) {
-			Task task = resolveTask(intent);
-			if (task != null) {
-				schedule(task);
-			}
-		}
+		schedule(intent);
+
 		return START_NOT_STICKY;
 	}
 
@@ -84,12 +80,27 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	}
 
 	/**
+	 * Schedule an intent.
+	 * 
+	 * @param intent
+	 *            intent to schedule
+	 */
+	protected void schedule(Intent intent) {
+		if (intent != null && intent.getAction() != null) {
+			Task task = resolveTask(intent);
+			if (task != null) {
+				schedule(task);
+			}
+		}
+	}
+
+	/**
 	 * Schedule a new {@link Task}.
 	 * 
 	 * @param task
 	 *            task to schedule
 	 */
-	public synchronized final void schedule(Task task) {
+	protected synchronized final void schedule(Task task) {
 		for (int w = 0; w < executions.size(); w++) {
 			Execution candidate = executions.get(w);
 
