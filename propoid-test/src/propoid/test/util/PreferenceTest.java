@@ -1,5 +1,7 @@
 package propoid.test.util;
 
+import java.util.Arrays;
+
 import propoid.test.R;
 import propoid.util.content.Preference;
 import android.preference.PreferenceManager;
@@ -29,8 +31,8 @@ public class PreferenceTest extends InstrumentationTestCase {
 	}
 
 	public void testInteger() {
-		Preference<Integer> preference = Preference.getInt(
-				getInstrumentation().getContext(), R.string.preference_test);
+		Preference<Integer> preference = Preference.getInt(getInstrumentation()
+				.getContext(), R.string.preference_test);
 
 		assertEquals(Integer.valueOf(0), preference.get());
 
@@ -82,5 +84,20 @@ public class PreferenceTest extends InstrumentationTestCase {
 		preference.set("test");
 
 		assertEquals("test", preference.get());
+	}
+
+	public void testStringList() {
+		Preference<String> preference = Preference.getString(
+				getInstrumentation().getContext(), R.string.preference_test);
+
+		assertEquals(0, preference.getList().size());
+
+		preference.setList(Arrays.asList("test1", "test2"));
+
+		assertEquals(Arrays.asList("test1", "test2"), preference.getList());
+
+		preference.setList(Arrays.asList("test3"));
+
+		assertEquals(Arrays.asList("test3"), preference.getList());
 	}
 }

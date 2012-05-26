@@ -15,6 +15,9 @@
  */
 package propoid.util.content;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -112,9 +115,14 @@ public abstract class Preference<T extends Comparable<T>> {
 	 * Get the value.
 	 */
 	public T get() {
+		return get(key);
+	}
+
+	private T get(String key) {
 		T value;
+
 		try {
-			value = getImpl();
+			value = getImpl(key);
 		} catch (ClassCastException valueFromPreferenceIsString) {
 			String fromPreferences = preferences.getString(key, null);
 
@@ -135,6 +143,28 @@ public abstract class Preference<T extends Comparable<T>> {
 	}
 
 	/**
+	 * Get the value.
+	 */
+	public List<T> getList() {
+		List<T> list = new ArrayList<T>();
+
+		int index = 0;
+		while (true) {
+			String key = key(index);
+
+			if (preferences.contains(key)) {
+				list.add(get(key));
+			} else {
+				break;
+			}
+
+			index++;
+		}
+
+		return list;
+	}
+
+	/**
 	 * Parse a value if the preference was initialized with a string from
 	 * <code>preferences.xml</code>
 	 * 
@@ -142,18 +172,36 @@ public abstract class Preference<T extends Comparable<T>> {
 	 */
 	protected abstract T parse(String fromPreferences);
 
-	protected abstract T getImpl();
+	protected abstract T getImpl(String key);
 
 	/**
 	 * Set the value.
 	 */
 	public void set(T t) {
 		Editor edit = preferences.edit();
-		setImpl(edit, t);
+		setImpl(edit, key, t);
 		edit.commit();
 	}
 
-	protected abstract void setImpl(Editor edit, T t);
+	private String key(int index) {
+		return key + "_" + index;
+	}
+
+	/**
+	 * Set a list of values.
+	 */
+	public void setList(List<T> ts) {
+		Editor edit = preferences.edit();
+		int index = 0;
+		for (T t : ts) {
+			setImpl(edit, key(index), t);
+			index++;
+		}
+		edit.remove(key(index));
+		edit.commit();
+	}
+
+	protected abstract void setImpl(Editor edit, String key, T t);
 
 	/**
 	 * Get a {@link String} preference.
@@ -167,7 +215,7 @@ public abstract class Preference<T extends Comparable<T>> {
 	public static Preference<String> getString(Context context, int id) {
 		return new Preference<String>(context, id, null) {
 			@Override
-			protected String getImpl() {
+			protected String getImpl(String key) {
 				return preferences.getString(key, fallback);
 			}
 
@@ -177,7 +225,7 @@ public abstract class Preference<T extends Comparable<T>> {
 			}
 
 			@Override
-			protected void setImpl(Editor edit, String value) {
+			protected void setImpl(Editor edit, String key, String value) {
 				edit.putString(key, value);
 			}
 		};
@@ -195,7 +243,7 @@ public abstract class Preference<T extends Comparable<T>> {
 	public static Preference<Integer> getInt(Context context, int id) {
 		return new Preference<Integer>(context, id, 0) {
 			@Override
-			protected Integer getImpl() {
+			protected Integer getImpl(String key) {
 				return preferences.getInt(key, fallback);
 			}
 
@@ -209,7 +257,7 @@ public abstract class Preference<T extends Comparable<T>> {
 			}
 
 			@Override
-			protected void setImpl(Editor edit, Integer value) {
+			protected void setImpl(Editor edit, String key, Integer value) {
 				edit.putInt(key, value);
 			}
 		};
@@ -227,7 +275,7 @@ public abstract class Preference<T extends Comparable<T>> {
 	public static Preference<Long> getLong(Context context, int id) {
 		return new Preference<Long>(context, id, 0l) {
 			@Override
-			protected Long getImpl() {
+			protected Long getImpl(String key) {
 				return preferences.getLong(key, fallback);
 			}
 
@@ -241,7 +289,7 @@ public abstract class Preference<T extends Comparable<T>> {
 			}
 
 			@Override
-			protected void setImpl(Editor edit, Long value) {
+			protected void setImpl(Editor edit, String key, Long value) {
 				edit.putLong(key, value);
 			}
 		};
@@ -259,7 +307,7 @@ public abstract class Preference<T extends Comparable<T>> {
 	public static Preference<Float> getFloat(Context context, int id) {
 		return new Preference<Float>(context, id, 0f) {
 			@Override
-			protected Float getImpl() {
+			protected Float getImpl(String key) {
 				return preferences.getFloat(key, fallback);
 			}
 
@@ -273,7 +321,7 @@ public abstract class Preference<T extends Comparable<T>> {
 			}
 
 			@Override
-			protected void setImpl(Editor edit, Float value) {
+			protected void setImpl(Editor edit, String key, Float value) {
 				edit.putFloat(key, value);
 			}
 		};
@@ -291,7 +339,7 @@ public abstract class Preference<T extends Comparable<T>> {
 	public static Preference<Boolean> getBoolean(Context context, int id) {
 		return new Preference<Boolean>(context, id, false) {
 			@Override
-			protected Boolean getImpl() {
+			protected Boolean getImpl(String key) {
 				return preferences.getBoolean(key, fallback);
 			}
 
@@ -301,7 +349,7 @@ public abstract class Preference<T extends Comparable<T>> {
 			}
 
 			@Override
-			protected void setImpl(Editor edit, Boolean value) {
+			protected void setImpl(Editor edit, String key, Boolean value) {
 				edit.putBoolean(key, value);
 			}
 		};
