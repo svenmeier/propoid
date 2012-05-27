@@ -132,6 +132,8 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 	 */
 	@SuppressWarnings("unchecked")
 	protected Task resolveTask(Intent intent) {
+		Task task;
+
 		try {
 			Class<? extends Task> clazz = (Class<? extends Task>) Class
 					.forName(intent.getAction());
@@ -139,15 +141,30 @@ public abstract class TaskService<L extends TaskObserver> extends Service {
 			Constructor<?> constructor = getConstructor(clazz);
 
 			if (constructor.getParameterTypes().length == 1) {
-				return (Task) constructor.newInstance(this);
+				task = (Task) constructor.newInstance(this);
 			} else {
-				return (Task) constructor.newInstance(this, intent);
+				task = (Task) constructor.newInstance(this, intent);
 			}
+
+			onTaskResolved(intent, task);
 		} catch (Throwable ex) {
+			task = null;
+
 			onTaskUnresolved(intent, ex);
 		}
 
-		return null;
+		return task;
+	}
+
+	/**
+	 * Hook method for handling of a resolved task.
+	 * 
+	 * @param intent
+	 *            intent that triggered the task
+	 * @param task
+	 *            resolved task
+	 */
+	protected void onTaskResolved(Intent intent, Task task) {
 	}
 
 	/**
