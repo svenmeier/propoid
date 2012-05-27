@@ -193,11 +193,17 @@ public abstract class Preference<T extends Comparable<T>> {
 	public void setList(List<T> ts) {
 		Editor edit = preferences.edit();
 		int index = 0;
+
 		for (T t : ts) {
 			setImpl(edit, key(index), t);
 			index++;
 		}
-		edit.remove(key(index));
+
+		while (preferences.contains(key(index))) {
+			edit.remove(key(index));
+			index++;
+		}
+
 		edit.commit();
 	}
 
