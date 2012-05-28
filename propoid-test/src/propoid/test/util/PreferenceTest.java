@@ -1,6 +1,7 @@
 package propoid.test.util;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import propoid.test.R;
 import propoid.util.content.Preference;
@@ -99,5 +100,9 @@ public class PreferenceTest extends InstrumentationTestCase {
 		preference.setList(Arrays.asList("test3"));
 
 		assertEquals(Arrays.asList("test3"), preference.getList());
+
+		preference.setList(Collections.<String> emptyList());
+
+		assertTrue(preference.getList().isEmpty());
 	}
 }
