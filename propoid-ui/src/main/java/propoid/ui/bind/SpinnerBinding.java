@@ -90,8 +90,6 @@ public class SpinnerBinding<T> extends Binding<T> implements
 			SpinnerAdapter adapter) {
 		super(property, view);
 
-		getView().setOnItemSelectedListener(null);
-
 		this.adapter = adapter;
 
 		getView().setAdapter(adapter);
@@ -116,7 +114,7 @@ public class SpinnerBinding<T> extends Binding<T> implements
 	protected void unbind() {
 		super.unbind();
 
-		getView().setOnItemClickListener(null);
+		getView().setOnItemSelectedListener(null);
 	}
 
 	@Override

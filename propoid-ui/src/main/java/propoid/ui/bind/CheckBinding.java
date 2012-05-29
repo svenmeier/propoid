@@ -38,8 +38,6 @@ public class CheckBinding extends Binding<Boolean> implements
 	public CheckBinding(Property<Boolean> property, View view) {
 		super(property, view);
 
-		getView().setOnCheckedChangeListener(null);
-
 		onChange(property.get());
 
 		getView().setOnCheckedChangeListener(this);
