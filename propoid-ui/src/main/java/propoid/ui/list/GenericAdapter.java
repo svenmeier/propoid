@@ -80,6 +80,15 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 	}
 
 	/**
+	 * Get the items of this adapter.
+	 * 
+	 * @return items
+	 */
+	public List<T> getItems() {
+		return items;
+	}
+
+	/**
 	 * Closes a wrapped {@link Closeable} on removal of the last observer.
 	 * 
 	 * @param observer
