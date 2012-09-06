@@ -3,5 +3,6 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/ANDROID"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/propoid-core"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
