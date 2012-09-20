@@ -34,13 +34,11 @@ public class XmlNavigator {
 
 	private LinkedList<Descent> stack = new LinkedList<Descent>();
 
-	public XmlNavigator(InputStream input) throws IOException,
-			XmlPullParserException {
+	public XmlNavigator(InputStream input) throws IOException {
 		this(input, null);
 	}
 
-	public XmlNavigator(Reader reader) throws IOException,
-			XmlPullParserException {
+	public XmlNavigator(Reader reader) throws IOException {
 		parser = Xml.newPullParser();
 
 		try {

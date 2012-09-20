@@ -21,6 +21,7 @@ import java.util.List;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -77,7 +78,13 @@ public abstract class Preference<T extends Comparable<T>> {
 
 	protected T max;
 
+	private ListenerWrapper wrapper;
+
+	private Context context;
+
 	protected Preference(Context context, int id, T fallback) {
+		this.context = context;
+
 		this.key = context.getString(id);
 
 		this.preferences = PreferenceManager
@@ -109,6 +116,24 @@ public abstract class Preference<T extends Comparable<T>> {
 		this.max = max;
 
 		return this;
+	}
+
+	/**
+	 * Listen to changes.
+	 * <p>
+	 * Important: Call this method with a {@code null} argument when no longer
+	 * interested in changes.
+	 * 
+	 * @param listener
+	 */
+	public void listen(OnChangeListener listener) {
+		if (this.wrapper != null) {
+			wrapper.destroy();
+		}
+
+		if (listener != null) {
+			new ListenerWrapper(listener);
+		}
 	}
 
 	/**
@@ -359,5 +384,41 @@ public abstract class Preference<T extends Comparable<T>> {
 				edit.putBoolean(key, value);
 			}
 		};
+	}
+
+	private class ListenerWrapper implements OnSharedPreferenceChangeListener {
+
+		private OnChangeListener listener;
+
+		public ListenerWrapper(OnChangeListener listener) {
+			this.listener = listener;
+
+			PreferenceManager.getDefaultSharedPreferences(context)
+					.registerOnSharedPreferenceChangeListener(this);
+
+			wrapper = this;
+		}
+
+		public void destroy() {
+			PreferenceManager.getDefaultSharedPreferences(context)
+					.unregisterOnSharedPreferenceChangeListener(this);
+
+			wrapper = null;
+		}
+
+		@Override
+		public void onSharedPreferenceChanged(SharedPreferences preferences,
+				String key) {
+			if (Preference.this.key.equals(key)) {
+				listener.onChanged();
+			}
+		}
+	}
+
+	/**
+	 * A listener to changes.
+	 */
+	public static interface OnChangeListener {
+		public void onChanged();
 	}
 }

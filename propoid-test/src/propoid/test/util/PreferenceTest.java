@@ -5,6 +5,8 @@ import java.util.Collections;
 
 import propoid.test.R;
 import propoid.util.content.Preference;
+import propoid.util.content.Preference.OnChangeListener;
+import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.test.InstrumentationTestCase;
 
@@ -13,11 +15,20 @@ import android.test.InstrumentationTestCase;
  */
 public class PreferenceTest extends InstrumentationTestCase {
 
+	private SharedPreferences preferences;
+
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+
+		preferences = PreferenceManager
+				.getDefaultSharedPreferences(getInstrumentation().getContext());
+
+	}
+
 	@Override
 	protected void tearDown() throws Exception {
-		PreferenceManager
-				.getDefaultSharedPreferences(getInstrumentation().getContext())
-				.edit().clear().commit();
+		preferences.edit().clear().commit();
 	}
 
 	public void testBoolean() {
@@ -104,5 +115,43 @@ public class PreferenceTest extends InstrumentationTestCase {
 		preference.setList(Collections.<String> emptyList());
 
 		assertTrue(preference.getList().isEmpty());
+	}
+
+	public void testListen() throws Throwable {
+		Preference<String> preference = Preference.getString(
+				getInstrumentation().getContext(), R.string.preference_test);
+
+		final boolean[] changed = { false };
+
+		try {
+			preference.listen(new OnChangeListener() {
+				@Override
+				public void onChanged() {
+					changed[0] = true;
+				}
+			});
+
+			runTestOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					preferences
+							.edit()
+							.putString(
+									getInstrumentation()
+											.getContext()
+											.getString(R.string.preference_test),
+									"foo").commit();
+				}
+			});
+
+			runTestOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					assertTrue(changed[0]);
+				}
+			});
+		} finally {
+			preference.listen(null);
+		}
 	}
 }
