@@ -83,12 +83,14 @@ public abstract class Preference<T extends Comparable<T>> {
 	private Context context;
 
 	protected Preference(Context context, int id, T fallback) {
-		this.context = context;
+		// we don't know the lifetime of this preference and the given context,
+		// so play safe and use the application's context
+		this.context = context.getApplicationContext();
 
 		this.key = context.getString(id);
 
 		this.preferences = PreferenceManager
-				.getDefaultSharedPreferences(context);
+				.getDefaultSharedPreferences(this.context);
 
 		this.fallback = fallback;
 	}
