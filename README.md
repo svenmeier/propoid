@@ -4,8 +4,8 @@ Propoid
 Propoid is a small library to support properties in Java:
 
 - small footprint
-- very simple to use: distributed as jars, no code generation, no effect on tool chain, no setup required
-- negligible runtime overhead through reflection on application startup (i.e. when classes are loaded)
+- very simple to use: distributed as aar, no code generation, no effect on tool chain, no setup required
+- reflection runtime overhead only during application startup (i.e. when classes are loaded)
 - very small memory overhead for each propoid
 - see propoid-core for caveats
 
