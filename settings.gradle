@@ -1,0 +1,1 @@
+include ':propoid-example', ':propoid-core', ':propoid-db', ':propoid-ui', ':propoid-validation', ':propoid-util'
