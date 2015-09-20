@@ -21,6 +21,11 @@ import android.util.SparseArray;
 import android.view.View;
 import android.widget.TextView;
 
+/**
+ * A generic "view holder" to speed up lookup of views.
+ *
+ * @see #get(View)
+ */
 public class Index {
 
 	private View parent;
