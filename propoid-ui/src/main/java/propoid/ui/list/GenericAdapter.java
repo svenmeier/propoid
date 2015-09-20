@@ -23,6 +23,7 @@ import java.util.List;
 
 import android.R;
 import android.database.DataSetObserver;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -232,16 +233,31 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 
 	/**
 	 * Helper method to install to the given {@link ListView}, i.e. set as
-	 * adapter, register as {@link OnItemClickListener} and keep the previous
-	 * scroll position.
+	 * adapter, register as {@link OnItemClickListener}, keep the previous
+	 * checked position and scroll.
 	 */
 	public void install(ListView view) {
+		SparseBooleanArray checked = view.getCheckedItemPositions();
+		if (checked != null) {
+			checked = checked.clone();
+		}
+
 		int position = view.getFirstVisiblePosition();
 		View child = view.getChildAt(0);
 		int top = (child == null) ? 0 : child.getTop();
 
 		view.setAdapter(this);
 		view.setOnItemClickListener(this);
+
+		if (checked != null) {
+			int size = checked.size();
+			for (int i = 0; i < size; i++) {
+				int key = checked.keyAt(i);
+				if (checked.get(key)) {
+					view.setItemChecked(key, true);
+				}
+			}
+		}
 
 		view.setSelectionFromTop(position, top);
 	}

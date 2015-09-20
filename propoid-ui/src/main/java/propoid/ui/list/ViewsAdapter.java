@@ -12,7 +12,7 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 /**
- * A list adapter for {@link View}s.
+ * A list adapter for a fixed list of {@link View}s.
  */
 public class ViewsAdapter implements ListAdapter {
 
