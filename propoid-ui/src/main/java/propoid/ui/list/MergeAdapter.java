@@ -115,7 +115,7 @@ public class MergeAdapter implements ListAdapter, OnItemClickListener {
 
 			offset += adapter.getCount();
 		}
-		
+
 		throw new IllegalArgumentException();
 	}
 
