@@ -106,7 +106,17 @@ public class MergeAdapter implements ListAdapter, OnItemClickListener {
 
 	@Override
 	public Object getItem(int position) {
-		return position;
+		int offset = 0;
+
+		for (ListAdapter adapter : adapters) {
+			if (position - offset < adapter.getCount()) {
+				return adapter.getItem(position - offset);
+			}
+
+			offset += adapter.getCount();
+		}
+		
+		throw new IllegalArgumentException();
 	}
 
 	@Override
