@@ -62,7 +62,7 @@ Bind properties to views:
 - use one of default converters or add your own
 - handles conversion and validation errors automatically
  
-Bind ListView to matched propoids (backed by a cursor):
+Bind ListView to matched Propoids (backed by a cursor):
 
     listView.setAdapter(new GenericAdapter<Foo>(repository.query(new Foo()).list()) {
         protected void bind(int position, View view, Foo foo) {
@@ -70,7 +70,10 @@ Bind ListView to matched propoids (backed by a cursor):
             
             TextBinding.string(foo.bar,	index.<TextView>get(R.id.foo_bar));
         }
-    );
+    });
+
+- Propoids are instantiated for visible views only (backed by cursor)
+- fast and convenient access to views via propoid.ui.Index
 
 propoid-core
 ------------
