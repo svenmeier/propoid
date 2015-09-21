@@ -30,7 +30,7 @@ import android.database.Cursor;
  * 
  * @see Repository#query(Propoid, Where)
  */
-public interface Match<P extends Propoid> {
+public interface Match<P extends Propoid> extends Closeable {
 
 	/**
 	 * List all matched {@link Propoid}s.
@@ -49,14 +49,13 @@ public interface Match<P extends Propoid> {
 	 * List all matched {@link Propoid}s in the given {@link Range}.
 	 * <p>
 	 * The returned list is backed by a {@link Cursor} and must be closed. This
-	 * can be done either explicitely through {@link Closeable#close()} or
-	 * implicitely by consuming all its elements via:
+	 * can be done either by calling {@link Closeable#close()} on this match or
+	 * the returned list. Additionally the returned list will be closed by:
 	 * <ul>
 	 * <li>getting all elements with {@link List#toArray()}</li>
 	 * <li>getting all elements with {@link List#toArray(Object[])}</li>
-	 * <li>completely iterating over all elements available from the iterator
-	 * returned by {@link List#iterator()} (e.g. when using the Java 5
-	 * foreach-loop)</li>
+	 * <li>iterating over all elements from its {@link List#iterator()}
+	 * (e.g. when using the Java 5 foreach-loop)</li>
 	 * </ul>
 	 * Note that one of the above is usually involved if you add all elements to
 	 * another collection, e.g. {@code new ArrayList(match.list())}.
@@ -147,4 +146,12 @@ public interface Match<P extends Propoid> {
 	 *            value
 	 */
 	public <T> void set(Property<T> property, T value);
+
+	/**
+	 * Close any open list.
+	 *
+	 * @see #list(Order...)
+	 * @see #list(Range, Order...)
+	 */
+	public void close();
 }
