@@ -55,8 +55,6 @@ public class Query extends Operation {
 
 		private Where where;
 
-		private PropoidList list;
-
 		public MatchImpl(Propoid propoid, Where where) {
 			this.propoid = propoid;
 			this.where = where;
@@ -153,10 +151,6 @@ public class Query extends Operation {
 
 		@Override
 		public PropoidList list(Range range, Order... ordering) {
-			if (list != null) {
-				list.close();
-			}
-
 			final SQL sql = new SQL();
 			final Arguments arguments = new Arguments();
 			final Aliaser aliaser = new Aliaser();
@@ -169,10 +163,8 @@ public class Query extends Operation {
 			sql.append(orderBy(aliaser, ordering));
 			sql.append(range.toLimit(repository));
 
-			list = new PropoidList(propoid.getClass(), repository.getDatabase()
+			return new PropoidList(propoid.getClass(), repository.getDatabase()
 					.rawQuery(sql.toString(), arguments.get()));
-
-			return list;
 		}
 
 		@Override
@@ -285,14 +277,6 @@ public class Query extends Operation {
 			sql.raw(")");
 
 			repository.getDatabase().execSQL(sql.toString(), arguments.get());
-		}
-
-		@Override
-		public void close() {
-			if (list != null) {
-				list.close();
-				list = null;
-			}
 		}
 	}
 

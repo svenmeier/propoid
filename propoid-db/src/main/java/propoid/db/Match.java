@@ -30,7 +30,7 @@ import android.database.Cursor;
  * 
  * @see Repository#query(Propoid, Where)
  */
-public interface Match<P extends Propoid> extends Closeable {
+public interface Match<P extends Propoid> {
 
 	/**
 	 * List all matched {@link Propoid}s.
@@ -41,7 +41,6 @@ public interface Match<P extends Propoid> extends Closeable {
 	 * @param ordering
 	 *            order of listing
 	 * @return all matched propoids
-	 * @see #close()
 	 */
 	public List<P> list(Order... ordering);
 
@@ -69,7 +68,6 @@ public interface Match<P extends Propoid> extends Closeable {
 	 * @param ordering
 	 *            order of listing
 	 * @return all matched propoids
-	 * @see #close()
 	 */
 	public List<P> list(Range range, Order... ordering);
 
@@ -146,12 +144,4 @@ public interface Match<P extends Propoid> extends Closeable {
 	 *            value
 	 */
 	public <T> void set(Property<T> property, T value);
-
-	/**
-	 * Close any open list.
-	 *
-	 * @see #list(Order...)
-	 * @see #list(Range, Order...)
-	 */
-	public void close();
 }
