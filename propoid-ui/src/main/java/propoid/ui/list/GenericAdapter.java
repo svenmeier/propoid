@@ -35,7 +35,7 @@ import android.widget.SpinnerAdapter;
 
 /**
  * A generified adapter which can be used for {@link ListView}s.
- * <p>
+ * <p/>
  * For convenience this adapter implements
  * {@link #onItemClick(AdapterView, View, int, long)} delegating to
  * {@link #onItem(Object, int)}.
@@ -80,9 +80,19 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 		this.items = items;
 	}
 
+	public void setItems(List<T> items) {
+		closeItems();
+
+		this.items = items;
+
+		for (DataSetObserver observer : observers) {
+			observer.onChanged();
+		}
+	}
+
 	/**
 	 * Get the items of this adapter.
-	 * 
+	 *
 	 * @return items
 	 */
 	public List<T> getItems() {
@@ -91,7 +101,7 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 
 	/**
 	 * Closes a wrapped {@link Closeable} on removal of the last observer.
-	 * 
+	 *
 	 * @param observer
 	 */
 	@Override
@@ -100,7 +110,13 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 			throw new IllegalArgumentException();
 		}
 
-		if (observers.isEmpty() && (items instanceof Closeable)) {
+		if (observers.isEmpty()) {
+			closeItems();
+		}
+	}
+
+	private void closeItems() {
+		if (items instanceof Closeable) {
 			try {
 				((Closeable) items).close();
 			} catch (IOException ex) {
@@ -169,7 +185,7 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 	}
 
 	private View getViewImpl(int position, View view, ViewGroup parent,
-			int layoutId) {
+							 int layoutId) {
 		T item = items.get(position);
 
 		if (view == null) {
@@ -194,20 +210,19 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 
 	/**
 	 * Handle a click on a {@link ListView}.
-	 * 
+	 *
 	 * @see ListView#setOnItemClickListener(OnItemClickListener)
 	 */
 	@Override
 	public final void onItemClick(AdapterView<?> arg0, View arg1, int item,
-			long arg3) {
+								  long arg3) {
 		onItem(getItem(item), item);
 	}
 
 	/**
 	 * Hook method for clicks on the given item.
-	 * 
-	 * @param item
-	 *            clicked item
+	 *
+	 * @param item     clicked item
 	 * @param position
 	 */
 	protected void onItem(T item, int position) {
@@ -221,13 +236,10 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 
 	/**
 	 * Bind the given item for the given view.
-	 * 
-	 * @param position
-	 *            position of view in list
-	 * @param view
-	 *            view to bind to
-	 * @param item
-	 *            item to bind
+	 *
+	 * @param position position of view in list
+	 * @param view     view to bind to
+	 * @param item     item to bind
 	 */
 	protected abstract void bind(int position, View view, T item);
 
