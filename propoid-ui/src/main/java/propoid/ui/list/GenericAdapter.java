@@ -69,13 +69,13 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 		this(layoutId, R.layout.simple_dropdown_item_1line, items);
 	}
 
-	protected GenericAdapter(int layoutId, int dropDownLayoutiD, T... items) {
-		this(layoutId, dropDownLayoutiD, Arrays.asList(items));
+	protected GenericAdapter(int layoutId, int dropDownLayoutId, T... items) {
+		this(layoutId, dropDownLayoutId, Arrays.asList(items));
 	}
 
-	protected GenericAdapter(int layoutId, int dropDownLayoutiD, List<T> items) {
+	protected GenericAdapter(int layoutId, int dropDownLayoutId, List<T> items) {
 		this.layoutId = layoutId;
-		this.dropDownLayoutId = dropDownLayoutiD;
+		this.dropDownLayoutId = dropDownLayoutId;
 
 		this.items = items;
 	}
@@ -248,7 +248,7 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 	 * adapter, register as {@link OnItemClickListener}, keep the previous
 	 * checked position and scroll.
 	 */
-	public void install(ListView view) {
+	public GenericAdapter<T> install(ListView view) {
 		SparseBooleanArray checked = view.getCheckedItemPositions();
 		if (checked != null) {
 			checked = checked.clone();
@@ -272,5 +272,7 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 		}
 
 		view.setSelectionFromTop(position, top);
+
+		return this;
 	}
 }

@@ -23,4 +23,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:22.2.0'
     compile project(':propoid-core')
     compile project(':propoid-validation')
+    compile project(':propoid-db')
 }

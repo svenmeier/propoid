@@ -94,6 +94,7 @@
     <orderEntry type="library" exported="" name="appcompat-v7-22.2.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="mockable-android-22" level="project" />
     <orderEntry type="module" module-name="propoid-validation" exported="" />
+    <orderEntry type="module" module-name="propoid-db" exported="" />
     <orderEntry type="module" module-name="propoid-core" exported="" />
   </component>
 </module>
