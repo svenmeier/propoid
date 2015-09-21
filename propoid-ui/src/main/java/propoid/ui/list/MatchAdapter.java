@@ -57,11 +57,9 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	}
 
 	protected MatchAdapter(int layoutId, int dropDownLayoutId, Match match) {
-		super(layoutId, dropDownLayoutId);
+		super(layoutId, dropDownLayoutId, new ArrayList<T>());
 
 		this.match = match;
-
-		setItems(new ArrayList<T>());
 	}
 
 	public void setOrder(Order... ordering) {
