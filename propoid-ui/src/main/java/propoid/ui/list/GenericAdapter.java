@@ -85,6 +85,10 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 
 		this.items = items;
 
+		notifyChanged();
+	}
+
+	public void notifyChanged() {
 		for (DataSetObserver observer : observers) {
 			observer.onChanged();
 		}
@@ -245,31 +249,16 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 
 	/**
 	 * Helper method to install to the given {@link ListView}, i.e. set as
-	 * adapter, register as {@link OnItemClickListener}, keep the previous
-	 * checked position and scroll.
+	 * adapter, register as {@link OnItemClickListener} while keeping the previous
+	 * scroll position.
 	 */
 	public GenericAdapter<T> install(ListView view) {
-		SparseBooleanArray checked = view.getCheckedItemPositions();
-		if (checked != null) {
-			checked = checked.clone();
-		}
-
 		int position = view.getFirstVisiblePosition();
 		View child = view.getChildAt(0);
 		int top = (child == null) ? 0 : child.getTop();
 
 		view.setAdapter(this);
 		view.setOnItemClickListener(this);
-
-		if (checked != null) {
-			int size = checked.size();
-			for (int i = 0; i < size; i++) {
-				int key = checked.keyAt(i);
-				if (checked.get(key)) {
-					view.setItemChecked(key, true);
-				}
-			}
-		}
 
 		view.setSelectionFromTop(position, top);
 
