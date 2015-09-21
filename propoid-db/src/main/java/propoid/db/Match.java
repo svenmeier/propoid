@@ -40,8 +40,8 @@ public interface Match<P extends Propoid> extends Closeable {
 	 * 
 	 * @param ordering
 	 *            order of listing
-	 * @return all matched propoids in a closeable list
-	 * @see Closeable
+	 * @return all matched propoids
+	 * @see #close()
 	 */
 	public List<P> list(Order... ordering);
 
@@ -68,8 +68,8 @@ public interface Match<P extends Propoid> extends Closeable {
 	 *            of propoids to list
 	 * @param ordering
 	 *            order of listing
-	 * @return all matched propoids in a closeable list
-	 * @see Closeable
+	 * @return all matched propoids
+	 * @see #close()
 	 */
 	public List<P> list(Range range, Order... ordering);
 
