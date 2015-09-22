@@ -76,14 +76,17 @@ Bind properties to views:
  
 Bind ListView to matched Propoids (backed by a cursor):
 
-    listView.setAdapter(new GenericAdapter<Foo>(repository.query(new Foo()).list()) {
+    MatchAdapter adapter = new MatchAdapter<Foo>(repository.query(new Foo())) {
         protected void bind(int position, View view, Foo foo) {
             Index index = Index.get(view);
             
             TextBinding.string(foo.bar,	index.<TextView>get(R.id.foo_bar));
         }
-    });
+    };
+    listView.setAdapter(adapter);
+    adapter.loadAsync(this);
 
+- no UI freeze: database is queried asynchronously and the listView updated with the result
 - Propoids are instantiated for visible views only (backed by cursor)
 - fast and convenient access to views via propoid.ui.Index
 

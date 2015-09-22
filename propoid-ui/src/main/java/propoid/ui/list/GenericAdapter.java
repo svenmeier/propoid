@@ -161,7 +161,7 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 
 	@Override
 	public boolean isEmpty() {
-		return items.isEmpty();
+		return getItems().isEmpty();
 	}
 
 	@Override
@@ -171,16 +171,16 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 
 	@Override
 	public T getItem(int position) {
-		return items.get(position);
+		return getItems().get(position);
 	}
 
 	@Override
 	public int getCount() {
-		return items.size();
+		return getItems().size();
 	}
 
 	public int position(T t) {
-		return items.indexOf(t);
+		return getItems().indexOf(t);
 	}
 
 	@Override
@@ -190,7 +190,7 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 
 	private View getViewImpl(int position, View view, ViewGroup parent,
 							 int layoutId) {
-		T item = items.get(position);
+		T item = getItems().get(position);
 
 		if (view == null) {
 			if (inflater == null) {

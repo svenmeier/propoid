@@ -37,10 +37,17 @@ import propoid.db.aspect.Row;
 /**
  * An adapter for {@link Match}.
  *
- * @see #load(FragmentActivity)
- * @see #load(Fragment)
+ * @see #loadAsync(FragmentActivity)
+ * @see #loadAsync(Fragment)
  */
 public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> {
+
+	private static int counter;
+
+	/**
+	 * Unique id required for {@link LoaderManager#restartLoader(int, Bundle, LoaderManager.LoaderCallbacks)}.
+	 */
+	private final int id = counter++;
 
 	private final Match match;
 
@@ -57,7 +64,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	}
 
 	protected MatchAdapter(int layoutId, int dropDownLayoutId, Match match) {
-		super(layoutId, dropDownLayoutId, new ArrayList<T>());
+		super(layoutId, dropDownLayoutId, (List)null);
 
 		this.match = match;
 	}
@@ -84,32 +91,45 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 		return Row.TRANSIENT;
 	}
 
-	public void load(FragmentActivity activity) {
-		Loading loading = new Loading(activity, this);
-
-		activity.getSupportLoaderManager().restartLoader(loading.id, null, loading);
+	@Override
+	public List<T> getItems() {
+		List<T> items = super.getItems();
+		if (items == null) {
+			items = load();
+		}
+		return items;
 	}
 
-	public void load(Fragment fragment) {
-		Loading loading = new Loading(fragment.getActivity(), this);
+	public void loadAsync(FragmentActivity activity) {
+		loadAsync(activity, activity.getSupportLoaderManager());
+	}
 
-		fragment.getLoaderManager().restartLoader(loading.id, null, loading);
+	public void loadAsync(Fragment fragment) {
+		loadAsync(fragment.getActivity(), fragment.getLoaderManager());
+	}
+
+	private void loadAsync(Context context, LoaderManager manager) {
+		if (super.getItems() == null) {
+			setItems(new ArrayList<T>());
+		}
+
+		Loading loading = new Loading(context, this);
+
+		manager.restartLoader(id, null, loading);
+	}
+
+	private List load() {
+		return match.list(range, ordering);
 	}
 
 	private static class Loading<T> extends AsyncTaskLoader<List<T>> implements LoaderManager.LoaderCallbacks<List<T>> {
 
-		private static int counter;
-
 		private final MatchAdapter adapter;
-
-		private final int id;
 
 		public Loading(Context context, MatchAdapter adapter) {
 			super(context);
 
 			this.adapter = adapter;
-
-			this.id = counter++;
 		}
 
 		@Override
@@ -139,7 +159,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 
 		@Override
 		public List<T> loadInBackground() {
-			return adapter.match.list(adapter.range, adapter.ordering);
+			return adapter.load();
 		}
 	}
 }
