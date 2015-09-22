@@ -22,6 +22,7 @@ import propoid.core.Propoid;
 import propoid.db.aspect.Row;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 
 /**
  * A reference to a {@link Propoid}.
@@ -29,6 +30,8 @@ import android.net.Uri;
  * @see Repository#lookup(Reference)
  */
 public class Reference<P extends Propoid> {
+
+	private static final String ARGUMENT_KEY = "propoid:reference";
 
 	public final Class<? extends P> type;
 	public final long id;
@@ -120,5 +123,41 @@ public class Reference<P extends Propoid> {
 			return null;
 		}
 		return from(data.toString());
+	}
+
+	/**
+	 * Store this reference as {@link Intent}s data.
+	 *
+	 * @param intent
+	 *            intent
+	 * @see Intent#setData(Uri)
+	 */
+	public void to(Intent intent) {
+		intent.setData(toUri());
+	}
+
+	/**
+	 * Create a reference from fragment arguments.
+	 *
+	 * @param arguments
+	 *            fragment arguments containing the reference
+	 * @return reference or {@code null}
+	 */
+	public static <P extends Propoid> Reference<P> from(Bundle arguments) {
+		String string = arguments.getString(ARGUMENT_KEY);
+		return from(string);
+	}
+
+	/**
+	 * Set a reference to fragment arguments.
+	 *
+	 * @param arguments
+	 *            fragment arguments
+	 * @return the bundle
+	 */
+	public Bundle set(Bundle arguments) {
+		arguments.putString(ARGUMENT_KEY, toString());
+
+		return arguments;
 	}
 }
