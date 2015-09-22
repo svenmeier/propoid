@@ -74,13 +74,14 @@ Bind properties to views:
 - use one of default converters or add your own
 - handles conversion and validation errors automatically
  
-Bind ListView to matched Propoids (backed by a cursor):
+Bind ListView to matched Propoids:
 
     MatchAdapter adapter = new MatchAdapter<Foo>(repository.query(new Foo())) {
         protected void bind(int position, View view, Foo foo) {
             Index index = Index.get(view);
             
-            TextBinding.string(foo.bar,	index.<TextView>get(R.id.foo_bar));
+            TextView textView = index.get(R.id.foo_bar);
+            textView.setText(foo.bar.get());
         }
     };
     listView.setAdapter(adapter);
