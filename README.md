@@ -42,6 +42,18 @@ Perform mass updates
 - Relations are lazily loaded (many-to-one and one-to-many)
 - Table schema is altered for new properties automagically.
 
+Pass propoids between activities and fragments via references:
+
+    Reference<Foo> in = new Reference<>(foo);
+
+    Intent intent = new Intent(context, FooActivity.class);
+    intent.setData(in.toUri());
+
+    ...
+
+    Reference<Foo> out = Reference.from(intent);
+    Foo foo = repository.get(out);
+
 propoid-validation
 ------------------
 
