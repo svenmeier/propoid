@@ -29,6 +29,8 @@ import propoid.core.Propoid;
 import propoid.db.Match;
 import propoid.db.Order;
 import propoid.db.Range;
+import propoid.db.Reference;
+import propoid.db.References;
 import propoid.db.Repository;
 import propoid.db.RepositoryException;
 import propoid.db.SQL;
@@ -165,6 +167,42 @@ public class Query extends Operation {
 
 			return new PropoidList(propoid.getClass(), repository.getDatabase()
 					.rawQuery(sql.toString(), arguments.get()));
+		}
+
+		@Override
+		public References<Propoid> references() {
+			final SQL sql = new SQL();
+			final Arguments arguments = new Arguments();
+			final Aliaser aliaser = new Aliaser();
+
+			sql.raw("SELECT ");
+			sql.raw(aliaser.alias(propoid));
+			sql.raw("._id, ");
+			sql.raw(aliaser.alias(propoid));
+			sql.raw("._type");
+			sql.append(from(aliaser, arguments));
+			sql.append(where(aliaser, arguments));
+
+			List<Reference<Propoid>> references = new ArrayList<>();
+
+			Cursor cursor = repository.getDatabase().rawQuery(sql.toString(),
+					arguments.get());
+			try {
+				while (cursor.moveToNext()) {
+					long id = cursor.getLong(cursor.getColumnIndex("_id"));
+
+					String type = cursor.getString(cursor.getColumnIndex("_type"));
+
+					Class<?> clazz = repository.naming.decodeType(repository, propoid.getClass(), type);
+
+					references.add(new Reference(clazz, id));
+				}
+			} finally {
+				cursor.close();
+			}
+
+
+			return new References<Propoid>(references);
 		}
 
 		@Override

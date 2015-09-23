@@ -72,6 +72,13 @@ public interface Match<P extends Propoid> {
 	public List<P> list(Range range, Order... ordering);
 
 	/**
+	 * References to all matched propoids.
+	 *
+	 * @return references
+	 */
+	public References<P> references();
+
+	/**
 	 * The first {@link Propoid} matched.
 	 * 
 	 * @return propoid or {@code null} if none matched.

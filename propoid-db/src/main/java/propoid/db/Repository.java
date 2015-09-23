@@ -274,14 +274,13 @@ public class Repository {
 	 * Invalid references are silently dropped.
 	 * 
 	 * @param references
-	 *            references of propoid
+	 *            references of propoids
 	 */
 	@SuppressWarnings("unchecked")
-	public <P extends Propoid> List<P> lookup(List<Reference<P>> references) {
-		List<?> ungeneric = (List<?>) references;
+	public <P extends Propoid> List<P> lookup(References<P> references) {
+		References<?> ungeneric = (References<?>) references;
 
-		return (List<P>) new Lookup(this)
-				.now((List<Reference<Propoid>>) ungeneric);
+		return (List<P>) new Lookup(this).now((References<Propoid>) ungeneric);
 	}
 
 	/**

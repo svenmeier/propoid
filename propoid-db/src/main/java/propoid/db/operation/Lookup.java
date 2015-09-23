@@ -23,6 +23,7 @@ import java.util.Map;
 import propoid.core.Propoid;
 import propoid.db.LookupException;
 import propoid.db.Reference;
+import propoid.db.References;
 import propoid.db.Repository;
 import propoid.db.SQL;
 import android.database.Cursor;
@@ -56,11 +57,11 @@ public class Lookup extends Operation {
 		}
 	}
 
-	public List<Propoid> now(List<Reference<Propoid>> references) {
+	public List<Propoid> now(References<Propoid> references) {
 		Map<Reference<Propoid>, Propoid> referenceToPropoid = new HashMap<Reference<Propoid>, Propoid>();
 
 		if (!references.isEmpty()) {
-			Class<? extends Propoid> type = references.get(0).type;
+			Class<? extends Propoid> type = references.iterator().next().type;
 
 			final SQL sql = new SQL();
 			String[] ids = new String[references.size()];
@@ -68,12 +69,11 @@ public class Lookup extends Operation {
 			sql.raw("SELECT * FROM ");
 			sql.escaped(repository.naming.table(repository, type));
 			sql.raw(" WHERE _id in (");
-			for (int r = 0; r < references.size(); r++) {
-				if (r > 0) {
-					sql.raw(",");
-				}
+			int r = 0;
+			for (Reference<Propoid> reference : references) {
+				sql.separate(",");
 				sql.raw("?");
-				ids[r] = Long.toString(references.get(r).id);
+				ids[r] = Long.toString(reference.id);
 			}
 			sql.raw(")");
 

@@ -16,6 +16,7 @@
 package propoid.db;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import propoid.core.Propoid;
@@ -23,18 +24,31 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * A parcel of {@link Ŕeference}s.
+ * A parcel of {@link Reference}s.
  */
-public class ReferenceParcel<T extends Propoid> implements Parcelable {
+public class References<T extends Propoid> implements Parcelable, Iterable<Reference<T>> {
 
 	private List<Reference<T>> references;
 
-	public ReferenceParcel(List<Reference<T>> references) {
+	public References(List<Reference<T>> references) {
 		this.references = references;
 	}
 
 	public List<Reference<T>> getReferences() {
 		return references;
+	}
+
+	public boolean isEmpty() {
+		return references.isEmpty();
+	}
+
+	public int size() {
+		return references.size();
+	}
+
+	@Override
+	public Iterator<Reference<T>> iterator() {
+		return references.iterator();
 	}
 
 	@Override
@@ -71,13 +85,13 @@ public class ReferenceParcel<T extends Propoid> implements Parcelable {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static final Parcelable.Creator<ReferenceParcel> CREATOR = new Parcelable.Creator<ReferenceParcel>() {
-		public ReferenceParcel createFromParcel(Parcel in) {
-			return new ReferenceParcel<Propoid>(read(in));
+	public static final Parcelable.Creator<References> CREATOR = new Parcelable.Creator<References>() {
+		public References createFromParcel(Parcel in) {
+			return new References<Propoid>(read(in));
 		}
 
-		public ReferenceParcel[] newArray(int size) {
-			return new ReferenceParcel[size];
+		public References[] newArray(int size) {
+			return new References[size];
 		}
 	};
 
@@ -87,14 +101,13 @@ public class ReferenceParcel<T extends Propoid> implements Parcelable {
 	 * @param propoids
 	 *            propoids to put into parcel
 	 */
-	public static <S extends Propoid> ReferenceParcel<S> from(List<S> propoids) {
+	public static <S extends Propoid> References<S> from(List<S> propoids) {
 		List<Reference<S>> references = new ArrayList<Reference<S>>();
 
 		for (S propoid : propoids) {
 			references.add(new Reference<S>(propoid));
 		}
 
-		return new ReferenceParcel<S>(references);
+		return new References<S>(references);
 	}
-
 }
