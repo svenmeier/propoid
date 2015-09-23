@@ -20,7 +20,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import propoid.core.Propoid;
+import propoid.db.aspect.Row;
+
 import android.os.Parcel;
+import android.os.ParcelFormatException;
 import android.os.Parcelable;
 
 /**
@@ -28,27 +31,46 @@ import android.os.Parcelable;
  */
 public class References<T extends Propoid> implements Parcelable, Iterable<Reference<T>> {
 
-	private List<Reference<T>> references;
+	private Class<? extends T> type;
 
-	public References(List<Reference<T>> references) {
-		this.references = references;
+	private long[] ids;
+
+	public References() {
+		type = null;
+		ids = new long[0];
 	}
 
-	public List<Reference<T>> getReferences() {
-		return references;
-	}
-
-	public boolean isEmpty() {
-		return references.isEmpty();
+	public References(Class<? extends T> type, long[] ids) {
+		this.type = type;
+		this.ids = ids;
 	}
 
 	public int size() {
-		return references.size();
+		return ids.length;
 	}
 
 	@Override
 	public Iterator<Reference<T>> iterator() {
-		return references.iterator();
+		return new Iterator<Reference<T>>() {
+			private int index = -1;
+
+			@Override
+			public boolean hasNext() {
+				return index + 1 < ids.length;
+			}
+
+			@Override
+			public Reference<T> next() {
+				index++;
+
+				return new Reference<T>(type, ids[index]);
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
 	}
 
 	@Override
@@ -58,36 +80,43 @@ public class References<T extends Propoid> implements Parcelable, Iterable<Refer
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		Object temp = references;
-		write(dest, (List<Reference<Propoid>>) temp);
-	}
+	public void writeToParcel(Parcel parcel, int flags) {
+		parcel.writeInt(ids.length);
 
-	private static void write(Parcel parcel, List<Reference<Propoid>> references) {
-		parcel.writeInt(references.size());
+		if (ids.length > 0) {
+			for (int i = 0; i < ids.length; i++) {
+				parcel.writeLong(ids[i]);
+			}
 
-		for (Reference<Propoid> reference : references) {
-			parcel.writeString(reference.toString());
+			parcel.writeString(type.getName());
 		}
 	}
 
-	private static List<Reference<Propoid>> read(Parcel parcel) {
-		int size = parcel.readInt();
+	private static References<Propoid> read(Parcel parcel) {
+		long[] ids = new long[parcel.readInt()];
 
-		List<Reference<Propoid>> references = new ArrayList<Reference<Propoid>>(
-				size);
+		if (ids.length > 0) {
+			Class<Propoid> type;
 
-		for (int r = 0; r < size; r++) {
-			references.add(Reference.from(parcel.readString()));
+			try {
+				type = (Class<Propoid>) Class.forName(parcel.readString());
+			} catch (ClassNotFoundException ex) {
+				throw new ParcelFormatException(ex.getMessage());
+			}
+
+			for (int i = 0; i < ids.length; i++) {
+				ids[i] = parcel.readLong();
+			}
+			return new References<>(type, ids);
+		} else {
+			return new References<>();
 		}
-
-		return references;
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static final Parcelable.Creator<References> CREATOR = new Parcelable.Creator<References>() {
 		public References createFromParcel(Parcel in) {
-			return new References<Propoid>(read(in));
+			return read(in);
 		}
 
 		public References[] newArray(int size) {
@@ -99,15 +128,24 @@ public class References<T extends Propoid> implements Parcelable, Iterable<Refer
 	 * Create a parcel of references.
 	 * 
 	 * @param propoids
-	 *            propoids to put into parcel
+	 *            propoids
 	 */
 	public static <S extends Propoid> References<S> from(List<S> propoids) {
-		List<Reference<S>> references = new ArrayList<Reference<S>>();
 
-		for (S propoid : propoids) {
-			references.add(new Reference<S>(propoid));
+		Class<? extends Propoid> type = null;
+
+		long[] ids = new long[propoids.size()];
+		for (int i = 0; i < ids.length; i++) {
+			S propoid = propoids.get(i);
+
+			ids[i] = Row.getID(propoid);
+			type = propoid.getClass();
 		}
 
-		return new References<S>(references);
+		if (type == null) {
+			return new References();
+		} else {
+			return new References<S>((Class<? extends S>) type, ids);
+		}
 	}
 }

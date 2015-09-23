@@ -183,26 +183,29 @@ public class Query extends Operation {
 			sql.append(from(aliaser, arguments));
 			sql.append(where(aliaser, arguments));
 
-			List<Reference<Propoid>> references = new ArrayList<>();
+			Cursor cursor = repository.getDatabase().rawQuery(sql.toString(), arguments.get());
 
-			Cursor cursor = repository.getDatabase().rawQuery(sql.toString(),
-					arguments.get());
+			Class<? extends Propoid> type = null;
+			long[] ids = new long[cursor.getCount()];
 			try {
 				while (cursor.moveToNext()) {
 					long id = cursor.getLong(cursor.getColumnIndex("_id"));
 
-					String type = cursor.getString(cursor.getColumnIndex("_type"));
+					if (type == null) {
+						String _type = cursor.getString(cursor.getColumnIndex("_type"));
 
-					Class<?> clazz = repository.naming.decodeType(repository, propoid.getClass(), type);
-
-					references.add(new Reference(clazz, id));
+						 type = repository.naming.decodeType(repository, propoid.getClass(), _type);
+					}
 				}
 			} finally {
 				cursor.close();
 			}
 
-
-			return new References<Propoid>(references);
+			if (ids.length == 0) {
+				return new References<>();
+			} else {
+				return new References<Propoid>(type, ids);
+			}
 		}
 
 		@Override

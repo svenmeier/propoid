@@ -60,7 +60,7 @@ public class Lookup extends Operation {
 	public List<Propoid> now(References<Propoid> references) {
 		Map<Reference<Propoid>, Propoid> referenceToPropoid = new HashMap<Reference<Propoid>, Propoid>();
 
-		if (!references.isEmpty()) {
+		if (references.size() > 0) {
 			Class<? extends Propoid> type = references.iterator().next().type;
 
 			final SQL sql = new SQL();
