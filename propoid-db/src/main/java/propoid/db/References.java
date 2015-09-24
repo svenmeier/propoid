@@ -16,6 +16,7 @@
 package propoid.db;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -47,6 +48,21 @@ public class References<T extends Propoid> implements Parcelable, Iterable<Refer
 
 	public int size() {
 		return ids.length;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof References<?>) {
+			References<?> other = (References<?>) o;
+
+			return this.type == other.type && Arrays.equals(this.ids, other.ids);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(this.ids);
 	}
 
 	@Override
@@ -96,17 +112,17 @@ public class References<T extends Propoid> implements Parcelable, Iterable<Refer
 		long[] ids = new long[parcel.readInt()];
 
 		if (ids.length > 0) {
-			Class<Propoid> type;
+			for (int i = 0; i < ids.length; i++) {
+				ids[i] = parcel.readLong();
+			}
 
+			Class<Propoid> type;
 			try {
 				type = (Class<Propoid>) Class.forName(parcel.readString());
 			} catch (ClassNotFoundException ex) {
 				throw new ParcelFormatException(ex.getMessage());
 			}
 
-			for (int i = 0; i < ids.length; i++) {
-				ids[i] = parcel.readLong();
-			}
 			return new References<>(type, ids);
 		} else {
 			return new References<>();
@@ -139,6 +155,9 @@ public class References<T extends Propoid> implements Parcelable, Iterable<Refer
 			S propoid = propoids.get(i);
 
 			ids[i] = Row.getID(propoid);
+			if (ids[i] == Row.TRANSIENT) {
+				throw new IllegalArgumentException("cannot reference transient propoid");
+			}
 			type = propoid.getClass();
 		}
 
