@@ -126,7 +126,7 @@ public class SpinnerBinding<T> extends Binding<T> implements
 	@Override
 	public void onItemSelected(AdapterView<?> adapterView, View view,
 			int index, long id) {
-		property.set((T) adapterView.getSelectedItem());
+		change((T) adapterView.getSelectedItem());
 	}
 
 	@Override

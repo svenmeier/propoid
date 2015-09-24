@@ -24,4 +24,9 @@ dependencies {
     compile project(':propoid-core')
     compile project(':propoid-validation')
     compile project(':propoid-db')
+    testCompile 'junit:junit:4.12'
+    testCompile('org.robolectric:robolectric:3.0-rc2') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+    }
 }
