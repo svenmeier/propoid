@@ -52,7 +52,7 @@ public class PropoidMapper implements Mapper<Propoid>, Cascader<Propoid> {
 		long id;
 
 		ToOneRelation relation = PropertyAspect.find(property, ToOneRelation.class);
-		if (relation != null && relation.loaded) {
+		if (relation == null || relation.loaded) {
 			Propoid propoid = property.getInternal();
 
 			id = Row.getID(propoid);

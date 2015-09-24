@@ -1,6 +1,9 @@
 package propoid.db;
 
 import junit.framework.TestCase;
+
+import java.util.List;
+
 import propoid.core.Property;
 import propoid.core.Propoid;
 import propoid.db.mapping.ByteMapper;
@@ -13,6 +16,7 @@ import propoid.db.mapping.FloatMapper;
 import propoid.db.mapping.IntegerMapper;
 import propoid.db.mapping.LongMapper;
 import propoid.db.mapping.PropoidMapper;
+import propoid.db.mapping.PropoidsMapper;
 import propoid.db.mapping.ShortMapper;
 import propoid.db.mapping.StringMapper;
 
@@ -33,6 +37,7 @@ public class DefaultMappingTest extends TestCase {
 		assertTrue(new ClassMapper().maps(foo.classP));
 		assertTrue(new ClassMapper().maps(foo.classPraw));
 		assertTrue(new PropoidMapper().maps(foo.propoidP));
+		assertTrue(new PropoidsMapper().maps(foo.propoidsP));
 		assertTrue(new EnumMapper().maps(foo.enumP));
 	}
 
@@ -49,6 +54,7 @@ public class DefaultMappingTest extends TestCase {
 		public final Property<Class<?>> classP = property();
 		public final Property<Class> classPraw = property();
 		public final Property<Foo> propoidP = property();
+		public final Property<List<Foo>> propoidsP = property();
 		public final Property<E> enumP = property();
 	}
 
