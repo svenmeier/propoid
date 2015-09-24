@@ -15,6 +15,9 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -31,6 +34,7 @@ public class UpdateTest {
 		repository = new Repository(new InMemoryLocator());
 
 		((DefaultCascading) repository.cascading).setCascaded(new Foo().barP);
+		((DefaultCascading) repository.cascading).setCascaded(new Foo().barsP);
 
 		Foo foo = new Foo();
 		repository.insert(foo);
@@ -45,7 +49,6 @@ public class UpdateTest {
 	public void testFoo() throws Exception {
 
 		Foo foo = repository.query(new Foo()).single();
-		foo.barP.set(null);
 
 		repository.update(foo);
 
@@ -58,20 +61,23 @@ public class UpdateTest {
 
 		Foo foo = repository.query(new Foo()).single();
 		foo.barP.set(new Bar());
+		foo.barsP.set(Arrays.asList(new Bar(), new Bar()));
 
 		repository.update(foo);
 
 		assertEquals(1, repository.query(new Foo()).count());
-		assertEquals(1, repository.query(new Bar()).count());
+		assertEquals(3, repository.query(new Bar()).count());
 
 		foo.barP.set(new Bar());
+		foo.barsP.set(Arrays.asList(new Bar(), new Bar()));
 
 		repository.update(foo);
 
 		assertEquals(1, repository.query(new Foo()).count());
-		assertEquals(1, repository.query(new Bar()).count());
+		assertEquals(3, repository.query(new Bar()).count());
 
 		foo.barP.set(null);
+		foo.barsP.set(Collections.<Bar>emptyList());
 
 		repository.update(foo);
 

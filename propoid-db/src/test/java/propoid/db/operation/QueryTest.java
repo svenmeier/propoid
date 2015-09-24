@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import propoid.db.BuildConfig;
@@ -38,7 +39,9 @@ public class QueryTest {
 
 		Foo foo = new Foo();
 		foo.barP.set(new Bar());
+		foo.barsP.set(Arrays.asList(new Bar(), new Bar()));
 		repository.insert(foo);
+
 		repository.insert(new FooEx());
 	}
 
