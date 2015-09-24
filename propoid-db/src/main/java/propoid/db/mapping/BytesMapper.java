@@ -32,8 +32,7 @@ public class BytesMapper implements Mapper<byte[]> {
 	@Override
 	public boolean maps(Property<?> property) {
 		Type type = property.meta().type;
-		return type instanceof GenericArrayType
-				&& ((GenericArrayType) type).getGenericComponentType() == Byte.TYPE;
+		return type instanceof Class && ((Class)type).isArray() && ((Class)type).getComponentType() == Byte.TYPE;
 	}
 
 	public String type(Property<byte[]> property, Repository repository) {

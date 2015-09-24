@@ -32,7 +32,9 @@ public class ClassMapper implements Mapper<Class> {
 
 	@Override
 	public boolean maps(Property<?> property) {
-		return Class.class == property.meta().type;
+		Type type = property.meta().type;
+
+		return Class.class == type || (type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() == Class.class);
 	}
 
 	public String type(Property<Class> property, Repository repository) {
