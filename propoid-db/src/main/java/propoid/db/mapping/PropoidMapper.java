@@ -55,9 +55,13 @@ public class PropoidMapper implements Mapper<Propoid>, Cascader<Propoid> {
 		if (relation == null || relation.loaded) {
 			Propoid propoid = property.getInternal();
 
-			id = Row.getID(propoid);
-			if (id == Row.TRANSIENT) {
-				throw new RepositoryException("cannot bind transient propoid");
+			if (propoid == null) {
+				id = Row.TRANSIENT;
+			} else {
+				id = Row.getID(propoid);
+				if (id == Row.TRANSIENT) {
+					throw new RepositoryException("cannot bind transient propoid");
+				}
 			}
 		} else {
 			id = relation.id;
@@ -123,27 +127,33 @@ public class PropoidMapper implements Mapper<Propoid>, Cascader<Propoid> {
 	}
 
 	private void merge(Repository repository, Property<Propoid> property) {
-		LazyLoad lazyLoad = PropertyAspect.find(property, LazyLoad.class);
+		ToOneRelation relation = PropertyAspect.find(property, ToOneRelation.class);
 
-		if (lazyLoad == null || lazyLoad.loaded) {
+		if (relation == null || relation.loaded) {
 			Propoid propoid = property.get();
 			if (propoid != null) {
 				repository.merge(propoid);
 			}
 		}
 
-		if (lazyLoad != null && lazyLoad.loaded) {
+		if (relation != null && relation.loaded) {
 			Propoid propoid = property.get();
 
-			long oldId = ((ToOneRelation) lazyLoad).id;
-			if (oldId != Row.TRANSIENT && oldId != Row.getID(propoid)) {
+			long newId = (propoid == null) ? Row.TRANSIENT : Row.getID(propoid);
+			long oldId = ((ToOneRelation) relation).id;
+			if (oldId != Row.TRANSIENT && oldId != newId) {
+				Class<? extends Propoid> itemType = (Class<? extends Propoid>) property.meta().type;
+
 				try {
-					Propoid oldPropoid = repository.lookup(new Reference<Propoid>(propoid.getClass(), oldId));
+					Propoid oldPropoid = repository.lookup(new Reference<Propoid>(itemType, oldId));
 
 					repository.delete(oldPropoid);
 				} catch (LookupException alreadyDeleted) {
 				}
 			}
+
+
+			((ToOneRelation) relation).id = newId;
 		}
 	}
 }

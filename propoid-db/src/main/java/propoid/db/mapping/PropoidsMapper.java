@@ -123,11 +123,9 @@ public class PropoidsMapper implements Mapper<Collection<Propoid>>, Cascader<Col
 	}
 
 	private void merge(Repository repository, Property<Collection<Propoid>> property) {
-		LazyLoad lazyLoad = PropertyAspect.find(property, LazyLoad.class);
+		ToManyRelation relation = PropertyAspect.find(property, ToManyRelation.class);
 
-		Class<? extends Propoid> itemType = PropoidsMapper.itemType(property);
-
-		if (lazyLoad == null || lazyLoad.loaded) {
+		if (relation == null || relation.loaded) {
 			Collection<Propoid> propoids = property.get();
 			if (propoids != null) {
 				for (Propoid propoid : propoids) {
@@ -136,13 +134,15 @@ public class PropoidsMapper implements Mapper<Collection<Propoid>>, Cascader<Col
 			}
 		}
 
-		if (lazyLoad != null && lazyLoad.loaded) {
-			long[] oldIds = ((ToManyRelation) lazyLoad).ids;
+		if (relation != null && relation.loaded) {
+			long[] newIds = toIds(property.get());
+
+			long[] oldIds = ((ToManyRelation) relation).ids;
 			if (oldIds != null) {
-				long[] ids = toIds(property.get());
+				Class<? extends Propoid> itemType = PropoidsMapper.itemType(property);
 
 				for (long oldId : oldIds) {
-					if (oldId != Row.TRANSIENT && (ids == null || contained(oldId, ids) == false)) {
+					if (oldId != Row.TRANSIENT && (newIds == null || contained(oldId, newIds) == false)) {
 						try {
 							Propoid oldPropoid = repository.lookup(new Reference<Propoid>(itemType, oldId));
 
@@ -152,6 +152,7 @@ public class PropoidsMapper implements Mapper<Collection<Propoid>>, Cascader<Col
 					}
 				}
 			}
+			((ToManyRelation) relation).ids = newIds;
 		}
 	}
 
