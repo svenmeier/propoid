@@ -8,12 +8,17 @@ import propoid.ui.convert.EnumConverter;
 import android.util.Xml.Encoding;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * Test for {@link EnumConverter}.
  */
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = propoid.ui.BuildConfig.class, sdk = 18)
 public class EnumConverterTest {
 
 	@Test

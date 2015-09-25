@@ -15,9 +15,15 @@ import propoid.db.Reference;
 import propoid.db.aspect.Row;
 import propoid.db.operation.Foo;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, emulateSdk = 18)
-public class ReferenceTest extends TestCase {
+@Config(constants = BuildConfig.class, sdk = 18)
+public class ReferenceTest {
 
 	@Test
 	public void testEquals() {

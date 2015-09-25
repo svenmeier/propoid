@@ -24,7 +24,7 @@ import static org.junit.Assert.assertEquals;
  * Test for {@link Update}.
  */
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, emulateSdk = 18)
+@Config(constants = BuildConfig.class, sdk = 18)
 public class UpdateTest {
 
 	private Repository repository;

@@ -3,6 +3,9 @@ package propoid.ui.convert;
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 
 import propoid.core.Property;
 import propoid.core.Propoid;
@@ -15,6 +18,8 @@ import static org.junit.Assert.assertEquals;
 /**
  * Test for {@link NumberConverter}.
  */
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = propoid.ui.BuildConfig.class, sdk = 18)
 public class NumberConverterTest {
 
 	@Test

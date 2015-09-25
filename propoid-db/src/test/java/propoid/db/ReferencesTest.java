@@ -15,9 +15,12 @@ import java.util.List;
 import propoid.core.Propoid;
 import propoid.db.aspect.Row;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, emulateSdk = 18)
-public class ReferencesTest extends TestCase {
+@Config(constants = BuildConfig.class, sdk = 18)
+public class ReferencesTest {
 
 	@Test
 	public void testFrom() {

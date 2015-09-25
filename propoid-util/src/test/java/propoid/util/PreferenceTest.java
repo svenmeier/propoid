@@ -26,7 +26,7 @@ import static org.junit.Assert.assertTrue;
  * Test for {@link Preference}.
  */
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, emulateSdk = 18)
+@Config(constants = BuildConfig.class, sdk = 18)
 public class PreferenceTest {
 
 	private SharedPreferences preferences;

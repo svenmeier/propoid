@@ -2,6 +2,11 @@ package propoid.db;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
+
 import java.util.List;
 
 import propoid.core.Property;
@@ -20,8 +25,13 @@ import propoid.db.mapping.PropoidsMapper;
 import propoid.db.mapping.ShortMapper;
 import propoid.db.mapping.StringMapper;
 
-public class DefaultMappingTest extends TestCase {
+import static org.junit.Assert.assertTrue;
 
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = propoid.db.BuildConfig.class, sdk = 18)
+public class DefaultMappingTest {
+
+	@Test
 	public void test() throws Exception {
 		Foo foo = new Foo();
 

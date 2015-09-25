@@ -30,7 +30,7 @@ import static org.junit.Assert.fail;
  * Test for {@link AlterTable}.
  */
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, emulateSdk = 18)
+@Config(constants = BuildConfig.class, sdk = 18)
 public class AlterTableTest {
 
 	private SQLiteDatabase database;

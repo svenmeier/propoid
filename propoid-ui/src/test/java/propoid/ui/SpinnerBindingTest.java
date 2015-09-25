@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
  * Test for {@link SpinnerBinding}.
  */
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = propoid.db.BuildConfig.class, emulateSdk = 18)
+@Config(constants = propoid.ui.BuildConfig.class, sdk = 18)
 public class SpinnerBindingTest {
 
 	private Spinner spinner;

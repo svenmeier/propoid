@@ -11,7 +11,7 @@ import propoid.db.BuildConfig;
 import propoid.db.Order;
 
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, emulateSdk = 18)
+@Config(constants = BuildConfig.class, sdk = 18)
 public class OrderTest extends TestCase {
 
 	@Test

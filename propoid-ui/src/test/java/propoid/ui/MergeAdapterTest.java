@@ -7,8 +7,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
 
-public class MergeAdapterTest extends TestCase {
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 
+import static org.junit.Assert.assertEquals;
+
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = propoid.ui.BuildConfig.class, sdk = 18)
+public class MergeAdapterTest {
+
+	@Test
 	public void test() throws Exception {
 		ListAdapter a = new TestListAdapter(1);
 		ListAdapter b = new TestListAdapter(2);

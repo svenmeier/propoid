@@ -3,6 +3,9 @@ package propoid.util;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,14 +20,15 @@ import static org.junit.Assert.fail;
 /**
  * Test for {@link XmlNavigator}.
  */
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 18)
 public class XmlNavigatorTest {
 
 	private InputStream input;
 
 	@Before
 	public void setUp() {
-		InputStream input = getClass()
-				.getResourceAsStream(getClass().getSimpleName() + ".xml");
+		input = getClass().getResourceAsStream(getClass().getSimpleName() + ".xml");
 	}
 
 	@After

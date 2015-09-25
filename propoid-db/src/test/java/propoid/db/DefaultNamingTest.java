@@ -2,14 +2,24 @@ package propoid.db;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
+
 import propoid.core.Propoid;
 import propoid.db.Repository;
 import propoid.db.naming.DefaultNaming;
 import propoid.db.operation.Foo;
 import propoid.db.operation.FooEx;
 
-public class DefaultNamingTest extends TestCase {
+import static org.junit.Assert.assertEquals;
 
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = propoid.db.BuildConfig.class, sdk = 18)
+public class DefaultNamingTest {
+
+	@Test
 	public void test() throws Exception {
 		Repository repository = null;
 

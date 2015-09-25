@@ -19,7 +19,7 @@ import org.robolectric.annotation.Config;
  * Test for {@link Index}.
  */
 @RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = BuildConfig.class, emulateSdk = 18)
+@Config(constants = BuildConfig.class, sdk = 18)
 public class IndexTest {
 
 	private Repository repository;
