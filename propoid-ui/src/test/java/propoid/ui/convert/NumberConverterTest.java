@@ -1,17 +1,23 @@
 package propoid.ui.convert;
 
 import junit.framework.TestCase;
+
+import org.junit.Test;
+
 import propoid.core.Property;
 import propoid.core.Propoid;
 import propoid.ui.Foo;
 import propoid.ui.convert.Converter;
 import propoid.ui.convert.NumberConverter;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * Test for {@link NumberConverter}.
  */
-public class NumberConverterTest extends TestCase {
+public class NumberConverterTest {
 
+	@Test
 	public void testFromProperty() throws Exception {
 		assertEquals("0", converter(new Foo().byteP).toString((byte) 0));
 		assertEquals("0", converter(new Foo().shortP).toString((short) 0));
@@ -32,8 +38,8 @@ public class NumberConverterTest extends TestCase {
 				.fromString("0"));
 		assertEquals(Long.valueOf(0l),
 				converter(new Foo().longP).fromString("0"));
-		assertEquals((float) 0, converter(new Foo().floatP).fromString("0"));
-		assertEquals((double) 0, converter(new Foo().doubleP).fromString("0"));
+		assertEquals((Object)0f, converter(new Foo().floatP).fromString("0"));
+		assertEquals((Object)0d, converter(new Foo().doubleP).fromString("0"));
 
 		assertEquals(null, converter(new Foo().doubleP).fromString(""));
 	}

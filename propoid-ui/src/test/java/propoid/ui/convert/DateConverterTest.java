@@ -4,13 +4,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import junit.framework.TestCase;
+
+import org.junit.Test;
+
 import propoid.ui.convert.DateConverter;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test for {@link DateConverter}.
  */
-public class DateConverterTest extends TestCase {
+public class DateConverterTest {
 
+	@Test
 	public void testFromProperty() throws Exception {
 		DateConverter converter = new DateConverter(new SimpleDateFormat(
 				"dd.MM.yyyy"), 0);
@@ -19,6 +25,7 @@ public class DateConverterTest extends TestCase {
 		assertEquals("", converter.toString(null));
 	}
 
+	@Test
 	public void testToProperty() throws Exception {
 		DateConverter converter = new DateConverter(new SimpleDateFormat(
 				"dd.MM.yyyy"), 0);
