@@ -28,11 +28,11 @@ import android.util.Log;
 /**
  * Simple preference wrapper offering typed access via string id.
  * <p>
- * Declare preference key in strings.xml with:
+ * Declare a preference key in <code>/res/xml/preferences.xml</code> with:
  * 
  * <pre>
  * {@code
- *   <string name="my_preferences">my_preference</string>
+ *   <string name="my_preference">my_preference</string>
  * }
  * </pre>
  * 
@@ -40,12 +40,14 @@ import android.util.Log;
  * 
  * <pre>
  * {@code
+ * <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
  *          <CheckBoxPreference
  *                 android:key="@string/my_preference"
  *                 android:title="@string/my_preference_title"
  *                 android:summary="@string/my_preference_summary"
  *                 android:defaultValue="true"
- * />
+ *          />
+ * </PreferenceScreen>
  * }
  * </pre>
  * 
@@ -64,7 +66,7 @@ import android.util.Log;
  * </pre>
  * 
  * @see #get()
- * @see #set(Object)
+ * @see #set(T)
  */
 public abstract class Preference<T extends Comparable<T>> {
 
