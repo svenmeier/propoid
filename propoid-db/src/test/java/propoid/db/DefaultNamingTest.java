@@ -1,9 +1,12 @@
 package propoid.db;
 
 import junit.framework.TestCase;
+
 import propoid.core.Propoid;
 import propoid.db.Repository;
 import propoid.db.naming.DefaultNaming;
+import propoid.db.operation.Foo;
+import propoid.db.operation.FooEx;
 
 public class DefaultNamingTest extends TestCase {
 
@@ -13,28 +16,20 @@ public class DefaultNamingTest extends TestCase {
 		DefaultNaming naming = new DefaultNaming();
 
 		assertEquals("Foo", naming.table(repository, Foo.class));
-		assertEquals("Foo", naming.table(repository, FooExtended.class));
+		assertEquals("Foo", naming.table(repository, FooEx.class));
 
 		assertEquals(null, naming.encodeType(repository, Foo.class));
-		assertEquals("FooExtended",
-				naming.encodeType(repository, FooExtended.class));
+		assertEquals("FooEx",
+				naming.encodeType(repository, FooEx.class));
 
 		assertEquals(Foo.class, naming.decodeType(repository, Foo.class, null));
-		assertEquals(FooExtended.class,
-				naming.decodeType(repository, Foo.class, "FooExtended"));
-		assertEquals(FooExtended.class,
-				naming.decodeType(repository, FooExtended.class, "FooExtended"));
-		assertEquals(FooExtended.class, naming.decodeType(repository,
-				Foo.class, "propoid.db.FooExtended"));
-		assertEquals(FooExtended.class, naming.decodeType(repository,
-				FooExtended.class, "propoid.db.FooExtended"));
+		assertEquals(FooEx.class,
+				naming.decodeType(repository, Foo.class, "FooEx"));
+		assertEquals(FooEx.class,
+				naming.decodeType(repository, FooEx.class, "FooEx"));
+		assertEquals(FooEx.class, naming.decodeType(repository,
+				Foo.class, "propoid.db.operation.FooEx"));
+		assertEquals(FooEx.class, naming.decodeType(repository,
+				FooEx.class, "propoid.db.operation.FooEx"));
 	}
-}
-
-class Foo extends Propoid {
-
-}
-
-class FooExtended extends Foo {
-
 }

@@ -154,7 +154,7 @@ public class Reference<P extends Propoid> {
 	 *            fragment arguments
 	 * @return the bundle
 	 */
-	public Bundle set(Bundle arguments) {
+	public Bundle to(Bundle arguments) {
 		arguments.putString(ARGUMENT_KEY, toString());
 
 		return arguments;

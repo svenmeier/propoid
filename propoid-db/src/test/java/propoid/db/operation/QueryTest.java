@@ -36,6 +36,7 @@ public class QueryTest {
 		repository = new Repository(new InMemoryLocator());
 
 		((DefaultCascading) repository.cascading).setCascaded(new Foo().barP);
+		((DefaultCascading) repository.cascading).setCascaded(new Foo().barsP);
 
 		Foo foo = new Foo();
 		foo.barP.set(new Bar());
@@ -135,6 +136,15 @@ public class QueryTest {
 
 		assertEquals(2, repository.query(foo, Where.equal(foo.barP, null))
 				.count());
+	}
+
+	@Test
+	public void testFooSetBars() {
+		Foo foo = new Foo();
+
+		repository.query(foo).set(foo.barsP, null);
+
+		assertEquals(2, repository.query(foo, Where.equal(foo.barsP, null)).count());
 	}
 
 	@Test

@@ -1,13 +1,22 @@
 package propoid.db;
 
+import android.content.Intent;
+import android.os.Bundle;
+
 import junit.framework.TestCase;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.annotation.Config;
 
 import propoid.core.Propoid;
 import propoid.db.Reference;
 import propoid.db.aspect.Row;
+import propoid.db.operation.Foo;
 
+@RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, emulateSdk = 18)
 public class ReferenceTest extends TestCase {
 
 	@Test
@@ -32,16 +41,44 @@ public class ReferenceTest extends TestCase {
 
 		Row.setID(foo, 1l);
 
-		assertEquals("propoid://propoid.db.ReferenceTest$Foo/1",
+		assertEquals("propoid://propoid.db.operation.Foo/1",
 				new Reference<Foo>(foo).toString());
 	}
 
 	@Test
 	public void testFromString() throws Exception {
-		Reference<Propoid> reference = Reference.from("propoid://propoid.db.ReferenceTest$Foo/1");
+		Reference<Propoid> reference = Reference.from("propoid://propoid.db.operation.Foo/1");
 
 		assertEquals(Foo.class, reference.type);
 		assertEquals(1l, reference.id);
+	}
+
+	@Test
+	public void testToIntent() {
+		Foo foo = new Foo();
+
+		Row.setID(foo, 1l);
+
+		Intent intent = new Intent();
+
+		Reference<Foo> reference = new Reference<>(foo);
+		reference.to(intent);
+
+		assertEquals(reference, Reference.from(intent));
+	}
+
+	@Test
+	public void testToArguments() {
+		Foo foo = new Foo();
+
+		Row.setID(foo, 1l);
+
+		Bundle arguments = new Bundle();
+
+		Reference<Foo> reference = new Reference<>(foo);
+		reference.to(arguments);
+
+		assertEquals(reference, Reference.from(arguments));
 	}
 
 	@Test
@@ -51,7 +88,7 @@ public class ReferenceTest extends TestCase {
 
 	@Test
 	public void testFromInvalid() throws Exception {
-		assertNull(Reference.from("propoid.db.Foo/1"));
+		assertNull(Reference.from("propoid.db.operation.Quux/1"));
 	}
 
 	@Test
@@ -62,9 +99,5 @@ public class ReferenceTest extends TestCase {
 			fail();
 		} catch (IllegalArgumentException expected) {
 		}
-	}
-
-	public static class Foo extends Propoid {
-
 	}
 }
