@@ -31,7 +31,6 @@ import propoid.db.LookupException;
 import propoid.db.Reference;
 import propoid.db.Repository;
 import propoid.db.RepositoryException;
-import propoid.db.aspect.LazyLoad;
 import propoid.db.aspect.ToManyRelation;
 import propoid.db.aspect.Row;
 import propoid.db.cascading.Cascader;
@@ -40,6 +39,9 @@ import propoid.db.cascading.Cascader;
  * A mapper for a collection of {@link Propoid}s.
  */
 public class PropoidsMapper implements Mapper<Collection<Propoid>>, Cascader<Collection<Propoid>> {
+
+	public static final char ID_PREFIX = '{';
+	public static final char ID_SUFFIX = '}';
 
 	@Override
 	public boolean maps(Property<?> property) {
@@ -160,9 +162,9 @@ public class PropoidsMapper implements Mapper<Collection<Propoid>>, Cascader<Col
 		StringBuilder string = new StringBuilder();
 
 		for (int l = 0; l < longs.length; l++) {
-			string.append('[');
+			string.append(ID_PREFIX);
 			string.append(longs[l]);
-			string.append(']');
+			string.append(ID_SUFFIX);
 		}
 
 		return string.toString();
@@ -171,7 +173,7 @@ public class PropoidsMapper implements Mapper<Collection<Propoid>>, Cascader<Col
 	private long[] split(String string) {
 		int count = 0;
 		for (int c = 0; c < string.length(); c++) {
-			if (string.charAt(c) == '[') {
+			if (string.charAt(c) == ID_PREFIX) {
 				count++;
 			}
 		}
@@ -179,12 +181,12 @@ public class PropoidsMapper implements Mapper<Collection<Propoid>>, Cascader<Col
 		long[] ids = new long[count];
 		int from = 0;
 		for (int i = 0; i < ids.length; i++) {
-			if (string.charAt(from) != '[') {
+			if (string.charAt(from) != ID_PREFIX) {
 				throw new RepositoryException("invalid ids " + string);
 			}
 			from++;
 
-			int to = string.indexOf(']', from);
+			int to = string.indexOf(ID_SUFFIX, from);
 			try {
 				ids[i] = Long.parseLong(string.substring(from, to).trim());
 			} catch (NumberFormatException ex) {

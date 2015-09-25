@@ -338,9 +338,11 @@ public class Where {
 			sql.raw(aliaser.alias(property.propoid));
 			sql.raw(".");
 			sql.escaped(property.meta().name);
-			sql.raw(" like '%[' || ");
+			// see PropoisMapper#ID_PREFIX
+			sql.raw(" like '%{' || ");
 			sql.raw(aliaser.alias(value));
-			sql.raw("._id || ']%' and ");
+			// see PropoisMapper#ID_SUFFIX
+			sql.raw("._id || '}%' and ");
 			sql.append(where.toWhere(repository, arguments, aliaser));
 			sql.raw(")");
 

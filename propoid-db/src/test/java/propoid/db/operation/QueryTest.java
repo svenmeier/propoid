@@ -129,6 +129,16 @@ public class QueryTest {
 	}
 
 	@Test
+	public void testFooHasOneBar() {
+		Foo foo = new Foo();
+		Bar bar = new Bar();
+
+		assertEquals(1,
+				repository.query(foo, Where.hasOne(foo.barsP, bar, Where.any()))
+						.count());
+	}
+
+	@Test
 	public void testFooSetBar() {
 		Foo foo = new Foo();
 
