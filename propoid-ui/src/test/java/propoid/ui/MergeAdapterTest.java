@@ -1,4 +1,4 @@
-package propoid.test.ui;
+package propoid.ui;
 
 import junit.framework.TestCase;
 import propoid.ui.list.MergeAdapter;
