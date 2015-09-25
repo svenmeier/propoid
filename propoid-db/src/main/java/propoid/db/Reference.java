@@ -131,8 +131,10 @@ public class Reference<P extends Propoid> {
 	 *            intent
 	 * @see Intent#setData(Uri)
 	 */
-	public void to(Intent intent) {
+	public Intent to(Intent intent) {
 		intent.setData(toUri());
+
+		return intent;
 	}
 
 	/**
