@@ -1,11 +1,9 @@
 package propoid.ui;
 
 import android.app.Activity;
-import android.database.DataSetObserver;
 import android.view.View;
 import android.widget.ListView;
 
-import org.apache.maven.artifact.ant.util.AntTaskModified;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +22,6 @@ import propoid.db.Order;
 import propoid.db.Range;
 import propoid.db.References;
 import propoid.db.RepositoryException;
-import propoid.ui.list.GenericAdapter;
 import propoid.ui.list.MatchAdapter;
 
 import static org.junit.Assert.assertTrue;
@@ -115,12 +112,10 @@ public class MatchAdapterTest {
 
 			@Override
 			public void delete() {
-
 			}
 
 			@Override
 			public <T> void set(Property<T> property, T value) {
-
 			}
 		};
 
@@ -133,7 +128,7 @@ public class MatchAdapterTest {
 
 		listView.setAdapter(adapter);
 
-		adapter.loadAsync(controller.get());
+		adapter.restart(0, controller.get());
 
 		controller.stop().destroy();
 
