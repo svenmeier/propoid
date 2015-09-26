@@ -7,6 +7,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.CheckBox;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,15 +28,16 @@ public class CheckBindingTest {
 
 	@Before
 	public void setUp() {
-/*		Activity context = Robolectric.buildActivity(Activity.class).create().get();;
+		Activity activity = Robolectric.buildActivity(Activity.class).create().get();;
 
-		checkBox = new CheckBox(context);*/
+		checkBox = new CheckBox(activity);
+		activity.setContentView(checkBox);
 	}
 
 	@Test
 	public void test() throws Throwable {
 		final Foo foo = new Foo();
-/*
+
 		new CheckBinding(foo.booleanP, checkBox);
 
 		assertEquals(true, checkBox.isChecked());
@@ -46,6 +48,6 @@ public class CheckBindingTest {
 
 		checkBox.setChecked(true);
 
-		assertEquals(Boolean.TRUE, foo.booleanP.get());*/
+		assertEquals(Boolean.TRUE, foo.booleanP.get());
 	}
 }

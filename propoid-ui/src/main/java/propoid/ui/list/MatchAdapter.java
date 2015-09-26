@@ -16,13 +16,13 @@
 package propoid.ui.list;
 
 import android.R;
+import android.app.Activity;
+import android.app.Fragment;
+import android.app.LoaderManager;
+import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.content.Loader;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.Loader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +37,7 @@ import propoid.db.aspect.Row;
 /**
  * An adapter for {@link Match}.
  *
- * @see #loadAsync(FragmentActivity)
+ * @see #loadAsync(Activity)
  * @see #loadAsync(Fragment)
  */
 public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> {
@@ -100,8 +100,19 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 		return items;
 	}
 
-	public void loadAsync(FragmentActivity activity) {
-		loadAsync(activity, activity.getSupportLoaderManager());
+	@Override
+	public void setItems(List<T> items) {
+		List<T> oldItems = super.getItems();
+		if (oldItems != null) {
+			// clear cursor for old items
+			oldItems.clear();
+		}
+
+		super.setItems(items);
+	}
+
+	public void loadAsync(Activity activity) {
+		loadAsync(activity, activity.getLoaderManager());
 	}
 
 	public void loadAsync(Fragment fragment) {

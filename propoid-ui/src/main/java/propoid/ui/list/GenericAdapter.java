@@ -15,15 +15,8 @@
  */
 package propoid.ui.list;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import android.R;
 import android.database.DataSetObserver;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +25,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SpinnerAdapter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * A generified adapter which can be used for {@link ListView}s.
@@ -81,8 +78,6 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 	}
 
 	public void setItems(List<T> items) {
-		closeItems();
-
 		this.items = items;
 
 		notifyChanged();
@@ -104,28 +99,12 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 	}
 
 	/**
-	 * Closes a wrapped {@link Closeable} on removal of the last observer.
-	 *
 	 * @param observer
 	 */
 	@Override
 	public void unregisterDataSetObserver(DataSetObserver observer) {
 		if (!observers.remove(observer)) {
 			throw new IllegalArgumentException();
-		}
-
-		if (observers.isEmpty()) {
-			closeItems();
-		}
-	}
-
-	private void closeItems() {
-		if (items instanceof Closeable) {
-			try {
-				((Closeable) items).close();
-			} catch (IOException ex) {
-				throw new RuntimeException(ex);
-			}
 		}
 	}
 

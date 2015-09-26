@@ -25,9 +25,10 @@ public class TextBindingTest {
 
 	@Before
 	public void setUp() {
-		Activity context = Robolectric.buildActivity(Activity.class).create().get();;
+		Activity activity = Robolectric.buildActivity(Activity.class).create().get();;
 
-		editText = new EditText(context);
+		editText = new EditText(activity);
+		activity.setContentView(editText);
 	}
 
 	@Test

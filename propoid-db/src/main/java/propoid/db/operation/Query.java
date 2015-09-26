@@ -15,8 +15,8 @@
  */
 package propoid.db.operation;
 
-import java.io.Closeable;
-import java.util.ArrayList;
+import android.database.Cursor;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,14 +29,12 @@ import propoid.core.Propoid;
 import propoid.db.Match;
 import propoid.db.Order;
 import propoid.db.Range;
-import propoid.db.Reference;
 import propoid.db.References;
 import propoid.db.Repository;
 import propoid.db.RepositoryException;
 import propoid.db.SQL;
 import propoid.db.Where;
 import propoid.db.aspect.Row;
-import android.database.Cursor;
 
 /**
  * Query {@link Propoid}s.
@@ -321,7 +319,7 @@ public class Query extends Operation {
 		}
 	}
 
-	class PropoidList implements List<Propoid>, Closeable {
+	class PropoidList implements List<Propoid> {
 
 		private Cursor cursor;
 
@@ -332,7 +330,7 @@ public class Query extends Operation {
 			this.cursor = cursor;
 		}
 
-		public void close() {
+		private void close() {
 			if (cursor != null) {
 				cursor.close();
 				cursor = null;
@@ -397,7 +395,7 @@ public class Query extends Operation {
 
 		@Override
 		public void clear() {
-			throw new UnsupportedOperationException();
+			close();
 		}
 
 		@Override
@@ -481,7 +479,7 @@ public class Query extends Operation {
 			throw new UnsupportedOperationException();
 		}
 
-		class PropoidIterator implements Iterator<Propoid>, Closeable {
+		class PropoidIterator implements Iterator<Propoid>{
 
 			private Boolean next = null;
 
@@ -529,8 +527,7 @@ public class Query extends Operation {
 				throw new RepositoryException("remove not supported");
 			}
 
-			@Override
-			public void close() {
+			private void close() {
 				PropoidList.this.close();
 			}
 		}

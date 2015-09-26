@@ -48,8 +48,8 @@ public interface Match<P extends Propoid> {
 	 * List all matched {@link Propoid}s in the given {@link Range}.
 	 * <p>
 	 * The returned list is backed by a {@link Cursor} and must be closed. This
-	 * can be done either by calling {@link Closeable#close()} on this match or
-	 * the returned list. Additionally the returned list will be closed by:
+	 * can be done by calling {@link List#clear()} on the returned list.
+	 * Additionally the returned list will be closed by:
 	 * <ul>
 	 * <li>getting all elements with {@link List#toArray()}</li>
 	 * <li>getting all elements with {@link List#toArray(Object[])}</li>

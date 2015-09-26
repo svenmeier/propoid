@@ -26,9 +26,10 @@ public class SpinnerBindingTest {
 
 	@Before
 	public void setUp() {
-		Activity context = Robolectric.buildActivity(Activity.class).create().get();;
+		Activity activity = Robolectric.buildActivity(Activity.class).create().get();;
 
-		spinner = new Spinner(context);
+		spinner = new Spinner(activity);
+		activity.setContentView(spinner);
 	}
 
 	@Test
