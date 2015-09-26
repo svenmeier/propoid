@@ -37,8 +37,8 @@ import propoid.db.aspect.Row;
 /**
  * An adapter for {@link Match}.
  *
- * @see #restart(Activity)
- * @see #restart(Fragment)
+ * @see #restart(int, Activity)
+ * @see #restart(int, Fragment)
  */
 public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> {
 
@@ -88,7 +88,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	public List<T> getItems() {
 		List<T> items = super.getItems();
 		if (items == null) {
-			items = load();
+			items = match.list(range, ordering);
 		}
 		return items;
 	}
@@ -104,10 +104,22 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 		super.setItems(items);
 	}
 
+	/**
+	 * Restart asynchronous loader.
+	 *
+	 * @param id uniqure id
+	 * @param activity context
+	 */
 	public void restart(int id, Activity activity) {
 		restart(id, activity, activity.getLoaderManager());
 	}
 
+	/**
+	 * Restart asynchronous loader.
+	 *
+	 * @param id uniqure id
+	 * @param fragment context
+	 */
 	public void restart(int id, Fragment fragment) {
 		restart(id, fragment.getActivity(), fragment.getLoaderManager());
 	}
@@ -120,10 +132,22 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 		manager.restartLoader(id, null, new Callbacks(context));
 	}
 
+	/**
+	 * Initialize asynchronous loader.
+	 *
+	 * @param id uniqure id
+	 * @param activity context
+	 */
 	public void init(int id, Activity activity) {
 		init(id, activity, activity.getLoaderManager());
 	}
 
+	/**
+	 * Initialize asynchronous loader.
+	 *
+	 * @param id uniqure id
+	 * @param fragment context
+	 */
 	public void init(int id, Fragment fragment) {
 		init(id, fragment.getActivity(), fragment.getLoaderManager());
 	}
@@ -136,8 +160,28 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 		manager.initLoader(id, null, new Callbacks(context));
 	}
 
-	private List load() {
-		return match.list(range, ordering);
+	/**
+	 * Destroy asynchronous loader.
+	 *
+	 * @param id uniqure id
+	 * @param activity context
+	 */
+	public void destroy(int id, Activity activity) {
+		destroy(id, activity, activity.getLoaderManager());
+	}
+
+	/**
+	 * Destroy asynchronous loader.
+	 *
+	 * @param id uniqure id
+	 * @param fragment context
+	 */
+	public void destroy(int id, Fragment fragment) {
+		destroy(id, fragment.getActivity(), fragment.getLoaderManager());
+	}
+
+	private void destroy(int id, Context context, LoaderManager manager) {
+		manager.destroyLoader(id);
 	}
 
 	private class Callbacks implements LoaderManager.LoaderCallbacks<List<T>> {
