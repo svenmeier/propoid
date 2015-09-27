@@ -28,6 +28,7 @@ import propoid.db.factory.DefaultFactory;
 import propoid.db.locator.FileLocator;
 import propoid.db.mapping.DefaultMapping;
 import propoid.db.naming.DefaultNaming;
+import propoid.db.observer.IgnoreObserver;
 import propoid.db.operation.Delete;
 import propoid.db.operation.Index;
 import propoid.db.operation.Insert;
@@ -68,6 +69,8 @@ public class Repository {
 
 	public final Mapping mapping;
 
+	private final Observer observer;
+
 	private Set<Class<? extends Propoid>> schemas = new HashSet<Class<? extends Propoid>>();
 
 	/**
@@ -99,6 +102,7 @@ public class Repository {
 		this.factory = lookup(settings, Factory.class, new DefaultFactory());
 		this.naming = lookup(settings, Naming.class, new DefaultNaming());
 		this.mapping = lookup(settings, Mapping.class, new DefaultMapping());
+		this.observer = lookup(settings, Observer.class, new IgnoreObserver());
 
 		open();
 	}
@@ -191,6 +195,8 @@ public class Repository {
 		schema(propoid);
 
 		new Delete(this).now(propoid);
+
+		observer.onDelete(propoid);
 	}
 
 	/**
@@ -225,6 +231,8 @@ public class Repository {
 		} finally {
 			database.endTransaction();
 		}
+
+		observer.onInsert(propoid);
 	}
 
 	/**
@@ -243,6 +251,8 @@ public class Repository {
 		} finally {
 			database.endTransaction();
 		}
+
+		observer.onUpdate(propoid);
 	}
 
 	/**

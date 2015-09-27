@@ -236,7 +236,16 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 
 		@Override
 		public List<T> loadInBackground() {
-			return match.list(range, ordering);
+			List<T> list = match.list(range, ordering);
+
+			// Ensure the cursor window is filled.
+			list.size();
+
+			return list;
+		}
+
+		@Override
+		protected void onReset() {
 		}
 	}
 }
