@@ -119,10 +119,6 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	}
 
 	private void restartLoader(int id, Context context, LoaderManager manager) {
-		if (super.getItems() == null) {
-			setItems(new ArrayList<T>());
-		}
-
 		manager.restartLoader(id, null, new Callbacks(context));
 	}
 
@@ -147,10 +143,6 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	}
 
 	private void initLoader(int id, Context context, LoaderManager manager) {
-		if (super.getItems() == null) {
-			setItems(new ArrayList<T>());
-		}
-
 		manager.initLoader(id, null, new Callbacks(context));
 	}
 
