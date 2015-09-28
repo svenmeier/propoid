@@ -21,6 +21,7 @@ import java.util.List;
 import propoid.core.Property;
 import propoid.core.Propoid;
 import android.database.Cursor;
+import android.net.Uri;
 
 /**
  * A match of a query.
@@ -31,6 +32,13 @@ import android.database.Cursor;
  * @see Repository#query(Propoid, Where)
  */
 public interface Match<P extends Propoid> {
+
+	/**
+	 * Get the {@link Uri} describing this match.
+	 *
+	 * @return uri
+	 */
+	public Uri getUri();
 
 	/**
 	 * List all matched {@link Propoid}s.

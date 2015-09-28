@@ -32,7 +32,7 @@ public class RepositoryService extends Service {
 	public void onCreate() {
 		super.onCreate();
 
-		repository = new Repository(getLocator(), getSettings());
+		repository = new Repository(this, getLocator(), getSettings());
 	}
 
 	@Override

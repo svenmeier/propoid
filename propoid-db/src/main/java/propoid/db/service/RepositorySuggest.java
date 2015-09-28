@@ -130,7 +130,7 @@ public abstract class RepositorySuggest<P extends Propoid> extends
 	 * @see #getSettings()
 	 */
 	protected Repository createRepository() {
-		return new Repository(getLocator(), getSettings());
+		return new Repository(getContext(), getLocator(), getSettings());
 	}
 
 	/**

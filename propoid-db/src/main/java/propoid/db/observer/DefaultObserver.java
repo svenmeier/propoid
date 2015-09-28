@@ -21,18 +21,32 @@ import android.content.Context;
 import propoid.core.Propoid;
 import propoid.db.Observer;
 import propoid.db.Reference;
+import propoid.db.Setting;
 
 /**
- * Observer to changes on {@link Propoid}s.
+ * Observer of changes on {@link Propoid}s, that notifies {@link android.database.ContentObserver}s.
  */
-public class IgnoreObserver implements Observer {
+public class DefaultObserver implements Observer {
+
+	private final ContentResolver contentResolver;
+
+	public DefaultObserver(Context context) {
+		this.contentResolver = context.getContentResolver();
+	}
 
 	public void onInsert(Propoid propoid) {
+		notify(propoid);
 	}
 
 	public void onDelete(Propoid propoid) {
+		notify(propoid);
 	}
 
 	public void onUpdate(Propoid propoid) {
+		notify(propoid);
+	}
+
+	private void notify(Propoid propoid) {
+		contentResolver.notifyChange(new Reference<Propoid>(propoid).toUri(), null);
 	}
 }

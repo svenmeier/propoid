@@ -12,7 +12,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.robolectric.Robolectric;
 import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import java.util.Arrays;
@@ -30,7 +32,7 @@ public class InsertTest {
 
 	@Before
 	public void setUp() throws Exception {
-		repository = new Repository(new InMemoryLocator());
+		repository = new Repository(RuntimeEnvironment.application, new InMemoryLocator());
 
 		((DefaultCascading) repository.cascading).setCascaded(new Foo().barP);
 		((DefaultCascading) repository.cascading).setCascaded(new Foo().barsP);

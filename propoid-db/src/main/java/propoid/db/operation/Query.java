@@ -16,6 +16,7 @@
 package propoid.db.operation;
 
 import android.database.Cursor;
+import android.net.Uri;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -104,6 +105,11 @@ public class Query extends Operation {
 				}
 			}
 			return sql;
+		}
+
+		@Override
+		public Uri getUri() {
+			return Uri.parse(String.format("propoid://%s", propoid.getClass().getName()));
 		}
 
 		@Override

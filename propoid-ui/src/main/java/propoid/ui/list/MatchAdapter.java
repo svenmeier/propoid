@@ -22,7 +22,10 @@ import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Loader;
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -216,12 +219,21 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 
 		private final Order[] ordering;
 
+		private ContentObserver observer = new ContentObserver(new Handler()) {
+			@Override
+			public void onChange(boolean selfChange) {
+				forceLoad();
+			}
+		};
+
 		public MatchLoader(Context context, Match match, Range range, Order[] ordering) {
 			super(context);
 
 			this.match = match;
 			this.range = range;
 			this.ordering = ordering;
+
+			context.getContentResolver().registerContentObserver(match.getUri(), true, observer);
 		}
 
 		@Override
@@ -246,6 +258,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 
 		@Override
 		protected void onReset() {
+			getContext().getContentResolver().unregisterContentObserver(observer);
 		}
 	}
 }

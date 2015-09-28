@@ -1,6 +1,7 @@
 package propoid.ui;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.view.View;
 import android.widget.ListView;
 
@@ -60,6 +61,11 @@ public class MatchAdapterTest {
 		};
 
 		Match match = new Match<Foo>() {
+			@Override
+			public Uri getUri() {
+				return null;
+			}
+
 			@Override
 			public List<Foo> list(Order... ordering) {
 				return list;

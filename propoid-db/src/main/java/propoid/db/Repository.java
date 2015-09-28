@@ -28,7 +28,7 @@ import propoid.db.factory.DefaultFactory;
 import propoid.db.locator.FileLocator;
 import propoid.db.mapping.DefaultMapping;
 import propoid.db.naming.DefaultNaming;
-import propoid.db.observer.IgnoreObserver;
+import propoid.db.observer.DefaultObserver;
 import propoid.db.operation.Delete;
 import propoid.db.operation.Index;
 import propoid.db.operation.Insert;
@@ -55,9 +55,9 @@ import android.database.sqlite.SQLiteDatabase;
  */
 public class Repository {
 
-	private Locator locator;
+	private Context context;
 
-	private SQLiteDatabase database;
+	private Locator locator;
 
 	public final Versioning versioning;
 
@@ -73,6 +73,8 @@ public class Repository {
 
 	private Set<Class<? extends Propoid>> schemas = new HashSet<Class<? extends Propoid>>();
 
+	private SQLiteDatabase database;
+
 	/**
 	 * Create a repository.
 	 * 
@@ -82,7 +84,7 @@ public class Repository {
 	 *            file name
 	 */
 	public Repository(Context context, String name, Setting... settings) {
-		this(new FileLocator(context, name));
+		this(context, new FileLocator(context, name));
 	}
 
 	/**
@@ -91,7 +93,7 @@ public class Repository {
 	 * @param locator
 	 *            locator
 	 */
-	public Repository(Locator locator, Setting... settings) {
+	public Repository(Context context, Locator locator, Setting... settings) {
 
 		this.locator = locator;
 
@@ -102,7 +104,7 @@ public class Repository {
 		this.factory = lookup(settings, Factory.class, new DefaultFactory());
 		this.naming = lookup(settings, Naming.class, new DefaultNaming());
 		this.mapping = lookup(settings, Mapping.class, new DefaultMapping());
-		this.observer = lookup(settings, Observer.class, new IgnoreObserver());
+		this.observer = lookup(settings, Observer.class, new DefaultObserver(context));
 
 		open();
 	}
@@ -145,7 +147,7 @@ public class Repository {
 		Naming naming = lookup(settings, Naming.class, this.naming);
 		Mapping mapping = lookup(settings, Mapping.class, this.mapping);
 
-		Repository repository = new Repository(locator, versioning, cascading,
+		Repository repository = new Repository(context, locator, versioning, cascading,
 				factory, naming, mapping);
 
 		// performance optimization: since the same database is used, we can
