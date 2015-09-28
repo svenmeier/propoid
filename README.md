@@ -85,7 +85,7 @@ Bind ListView to matched Propoids:
         }
     };
     listView.setAdapter(adapter);
-    adapter.restart(0, this);
+    adapter.initLoader(0, this);
 
 - no UI freeze: database is queried asynchronously and the listView updated with the results
 - Propoids are instantiated for visible views only (backed by cursor)

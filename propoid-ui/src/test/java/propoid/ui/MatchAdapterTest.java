@@ -134,7 +134,7 @@ public class MatchAdapterTest {
 
 		listView.setAdapter(adapter);
 
-		adapter.restart(0, controller.get());
+		adapter.restartLoader(0, controller.get());
 
 		controller.stop().destroy();
 

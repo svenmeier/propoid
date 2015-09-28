@@ -23,7 +23,6 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Loader;
 import android.database.ContentObserver;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -38,11 +37,11 @@ import propoid.db.Range;
 import propoid.db.aspect.Row;
 
 /**
- * An adapter for {@link Match}. To show the actual result, on of the {@code init()} or
- * {@code restart()} methods have to be called.
+ * An adapter for {@link Match}. To show the actual result, on of the {@code initLoader()} or
+ * {@code restartLoader()} methods have to be called.
  *
- * @see #init(int, Activity)
- * @see #init(int, Fragment)
+ * @see #initLoader(int, Activity)
+ * @see #initLoader(int, Fragment)
  */
 public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> {
 
@@ -105,8 +104,8 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	 * @param id uniqure id
 	 * @param activity context
 	 */
-	public void restart(int id, Activity activity) {
-		restart(id, activity, activity.getLoaderManager());
+	public void restartLoader(int id, Activity activity) {
+		restartLoader(id, activity, activity.getLoaderManager());
 	}
 
 	/**
@@ -115,11 +114,11 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	 * @param id uniqure id
 	 * @param fragment context
 	 */
-	public void restart(int id, Fragment fragment) {
-		restart(id, fragment.getActivity(), fragment.getLoaderManager());
+	public void restartLoader(int id, Fragment fragment) {
+		restartLoader(id, fragment.getActivity(), fragment.getLoaderManager());
 	}
 
-	private void restart(int id, Context context, LoaderManager manager) {
+	private void restartLoader(int id, Context context, LoaderManager manager) {
 		if (super.getItems() == null) {
 			setItems(new ArrayList<T>());
 		}
@@ -133,8 +132,8 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	 * @param id uniqure id
 	 * @param activity context
 	 */
-	public void init(int id, Activity activity) {
-		init(id, activity, activity.getLoaderManager());
+	public void initLoader(int id, Activity activity) {
+		initLoader(id, activity, activity.getLoaderManager());
 	}
 
 	/**
@@ -143,11 +142,11 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	 * @param id uniqure id
 	 * @param fragment context
 	 */
-	public void init(int id, Fragment fragment) {
-		init(id, fragment.getActivity(), fragment.getLoaderManager());
+	public void initLoader(int id, Fragment fragment) {
+		initLoader(id, fragment.getActivity(), fragment.getLoaderManager());
 	}
 
-	private void init(int id, Context context, LoaderManager manager) {
+	private void initLoader(int id, Context context, LoaderManager manager) {
 		if (super.getItems() == null) {
 			setItems(new ArrayList<T>());
 		}
