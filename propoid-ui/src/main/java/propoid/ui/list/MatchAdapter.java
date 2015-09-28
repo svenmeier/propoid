@@ -38,10 +38,11 @@ import propoid.db.Range;
 import propoid.db.aspect.Row;
 
 /**
- * An adapter for {@link Match}.
+ * An adapter for {@link Match}. To show the actual result, on of the {@code init()} or
+ * {@code restart()} methods have to be called.
  *
- * @see #restart(int, Activity)
- * @see #restart(int, Fragment)
+ * @see #init(int, Activity)
+ * @see #init(int, Fragment)
  */
 public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> {
 
@@ -60,7 +61,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	}
 
 	protected MatchAdapter(int layoutId, int dropDownLayoutId, Match match) {
-		super(layoutId, dropDownLayoutId, (List)null);
+		super(layoutId, dropDownLayoutId, new ArrayList<T>());
 
 		this.match = match;
 	}
@@ -88,15 +89,6 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	}
 
 	@Override
-	public List<T> getItems() {
-		List<T> items = super.getItems();
-		if (items == null) {
-			items = match.list(range, ordering);
-		}
-		return items;
-	}
-
-	@Override
 	public void setItems(List<T> items) {
 		List<T> oldItems = super.getItems();
 		if (oldItems != null) {
@@ -108,7 +100,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	}
 
 	/**
-	 * Restart asynchronous loader.
+	 * Force restart of an asynchronous loader.
 	 *
 	 * @param id uniqure id
 	 * @param activity context
@@ -118,7 +110,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	}
 
 	/**
-	 * Restart asynchronous loader.
+	 * Force restart of an asynchronous loader.
 	 *
 	 * @param id uniqure id
 	 * @param fragment context
@@ -136,7 +128,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	}
 
 	/**
-	 * Initialize asynchronous loader.
+	 * Initialize an asynchronous loader.
 	 *
 	 * @param id uniqure id
 	 * @param activity context
@@ -146,7 +138,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	}
 
 	/**
-	 * Initialize asynchronous loader.
+	 * Initialize an asynchronous loader.
 	 *
 	 * @param id uniqure id
 	 * @param fragment context
