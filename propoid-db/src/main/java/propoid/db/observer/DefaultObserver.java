@@ -22,6 +22,7 @@ import propoid.core.Propoid;
 import propoid.db.Observer;
 import propoid.db.Reference;
 import propoid.db.Setting;
+import propoid.db.aspect.Row;
 
 /**
  * Observer of changes on {@link Propoid}s, that notifies {@link android.database.ContentObserver}s.
@@ -46,7 +47,21 @@ public class DefaultObserver implements Observer {
 		notify(propoid);
 	}
 
+	/**
+	 * Notify a change for the propoid's class and <em>all</em> its superclasses. This way observers
+	 * of a superclass will be notified too, although {@code Uri}s do not actually support
+	 * polymorphism.
+	 *
+	 * @param propoid
+	 */
 	private void notify(Propoid propoid) {
-		contentResolver.notifyChange(new Reference<Propoid>(propoid).toUri(), null);
+		Class<? extends Propoid> clazz = propoid.getClass();
+		long id = Row.getID(propoid);
+
+		while (clazz != Propoid.class) {
+			contentResolver.notifyChange(new Reference<Propoid>(clazz, id).toUri(), null);
+
+			clazz = (Class<? extends Propoid>) clazz.getSuperclass();
+		}
 	}
 }
