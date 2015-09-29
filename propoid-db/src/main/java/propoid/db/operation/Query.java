@@ -109,7 +109,7 @@ public class Query extends Operation {
 
 		@Override
 		public Uri getUri() {
-			return Uri.parse(String.format("propoid://%s", propoid.getClass().getName()));
+			return Query.getUri(propoid.getClass());
 		}
 
 		@Override
@@ -537,5 +537,9 @@ public class Query extends Operation {
 				PropoidList.this.close();
 			}
 		}
+	}
+
+	public static Uri getUri(Class<? extends Propoid> type) {
+		return Uri.parse(String.format("propoid://%s", type.getName()));
 	}
 }

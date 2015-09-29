@@ -15,7 +15,6 @@
  */
 package propoid.ui.list;
 
-import android.R;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.LoaderManager;
@@ -26,77 +25,38 @@ import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import propoid.core.Propoid;
-import propoid.db.Match;
-import propoid.db.Order;
-import propoid.db.Range;
-import propoid.db.aspect.Row;
+import propoid.db.LookupException;
+import propoid.db.Reference;
+import propoid.db.Repository;
 
 /**
- * An adapter for {@link Match}. To show the actual result, one of the {@code initLoader()} or
- * {@code restartLoader()} methods has to be called.
+ * A lookup of a reference. To get the result in {@link #onLookup(Propoid)}, one of the
+ * {@code initLoader()} or {@code restartLoader()} methods has to be called.
  *
  * @see #initLoader(int, Activity)
  * @see #initLoader(int, Fragment)
+ * @see #onLookup(Propoid)
+ *
+ * @param <T>
  */
-public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> {
+public abstract class ReferenceLookup<T extends Propoid>{
 
-	private final Match match;
+	private Reference<T> reference;
 
-	private Order[] ordering = new Order[0];
+	private Repository repository;
 
-	private Range range = Range.all();
-
-	protected MatchAdapter(Match match) {
-		this(R.layout.simple_list_item_1, match);
+	protected ReferenceLookup(Repository repository, Reference<T> reference) {
+		this.repository = repository;
+		this.reference = reference;
 	}
 
-	protected MatchAdapter(int layoutId, Match match) {
-		this(layoutId, R.layout.simple_dropdown_item_1line, match);
-	}
-
-	protected MatchAdapter(int layoutId, int dropDownLayoutId, Match match) {
-		super(layoutId, dropDownLayoutId, new ArrayList<T>());
-
-		this.match = match;
-	}
-
-	public void setOrder(Order... ordering) {
-		this.ordering = ordering;
-	}
-
-	public void setRange(Range range) {
-		this.range = range;
-	}
-
-	@Override
-	public boolean hasStableIds() {
-		return true;
-	}
-
-	@Override
-	public long getItemId(int position) {
-		if (position < getCount()) {
-			return Row.getID(getItem(position));
-		}
-
-		return Row.TRANSIENT;
-	}
-
-	@Override
-	public void setItems(List<T> items) {
-		List<T> oldItems = super.getItems();
-		if (oldItems != null) {
-			// clear cursor for old items
-			oldItems.clear();
-		}
-
-		super.setItems(items);
-	}
+	/**
+	 * Hook method called when the propoid was looked up.
+	 *
+	 * @param propoid	looked up propoid or {@code null}
+	 */
+	protected abstract void onLookup(T propoid);
 
 	/**
 	 * Force restart of an asynchronous loader.
@@ -170,7 +130,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 		manager.destroyLoader(id);
 	}
 
-	private class Callbacks implements LoaderManager.LoaderCallbacks<List<T>> {
+	private class Callbacks implements LoaderManager.LoaderCallbacks<T> {
 
 		private final Context context;
 
@@ -179,28 +139,26 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 		}
 
 		@Override
-		public Loader<List<T>> onCreateLoader(int id, Bundle args) {
-			return new MatchLoader<T>(context, match, range, ordering);
+		public Loader<T> onCreateLoader(int id, Bundle args) {
+			return new ReferenceLoader<T>(context, repository, reference);
 		}
 
 		@Override
-		public void onLoadFinished(Loader<List<T>> loader, List<T> propoids) {
-			setItems(propoids);
+		public void onLoadFinished(Loader<T> loader, T propoid) {
+			onLookup(propoid);
 		}
 
 		@Override
-		public void onLoaderReset(Loader<List<T>> loader) {
-			setItems(Collections.<T>emptyList());
+		public void onLoaderReset(Loader<T> loader) {
+			onLookup(null);
 		}
 	}
 
-	private static class MatchLoader<T extends Propoid> extends AsyncTaskLoader<List<T>> {
+	private static class ReferenceLoader<T extends Propoid> extends AsyncTaskLoader<T> {
 
-		private final Match<T> match;
+		private final Repository repository;
 
-		private final Range range;
-
-		private final Order[] ordering;
+		private final Reference<T> reference;
 
 		private ContentObserver observer = new ContentObserver(new Handler()) {
 			@Override
@@ -209,14 +167,13 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 			}
 		};
 
-		public MatchLoader(Context context, Match match, Range range, Order[] ordering) {
+		public ReferenceLoader(Context context, Repository repository, Reference<T> reference) {
 			super(context);
 
-			this.match = match;
-			this.range = range;
-			this.ordering = ordering;
+			this.repository = repository;
+			this.reference = reference;
 
-			context.getContentResolver().registerContentObserver(match.getUri(), true, observer);
+			context.getContentResolver().registerContentObserver(reference.toUri(), true, observer);
 		}
 
 		@Override
@@ -230,13 +187,12 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 		}
 
 		@Override
-		public List<T> loadInBackground() {
-			List<T> list = match.list(range, ordering);
-
-			// Ensure the cursor window is filled.
-			list.size();
-
-			return list;
+		public T loadInBackground() {
+			try {
+				return repository.lookup(reference);
+			} catch (LookupException ex) {
+				return null;
+			}
 		}
 
 		@Override
