@@ -160,8 +160,6 @@ public class Repository {
 	public void open() {
 		if (database == null) {
 			database = locator.open();
-
-			versioning.upgrade(database);
 		}
 	}
 
@@ -324,7 +322,12 @@ public class Repository {
 		return (Match<P>) new Query(this).now(propoid, where);
 	}
 
-	protected void schema(Propoid propoid) {
+	protected synchronized void schema(Propoid propoid) {
+		if (schemas.isEmpty()) {
+			// first propoid schema - perform upgrade
+			versioning.upgrade(database);
+		}
+
 		if (!schemas.contains(propoid.getClass())) {
 			new Schema(this).now(propoid);
 
