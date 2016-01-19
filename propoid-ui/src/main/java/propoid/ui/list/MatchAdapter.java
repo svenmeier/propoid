@@ -45,32 +45,33 @@ import propoid.db.aspect.Row;
  */
 public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> {
 
-	private final Match match;
+	private final MatchLookup lookup;
 
-	private Order[] ordering = new Order[0];
-
-	private Range range = Range.all();
-
-	protected MatchAdapter(Match match) {
+	protected MatchAdapter(Match<T> match) {
 		this(R.layout.simple_list_item_1, match);
 	}
 
-	protected MatchAdapter(int layoutId, Match match) {
+	protected MatchAdapter(int layoutId, Match<T> match) {
 		this(layoutId, R.layout.simple_dropdown_item_1line, match);
 	}
 
-	protected MatchAdapter(int layoutId, int dropDownLayoutId, Match match) {
+	protected MatchAdapter(int layoutId, int dropDownLayoutId, Match<T> match) {
 		super(layoutId, dropDownLayoutId, new ArrayList<T>());
 
-		this.match = match;
+		this.lookup = new MatchLookup<T>(match) {
+			@Override
+			protected void onLookup(List<T> propoids) {
+				setItems(propoids);
+			}
+		};
 	}
 
 	public void setOrder(Order... ordering) {
-		this.ordering = ordering;
+		lookup.setOrder(ordering);
 	}
 
 	public void setRange(Range range) {
-		this.range = range;
+		lookup.setRange(range);
 	}
 
 	@Override
@@ -105,7 +106,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	 * @param activity context
 	 */
 	public void restartLoader(int id, Activity activity) {
-		restartLoader(id, activity, activity.getLoaderManager());
+		lookup.restartLoader(id, activity);
 	}
 
 	/**
@@ -115,11 +116,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	 * @param fragment context
 	 */
 	public void restartLoader(int id, Fragment fragment) {
-		restartLoader(id, fragment.getActivity(), fragment.getLoaderManager());
-	}
-
-	private void restartLoader(int id, Context context, LoaderManager manager) {
-		manager.restartLoader(id, null, new Callbacks(context));
+		lookup.restartLoader(id, fragment);
 	}
 
 	/**
@@ -129,7 +126,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	 * @param activity context
 	 */
 	public void initLoader(int id, Activity activity) {
-		initLoader(id, activity, activity.getLoaderManager());
+		lookup.initLoader(id, activity);
 	}
 
 	/**
@@ -139,11 +136,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	 * @param fragment context
 	 */
 	public void initLoader(int id, Fragment fragment) {
-		initLoader(id, fragment.getActivity(), fragment.getLoaderManager());
-	}
-
-	private void initLoader(int id, Context context, LoaderManager manager) {
-		manager.initLoader(id, null, new Callbacks(context));
+		lookup.initLoader(id, fragment);
 	}
 
 	/**
@@ -153,7 +146,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	 * @param activity context
 	 */
 	public void destroy(int id, Activity activity) {
-		destroy(id, activity, activity.getLoaderManager());
+		lookup.destroy(id, activity);
 	}
 
 	/**
@@ -163,85 +156,6 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	 * @param fragment context
 	 */
 	public void destroy(int id, Fragment fragment) {
-		destroy(id, fragment.getActivity(), fragment.getLoaderManager());
-	}
-
-	private void destroy(int id, Context context, LoaderManager manager) {
-		manager.destroyLoader(id);
-	}
-
-	private class Callbacks implements LoaderManager.LoaderCallbacks<List<T>> {
-
-		private final Context context;
-
-		Callbacks(Context context) {
-			this.context = context;
-		}
-
-		@Override
-		public Loader<List<T>> onCreateLoader(int id, Bundle args) {
-			return new MatchLoader<T>(context, match, range, ordering);
-		}
-
-		@Override
-		public void onLoadFinished(Loader<List<T>> loader, List<T> propoids) {
-			setItems(propoids);
-		}
-
-		@Override
-		public void onLoaderReset(Loader<List<T>> loader) {
-			setItems(Collections.<T>emptyList());
-		}
-	}
-
-	private static class MatchLoader<T extends Propoid> extends AsyncTaskLoader<List<T>> {
-
-		private final Match<T> match;
-
-		private final Range range;
-
-		private final Order[] ordering;
-
-		private ContentObserver observer = new ContentObserver(new Handler()) {
-			@Override
-			public void onChange(boolean selfChange) {
-				forceLoad();
-			}
-		};
-
-		public MatchLoader(Context context, Match match, Range range, Order[] ordering) {
-			super(context);
-
-			this.match = match;
-			this.range = range;
-			this.ordering = ordering;
-
-			context.getContentResolver().registerContentObserver(match.getUri(), true, observer);
-		}
-
-		@Override
-		protected void onStartLoading() {
-			forceLoad();
-		}
-
-		@Override
-		protected void onStopLoading() {
-			cancelLoad();
-		}
-
-		@Override
-		public List<T> loadInBackground() {
-			List<T> list = match.list(range, ordering);
-
-			// Ensure the cursor window is filled.
-			list.size();
-
-			return list;
-		}
-
-		@Override
-		protected void onReset() {
-			getContext().getContentResolver().unregisterContentObserver(observer);
-		}
+		lookup.destroy(id, fragment);
 	}
 }
