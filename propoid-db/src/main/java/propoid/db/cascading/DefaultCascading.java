@@ -76,7 +76,7 @@ public class DefaultCascading implements Cascading {
 			if (mapper instanceof Cascader) {
 				((Cascader) mapper).cascadeInsert(repository, property);
 			} else {
-				throw new RepositoryException("cannot beforeBind property");
+				throw new RepositoryException("cannot cascade insert for property " + property.meta().name);
 			}
 		}
 	}
@@ -93,7 +93,7 @@ public class DefaultCascading implements Cascading {
 			if (mapper instanceof Cascader) {
 				((Cascader) mapper).cascadeUpdate(repository, property);
 			} else {
-				throw new RepositoryException("cannot beforeBind property");
+				throw new RepositoryException("cannot cascade update for property " + property.meta().name);
 			}
 		}
 	}
