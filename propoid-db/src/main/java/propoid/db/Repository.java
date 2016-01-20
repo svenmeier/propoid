@@ -328,10 +328,13 @@ public class Repository {
 			versioning.upgrade(database);
 		}
 
-		if (!schemas.contains(propoid.getClass())) {
-			new Schema(this).now(propoid);
+		Class<? extends Propoid> clazz = propoid.getClass();
+		if (!schemas.contains(clazz)) {
+			// create a new instance with default property values
+			Propoid defaults = factory.create(this, clazz, Row.TRANSIENT);
+			new Schema(this).now(defaults);
 
-			schemas.add(propoid.getClass());
+			schemas.add(clazz);
 		}
 	}
 
