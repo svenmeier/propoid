@@ -113,6 +113,11 @@ public class Query extends Operation {
 		}
 
 		@Override
+		public Propoid getPrototype() {
+			return propoid;
+		}
+
+		@Override
 		public Propoid single() {
 
 			PropoidList list = list(Range.offsetLimit(0, 2));

@@ -66,6 +66,10 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 		};
 	}
 
+	public Match<T> getMatch() {
+		return lookup.getMatch();
+	}
+
 	public void setOrder(Order... ordering) {
 		lookup.setOrder(ordering);
 	}

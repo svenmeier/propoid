@@ -41,6 +41,13 @@ public interface Match<P extends Propoid> {
 	public Uri getUri();
 
 	/**
+	 * Get the propoid that acts as the prototype.
+	 *
+	 * @return
+	 */
+	public P getPrototype();
+
+	/**
 	 * List all matched {@link Propoid}s.
 	 * <p>
 	 * See {@link #list(Range, Order...)} for further details regarding the list

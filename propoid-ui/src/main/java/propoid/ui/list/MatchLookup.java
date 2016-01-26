@@ -40,14 +40,18 @@ import propoid.db.aspect.Row;
  */
 public abstract class MatchLookup<T extends Propoid> {
 
-	private final Match match;
+	private final Match<T> match;
 
 	private Order[] ordering = new Order[0];
 
 	private Range range = Range.all();
 
-	protected MatchLookup(Match match) {
+	protected MatchLookup(Match<T> match) {
 		this.match = match;
+	}
+
+	public Match<T> getMatch() {
+		return match;
 	}
 
 	public void setOrder(Order... ordering) {
