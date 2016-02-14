@@ -144,7 +144,7 @@ public abstract class MatchLookup<T extends Propoid> {
 
 		@Override
 		public Loader<List<T>> onCreateLoader(int id, Bundle args) {
-			return new MatchLoader<T>(context, match, range, ordering);
+			return new MatchLoader<T>(context, getMatch(), range, ordering);
 		}
 
 		@Override

@@ -68,6 +68,12 @@ public class MatchAdapterTest {
 		};
 
 		Match match = new Match<Foo>() {
+
+			@Override
+			public Foo getPrototype() {
+				return new Foo();
+			}
+
 			@Override
 			public Uri getUri() {
 				return Query.getUri(Foo.class);
