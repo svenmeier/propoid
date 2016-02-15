@@ -15,6 +15,8 @@
  */
 package propoid.db.aspect;
 
+import java.util.Iterator;
+
 import propoid.core.AbstractAspect;
 import propoid.core.Aspect;
 import propoid.core.Propoid;
@@ -56,6 +58,17 @@ public class Row extends AbstractAspect {
 		} else {
 			if (row.id != id) {
 				throw new RepositoryException("id already set");
+			}
+		}
+	}
+
+	public static void reset(Propoid propoid) {
+		Iterator<Aspect> aspects = propoid.aspects().iterator();
+		while (aspects.hasNext()) {
+			Aspect aspect = aspects.next();
+			if (aspect instanceof Row) {
+				aspects.remove();
+				break;
 			}
 		}
 	}
