@@ -104,7 +104,7 @@ public abstract class Operation {
 	/**
 	 * Aliaser for {@link Propoid}s.
 	 */
-	public class Aliaser {
+	public static class Aliaser {
 
 		private char current = 'a';
 

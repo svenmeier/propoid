@@ -73,4 +73,18 @@ public class SQL {
 	public String toString() {
 		return builder.toString();
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof SQL) {
+			return this.builder.toString().equals(((SQL) o).builder.toString());
+		}
+
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return builder.hashCode();
+	}
 }

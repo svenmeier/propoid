@@ -31,9 +31,9 @@ import propoid.db.operation.Operation.Aliaser;
 public class Order {
 
 	public final Property<?>[] property;
-	public final boolean ascending;
+	public final Boolean ascending;
 
-	Order(boolean ascending, Property<?>... property) {
+	Order(Boolean ascending, Property<?>... property) {
 		this.ascending = ascending;
 		this.property = property;
 	}
@@ -97,19 +97,25 @@ public class Order {
 	}
 
 	public SQL toOrderBy(Aliaser aliaser) {
-		if (property.length == 0) {
+		if (ascending == null) {
 			return new SQL("random()");
 		}
 
-		Property<?> last = property[property.length - 1];
-
 		SQL sql = new SQL();
-		sql.raw(aliaser.alias(last.propoid));
-		sql.raw(".");
-		sql.escaped(last.meta().name);
 
-		if (last.meta().type == String.class) {
-			sql.raw(" COLLATE NOCASE");
+		if (property.length == 0) {
+			sql.raw("_id");
+		} else {
+			Property<?> last = property[property.length - 1];
+
+			sql.raw(aliaser.alias(last.propoid));
+			sql.raw(".");
+			sql.escaped(last.meta().name);
+
+			if (last.meta().type == String.class) {
+				sql.raw(" COLLATE NOCASE");
+			}
+
 		}
 
 		if (ascending) {
@@ -157,10 +163,24 @@ public class Order {
 	}
 
 	/**
-	 * Random order.
+	 * Random.
 	 */
 	public static Order random() {
+		return new Order(null);
+	}
+
+	/**
+	 * Ascending by insert.
+	 */
+	public static Order ascendingByInsert() {
 		return new Order(true);
+	}
+
+	/**
+	 * Descending by insert.
+	 */
+	public static Order descendingByInsert() {
+		return new Order(false);
 	}
 
 	/**
