@@ -15,10 +15,11 @@
  */
 package propoid.db.mapping;
 
-import propoid.core.Property;
-import propoid.db.Repository;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
+
+import propoid.core.Property;
+import propoid.db.Repository;
 
 /**
  * A mapper for {@link String} properties.
