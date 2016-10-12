@@ -15,15 +15,15 @@
  */
 package propoid.util.content;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Simple preference wrapper offering typed access via string id.
@@ -386,6 +386,45 @@ public abstract class Preference<T extends Comparable<T>> {
 			@Override
 			protected void setImpl(Editor edit, String key, Boolean value) {
 				edit.putBoolean(key, value);
+			}
+		};
+	}
+
+	/**
+	 * Get an {@link Enum} preference.
+	 *
+	 * @param context
+	 *            context
+	 * @param clazz
+	 * 			  enum class
+	 * @param id
+	 *            string id of preference
+	 * @return preference
+	 */
+	public static <T extends Enum<T>> Preference<T> getEnum(Context context, final Class<T> clazz, int id) {
+		return new Preference<T>(context, id, null) {
+			@Override
+			protected T getImpl(String key) {
+				return constant(preferences.getString(key, fallback == null ? null : fallback.name()));
+			}
+
+			private T constant(String name) {
+				for (T t : clazz.getEnumConstants()) {
+					if (t.name().equals(name)) {
+						return t;
+					}
+				}
+				return null;
+			}
+
+			@Override
+			protected T parse(String fromPreferences) {
+				return constant(fromPreferences);
+			}
+
+			@Override
+			protected void setImpl(Editor edit, String key, T value) {
+				edit.putString(key, value.name());
 			}
 		};
 	}
