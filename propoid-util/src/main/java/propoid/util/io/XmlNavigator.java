@@ -104,6 +104,18 @@ public class XmlNavigator {
 	}
 
 	/**
+	 * Descent the XML tree to the descendent with the given name.
+	 *
+	 * @param name
+	 *            name of descendent to descent to
+	 */
+	public void descentRequired(String name) throws IOException {
+		if (descent(name) == false) {
+			throw new IOException("tag expected '" + name + "'");
+		}
+	}
+
+	/**
 	 * Ascent back from a previous {@link #descent(String)}.
 	 */
 	public void ascent() throws IOException {
@@ -169,9 +181,7 @@ public class XmlNavigator {
 	 *             if not present
 	 */
 	public String getText(String name) throws IOException {
-		if (!descent(name)) {
-			throw new IOException("tag expected '" + name + "'");
-		}
+		descentRequired(name);
 
 		String text = getText();
 
@@ -188,6 +198,10 @@ public class XmlNavigator {
 			ioException.initCause(ex);
 			throw ioException;
 		}
+	}
+
+	public int offset() {
+		return parser.getLineNumber();
 	}
 
 	private class Descent {
