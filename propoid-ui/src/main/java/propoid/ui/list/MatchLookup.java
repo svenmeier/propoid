@@ -15,18 +15,16 @@
  */
 package propoid.ui.list;
 
-import android.R;
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.LoaderManager;
-import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.content.Loader;
 import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +32,6 @@ import propoid.core.Propoid;
 import propoid.db.Match;
 import propoid.db.Order;
 import propoid.db.Range;
-import propoid.db.aspect.Row;
 
 /**
  */
@@ -68,8 +65,8 @@ public abstract class MatchLookup<T extends Propoid> {
 	 * @param id uniqure id
 	 * @param activity context
 	 */
-	public void restartLoader(int id, Activity activity) {
-		restartLoader(id, activity, activity.getLoaderManager());
+	public void restartLoader(int id, FragmentActivity activity) {
+		restartLoader(id, activity, activity.getSupportLoaderManager());
 	}
 
 	/**
@@ -92,8 +89,8 @@ public abstract class MatchLookup<T extends Propoid> {
 	 * @param id uniqure id
 	 * @param activity context
 	 */
-	public void initLoader(int id, Activity activity) {
-		initLoader(id, activity, activity.getLoaderManager());
+	public void initLoader(int id, FragmentActivity activity) {
+		initLoader(id, activity, activity.getSupportLoaderManager());
 	}
 
 	/**
@@ -116,8 +113,8 @@ public abstract class MatchLookup<T extends Propoid> {
 	 * @param id uniqure id
 	 * @param activity context
 	 */
-	public void destroy(int id, Activity activity) {
-		destroy(id, activity, activity.getLoaderManager());
+	public void destroy(int id, FragmentActivity activity) {
+		destroy(id, activity, activity.getSupportLoaderManager());
 	}
 
 	/**

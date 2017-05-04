@@ -17,17 +17,10 @@ package propoid.ui.list;
 
 import android.R;
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.LoaderManager;
-import android.content.AsyncTaskLoader;
-import android.content.Context;
-import android.content.Loader;
-import android.database.ContentObserver;
-import android.os.Bundle;
-import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import propoid.core.Propoid;
@@ -40,7 +33,7 @@ import propoid.db.aspect.Row;
  * An adapter for {@link Match}. To show the actual result, one of the {@code initLoader()} or
  * {@code restartLoader()} methods has to be called.
  *
- * @see #initLoader(int, Activity)
+ * @see #initLoader(int, FragmentActivity)
  * @see #initLoader(int, Fragment)
  */
 public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> {
@@ -109,7 +102,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	 * @param id uniqure id
 	 * @param activity context
 	 */
-	public void restartLoader(int id, Activity activity) {
+	public void restartLoader(int id, FragmentActivity activity) {
 		lookup.restartLoader(id, activity);
 	}
 
@@ -129,7 +122,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	 * @param id uniqure id
 	 * @param activity context
 	 */
-	public void initLoader(int id, Activity activity) {
+	public void initLoader(int id, FragmentActivity activity) {
 		lookup.initLoader(id, activity);
 	}
 
@@ -149,7 +142,7 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	 * @param id uniqure id
 	 * @param activity context
 	 */
-	public void destroy(int id, Activity activity) {
+	public void destroy(int id, FragmentActivity activity) {
 		lookup.destroy(id, activity);
 	}
 

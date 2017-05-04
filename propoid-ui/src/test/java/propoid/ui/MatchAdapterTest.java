@@ -2,6 +2,7 @@ package propoid.ui;
 
 import android.app.Activity;
 import android.net.Uri;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.ListView;
 
@@ -37,11 +38,11 @@ import static org.junit.Assert.fail;
 public class MatchAdapterTest {
 
 	private ListView listView;
-	private ActivityController<Activity> controller;
+	private ActivityController<FragmentActivity> controller;
 
 	@Before
 	public void setUp() {
-		controller = Robolectric.buildActivity(Activity.class).create();
+		controller = Robolectric.buildActivity(FragmentActivity.class).create();
 
 		Activity activity = controller.get();
 
