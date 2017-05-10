@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import java.util.List;
@@ -27,8 +27,8 @@ import propoid.db.mapping.StringMapper;
 
 import static org.junit.Assert.assertTrue;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = propoid.db.BuildConfig.class, sdk = 18)
+@RunWith(RobolectricTestRunner.class)
+@Config(constants = propoid.db.BuildConfig.class)
 public class DefaultMappingTest {
 
 	@Test

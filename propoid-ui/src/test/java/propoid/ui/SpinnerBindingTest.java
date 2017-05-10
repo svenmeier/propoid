@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import propoid.ui.bind.SpinnerBinding;
@@ -18,8 +18,8 @@ import static org.junit.Assert.assertEquals;
 /**
  * Test for {@link SpinnerBinding}.
  */
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = propoid.ui.BuildConfig.class, sdk = 18)
+@RunWith(RobolectricTestRunner.class)
+@Config(constants = propoid.ui.BuildConfig.class)
 public class SpinnerBindingTest {
 
 	private Spinner spinner;

@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import propoid.core.Propoid;
@@ -15,8 +15,8 @@ import propoid.db.operation.FooEx;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = propoid.db.BuildConfig.class, sdk = 18)
+@RunWith(RobolectricTestRunner.class)
+@Config(constants = propoid.db.BuildConfig.class)
 public class DefaultNamingTest {
 
 	@Test

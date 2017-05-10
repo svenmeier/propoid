@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.RobolectricGradleTestRunner;
+import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import propoid.ui.convert.DateConverter;
@@ -17,8 +17,8 @@ import static org.junit.Assert.assertEquals;
 /**
  * Test for {@link DateConverter}.
  */
-@RunWith(RobolectricGradleTestRunner.class)
-@Config(constants = propoid.ui.BuildConfig.class, sdk = 18)
+@RunWith(RobolectricTestRunner.class)
+@Config(constants = propoid.ui.BuildConfig.class)
 public class DateConverterTest {
 
 	@Test

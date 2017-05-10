@@ -21,7 +21,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':propoid-core')
     testCompile 'junit:junit:4.12'
-    testCompile('org.robolectric:robolectric:3.0') {
+    testCompile('org.robolectric:robolectric:3.3.2') {
         exclude group: 'commons-logging', module: 'commons-logging'
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
