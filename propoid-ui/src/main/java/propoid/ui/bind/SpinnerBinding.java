@@ -23,7 +23,7 @@ import propoid.ui.convert.Converter;
 import propoid.ui.convert.EnumConverter;
 import propoid.ui.convert.NumberConverter;
 import propoid.ui.convert.StringConverter;
-import propoid.ui.list.GenericAdapter;
+import propoid.ui.list.GenericListAdapter;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -66,7 +66,7 @@ public class SpinnerBinding<T> extends Binding<T> implements
 	 */
 	public SpinnerBinding(final Property<T> property, View view,
 			final Converter<T> converter, List<T> ts) {
-		this(property, view, new GenericAdapter<T>(
+		this(property, view, new GenericListAdapter<T>(
 				android.R.layout.simple_spinner_item,
 				android.R.layout.simple_spinner_dropdown_item, ts) {
 			@Override

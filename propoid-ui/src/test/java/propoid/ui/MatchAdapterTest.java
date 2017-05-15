@@ -25,9 +25,8 @@ import propoid.db.Order;
 import propoid.db.Range;
 import propoid.db.References;
 import propoid.db.RepositoryException;
-import propoid.db.aspect.Row;
 import propoid.db.operation.Query;
-import propoid.ui.list.MatchAdapter;
+import propoid.ui.list.MatchListAdapter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -159,7 +158,7 @@ public class MatchAdapterTest {
 			}
 		};
 
-		MatchAdapter<Foo> adapter = new MatchAdapter<Foo>(match) {
+		MatchListAdapter<Foo> adapter = new MatchListAdapter<Foo>(match) {
 			@Override
 			protected void bind(int position, View view, Foo item) {
 			}

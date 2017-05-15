@@ -1,9 +1,6 @@
 package propoid.ui;
 
 import android.app.Activity;
-import android.net.Uri;
-import android.view.View;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import org.junit.Before;
@@ -18,23 +15,11 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.util.ActivityController;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import propoid.core.Property;
-import propoid.core.Propoid;
-import propoid.db.Match;
-import propoid.db.Order;
-import propoid.db.Range;
 import propoid.db.Reference;
-import propoid.db.References;
 import propoid.db.Repository;
-import propoid.db.RepositoryException;
 import propoid.db.aspect.Row;
-import propoid.db.operation.Query;
-import propoid.ui.list.MatchAdapter;
 import propoid.ui.list.ReferenceLookup;
 
 import static org.junit.Assert.assertEquals;

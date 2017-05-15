@@ -17,13 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import propoid.ui.list.GenericAdapter;
+import propoid.ui.list.GenericListAdapter;
 
 import static org.junit.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
-public class GenericAdapterTest {
+public class GenericListAdapterTest {
 
 	private ListView listView;
 	private ActivityController<Activity> controller;
@@ -45,7 +45,7 @@ public class GenericAdapterTest {
 		final AtomicBoolean registered = new AtomicBoolean();
 		final AtomicBoolean unregistered = new AtomicBoolean();
 
-		GenericAdapter<Foo> adapter = new GenericAdapter<Foo>(list) {
+		GenericListAdapter<Foo> adapter = new GenericListAdapter<Foo>(list) {
 			@Override
 			protected void bind(int position, View view, Foo item) {
 

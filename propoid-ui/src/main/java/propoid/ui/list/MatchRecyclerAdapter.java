@@ -15,10 +15,9 @@
  */
 package propoid.ui.list;
 
-import android.R;
-import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,25 +35,27 @@ import propoid.db.aspect.Row;
  * @see #initLoader(int, FragmentActivity)
  * @see #initLoader(int, Fragment)
  */
-public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> {
+public abstract class MatchRecyclerAdapter<T extends Propoid> extends GenericRecyclerAdapter<T> {
 
 	private final MatchLookup lookup;
 
-	protected MatchAdapter(Match<T> match) {
-		this(R.layout.simple_list_item_1, match);
-	}
+	protected MatchRecyclerAdapter(int layoutId, Match<T> match) {
+		super(layoutId, new ArrayList<T>());
 
-	protected MatchAdapter(int layoutId, Match<T> match) {
-		this(layoutId, R.layout.simple_dropdown_item_1line, match);
-	}
-
-	protected MatchAdapter(int layoutId, int dropDownLayoutId, Match<T> match) {
-		super(layoutId, dropDownLayoutId, new ArrayList<T>());
+		setHasStableIds(true);
 
 		this.lookup = new MatchLookup<T>(match) {
 			@Override
 			protected void onLookup(List<T> propoids) {
-				setItems(propoids);
+				List<T> oldItems = items;
+				if (oldItems != null) {
+					// clear cursor for old items
+					oldItems.clear();
+				}
+
+				items = propoids;
+
+				notifyDataSetChanged();
 			}
 		};
 	}
@@ -72,28 +73,12 @@ public abstract class MatchAdapter<T extends Propoid> extends GenericAdapter<T> 
 	}
 
 	@Override
-	public boolean hasStableIds() {
-		return true;
-	}
-
-	@Override
 	public long getItemId(int position) {
-		if (position < getCount()) {
-			return Row.getID(getItem(position));
+		if (position < items.size()) {
+			return Row.getID(items.get(position));
 		}
 
 		return Row.TRANSIENT;
-	}
-
-	@Override
-	public void setItems(List<T> items) {
-		List<T> oldItems = super.getItems();
-		if (oldItems != null) {
-			// clear cursor for old items
-			oldItems.clear();
-		}
-
-		super.setItems(items);
 	}
 
 	/**

@@ -37,7 +37,7 @@ import java.util.List;
  * {@link #onItemClick(AdapterView, View, int, long)} delegating to
  * {@link #onItem(Object, int)}.
  */
-public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
+public abstract class GenericListAdapter<T> implements ListAdapter, SpinnerAdapter,
 		OnItemClickListener {
 
 	private final ArrayList<DataSetObserver> observers = new ArrayList<DataSetObserver>();
@@ -50,27 +50,27 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 
 	private LayoutInflater inflater;
 
-	protected GenericAdapter(T... items) {
+	protected GenericListAdapter(T... items) {
 		this(Arrays.asList(items));
 	}
 
-	protected GenericAdapter(List<T> items) {
+	protected GenericListAdapter(List<T> items) {
 		this(R.layout.simple_list_item_1, items);
 	}
 
-	protected GenericAdapter(int layoutId, T... items) {
+	protected GenericListAdapter(int layoutId, T... items) {
 		this(layoutId, Arrays.asList(items));
 	}
 
-	protected GenericAdapter(int layoutId, List<T> items) {
+	protected GenericListAdapter(int layoutId, List<T> items) {
 		this(layoutId, R.layout.simple_dropdown_item_1line, items);
 	}
 
-	protected GenericAdapter(int layoutId, int dropDownLayoutId, T... items) {
+	protected GenericListAdapter(int layoutId, int dropDownLayoutId, T... items) {
 		this(layoutId, dropDownLayoutId, Arrays.asList(items));
 	}
 
-	protected GenericAdapter(int layoutId, int dropDownLayoutId, List<T> items) {
+	protected GenericListAdapter(int layoutId, int dropDownLayoutId, List<T> items) {
 		this.layoutId = layoutId;
 		this.dropDownLayoutId = dropDownLayoutId;
 
@@ -230,7 +230,7 @@ public abstract class GenericAdapter<T> implements ListAdapter, SpinnerAdapter,
 	 * Helper method to install to the given {@link ListView}, i.e. set as
 	 * adapter and register as {@link OnItemClickListener}.
 	 */
-	public GenericAdapter<T> install(ListView view) {
+	public GenericListAdapter<T> install(ListView view) {
 		view.setAdapter(this);
 		view.setOnItemClickListener(this);
 
