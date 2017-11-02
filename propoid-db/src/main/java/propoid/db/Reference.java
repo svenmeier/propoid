@@ -68,8 +68,10 @@ public class Reference<P extends Propoid> {
 		return Uri.parse(toString());
 	}
 
-	public String toString() {
-		return String.format("propoid://%s/%s", type.getName(), id);
+	public String toString()
+	{
+		String packageName = type.getPackage().getName();
+		return String.format("propoid://%s/%s/%s", packageName, type.getSimpleName(), id);
 	}
 
 	/**
@@ -83,11 +85,12 @@ public class Reference<P extends Propoid> {
 	@SuppressWarnings("unchecked")
 	public static <P extends Propoid> Reference<P> from(String string) {
 		try {
-			Matcher matcher = Pattern.compile("propoid://(.*)/(.*)").matcher(
+			Matcher matcher = Pattern.compile("propoid://(.*)/(.*)/(.*)").matcher(
 					string);
 			if (matcher.matches()) {
-				Class<P> type = (Class<P>) Class.forName(matcher.group(1));
-				long id = Long.parseLong(matcher.group(2));
+				Class<P> type = (Class<P>) Class.forName(matcher.group(1) + "." +
+						 matcher.group(2));
+				long id = Long.parseLong(matcher.group(3));
 
 				return new Reference<P>(type, id);
 			}

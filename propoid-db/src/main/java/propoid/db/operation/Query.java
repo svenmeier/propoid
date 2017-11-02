@@ -90,7 +90,7 @@ public class Query extends Operation {
 				arguments.add(type);
 			}
 
-			sql.append(where.toWhere(repository, arguments, aliaser));
+			sql.append(where.toWhere(repository, propoid, arguments, aliaser));
 
 			return sql;
 		}
@@ -320,7 +320,6 @@ public class Query extends Operation {
 			sql.raw("DELETE FROM ");
 			sql.escaped(repository.naming.table(repository, propoid.getClass()));
 			sql.raw(" WHERE _id IN (");
-
 			sql.raw("SELECT _id");
 			sql.append(from(aliaser, arguments));
 			sql.append(where(aliaser, arguments));
@@ -545,6 +544,7 @@ public class Query extends Operation {
 	}
 
 	public static Uri getUri(Class<? extends Propoid> type) {
-		return Uri.parse(String.format("propoid://%s", type.getName()));
+		String packageName = type.getPackage().getName();
+		return Uri.parse(String.format("propoid://%s/%s", packageName, type.getSimpleName()));
 	}
 }

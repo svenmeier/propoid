@@ -47,13 +47,13 @@ public class ReferenceTest {
 
 		Row.setID(foo, 1l);
 
-		assertEquals("propoid://propoid.db.operation.Foo/1",
+		assertEquals("propoid://propoid.db.operation/Foo/1",
 				new Reference<Foo>(foo).toString());
 	}
 
 	@Test
 	public void testFromString() throws Exception {
-		Reference<Propoid> reference = Reference.from("propoid://propoid.db.operation.Foo/1");
+		Reference<Propoid> reference = Reference.from("propoid://propoid.db.operation/Foo/1");
 
 		assertEquals(Foo.class, reference.type);
 		assertEquals(1l, reference.id);

@@ -40,7 +40,7 @@ public class Where {
 	/**
 	 * Get SQL representation of this where condition.
 	 */
-	public SQL toWhere(Repository repository, Arguments arguments, Aliaser aliases) {
+	public SQL toWhere(Repository repository, Propoid propoid, Arguments arguments, Aliaser aliases) {
 		return new SQL("1 = 1");
 	}
 
@@ -179,13 +179,12 @@ public class Where {
 	 * @param where
 	 * @return this
 	 */
-	public static <P extends Propoid> Where has(Property<P> property, P value,
-			Where where) {
+	public static <P extends Propoid> Where has(Property<P> property, P value, Where where) {
 		return new Has<P>(property, value, where);
 	}
 
 	/**
-	 * ... property has a {@link Propoid} where a condition is met.
+	 * ... property has one {@link Propoid} where a condition is met.
 	 *
 	 * @param property
 	 * @param value
@@ -193,8 +192,20 @@ public class Where {
 	 * @return this
 	 */
 	public static <P extends Propoid> Where hasOne(Property<? extends Collection<P>> property, P value,
-												Where where) {
-		return new HasOne<P>(property, value, where);
+												   Where where) {
+		return new Contains<P>(property, value, where);
+	}
+
+	/**
+	 * ... this is property of another {@link Propoid} where a condition is met.
+	 *
+	 * @param property
+	 * @param where
+	 * @param <P>
+	 * @return
+	 */
+	public static <P extends Propoid> Where is(Property<P> property, Where where) {
+		return new Is<P>(property, where);
 	}
 
 	private static class Not extends Where {
@@ -211,12 +222,12 @@ public class Where {
 		}
 
 		@Override
-		public SQL toWhere(Repository repository, Arguments arguments,
-				Aliaser aliaser) {
+		public SQL toWhere(Repository repository, Propoid propoid, Arguments arguments,
+						   Aliaser aliaser) {
 			SQL sql = new SQL();
 
 			sql.raw("(not ");
-			sql.append(where.toWhere(repository, arguments, aliaser));
+			sql.append(where.toWhere(repository, propoid, arguments, aliaser));
 			sql.raw(")");
 
 			return sql;
@@ -243,8 +254,8 @@ public class Where {
 		}
 
 		@Override
-		public SQL toWhere(Repository repository, Arguments arguments,
-				Aliaser aliaser) {
+		public SQL toWhere(Repository repository, Propoid propoid, Arguments arguments,
+						   Aliaser aliaser) {
 			SQL sql = new SQL();
 
 			if (operands.length == 0) {
@@ -253,10 +264,45 @@ public class Where {
 				sql.raw("(");
 				for (Where where : this.operands) {
 					sql.separate(op);
-					sql.append(where.toWhere(repository, arguments, aliaser));
+					sql.append(where.toWhere(repository, propoid, arguments, aliaser));
 				}
 				sql.raw(")");
 			}
+
+			return sql;
+		}
+	}
+
+	private static class Is<P extends Propoid> extends Where {
+
+		private Property<P> property;
+		private Where where;
+
+		public Is(Property<P> property, Where where) {
+			this.property = property;
+			this.where = where;
+		}
+
+		@Override
+		public void schema(Repository repository) { }
+
+		@Override
+		public SQL toWhere(Repository repository, Propoid propoid, Arguments arguments, Aliaser aliaser) {
+			SQL sql = new SQL();
+
+			sql.raw("exists (select null from ");
+			sql.escaped(repository.naming.table(repository, property.propoid.getClass()));
+			sql.raw(" ");
+			sql.raw(aliaser.alias(property.propoid));
+			sql.raw(" where ");
+			sql.raw(aliaser.alias(property.propoid));
+			sql.raw(".");
+			sql.raw(property.meta().name);
+			sql.raw("=");
+			sql.raw(aliaser.alias(propoid));
+			sql.raw("._id and ");
+			sql.append(where.toWhere(repository, property.propoid, arguments, aliaser));
+			sql.raw(")");
 
 			return sql;
 		}
@@ -283,8 +329,8 @@ public class Where {
 		}
 
 		@Override
-		public SQL toWhere(Repository repository, Arguments arguments,
-				Aliaser aliaser) {
+		public SQL toWhere(Repository repository, Propoid propoid, Arguments arguments,
+						   Aliaser aliaser) {
 			SQL sql = new SQL();
 
 			sql.raw("exists (select null from ");
@@ -298,26 +344,26 @@ public class Where {
 			sql.raw(".");
 			sql.escaped(property.meta().name);
 			sql.raw(" and ");
-			sql.append(where.toWhere(repository, arguments, aliaser));
+			sql.append(where.toWhere(repository, value, arguments, aliaser));
 			sql.raw(")");
 
 			return sql;
 		}
 	}
 
-	private static class HasOne<P extends Propoid> extends Where {
+	private static class Contains<P extends Propoid> extends Where {
 
 		private Property<? extends Collection<P>> property;
 		private P value;
 		private Where where;
 
-		public HasOne(Property<? extends Collection<P>> property, P value, Where where) {
-			if (value == null) {
-				throw new IllegalArgumentException("value must no be null");
-			}
-			this.property = property;
-			this.value = value;
-			this.where = where;
+		public Contains(Property<? extends Collection<P>> property, P value, Where where) {
+				if (value == null) {
+					throw new IllegalArgumentException("value must no be null");
+				}
+				this.property = property;
+				this.value = value;
+				this.where = where;
 		}
 
 		@Override
@@ -326,7 +372,7 @@ public class Where {
 		}
 
 		@Override
-		public SQL toWhere(Repository repository, Arguments arguments,
+		public SQL toWhere(Repository repository, Propoid propoid, Arguments arguments,
 						   Aliaser aliaser) {
 			SQL sql = new SQL();
 
@@ -343,7 +389,7 @@ public class Where {
 			sql.raw(aliaser.alias(value));
 			// see PropoisMapper#ID_SUFFIX
 			sql.raw("._id || '}%' and ");
-			sql.append(where.toWhere(repository, arguments, aliaser));
+			sql.append(where.toWhere(repository, value, arguments, aliaser));
 			sql.raw(")");
 
 			return sql;
@@ -366,8 +412,8 @@ public class Where {
 		}
 
 		@Override
-		public SQL toWhere(Repository repository, Arguments arguments,
-				Aliaser aliaser) {
+		public SQL toWhere(Repository repository, Propoid propoid, Arguments arguments,
+						   Aliaser aliaser) {
 			SQL sql = new SQL();
 
 			sql.raw(aliaser.alias(property.propoid));
