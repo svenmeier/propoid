@@ -19,6 +19,7 @@ import java.util.Collection;
 
 import propoid.core.Property;
 import propoid.core.Propoid;
+import propoid.db.operation.Operation;
 import propoid.db.operation.Operation.Aliaser;
 import propoid.db.operation.Operation.Arguments;
 
@@ -206,6 +207,23 @@ public class Where {
 	 */
 	public static <P extends Propoid> Where is(Property<P> property, Where where) {
 		return new Is<P>(property, where);
+	}
+
+	/**
+	 * ... condition is never met.
+	 *
+	 * @return
+	 */
+	public static Where none() {
+		return new None();
+	}
+
+	private static class None extends Where {
+
+		@Override
+		public SQL toWhere(Repository repository, Propoid propoid, Arguments arguments, Aliaser aliases) {
+			return new SQL("1 = 0");
+		}
 	}
 
 	private static class Not extends Where {
