@@ -84,7 +84,7 @@ public class Repository {
 	 *            file name
 	 */
 	public Repository(Context context, String name, Setting... settings) {
-		this(context, new FileLocator(context, name));
+		this(context, new FileLocator(context, name), settings);
 	}
 
 	/**

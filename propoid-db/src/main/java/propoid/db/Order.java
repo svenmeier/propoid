@@ -162,6 +162,26 @@ public class Order {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+
+		for (Property<?> p : property) {
+			if (builder.length() == 0) {
+				builder.append(p.meta().owner.getSimpleName());
+			}
+			builder.append(".");
+			builder.append(p.meta().name);
+		}
+		if (ascending) {
+			builder.append(".ASC");
+		} else {
+			builder.append(".DESC");
+		}
+
+		return builder.toString();
+	}
+
 	/**
 	 * Random.
 	 */
