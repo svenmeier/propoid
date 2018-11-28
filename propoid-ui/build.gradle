@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "27.0.0"
 
     defaultConfig {
         minSdkVersion 14
@@ -18,16 +17,16 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:support-v13:25.3.1'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
-    compile project(':propoid-core')
-    compile project(':propoid-validation')
-    compile project(':propoid-db')
-    testCompile 'junit:junit:4.12'
-    testCompile('org.robolectric:robolectric:3.3.2') {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:support-v13:25.3.1'
+    implementation 'com.android.support:recyclerview-v7:25.3.1'
+    implementation project(':propoid-core')
+    implementation project(':propoid-validation')
+    implementation project(':propoid-db')
+    testImplementation 'junit:junit:4.12'
+    testImplementation('org.robolectric:robolectric:3.3.2') {
         exclude group: 'commons-logging', module: 'commons-logging'
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
-    testCompile 'org.mockito:mockito-core:1.10.19'
+    testImplementation 'org.mockito:mockito-core:1.10.19'
 }

@@ -2,7 +2,6 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "27.0.0"
 
     defaultConfig {
         minSdkVersion 14
@@ -18,10 +17,10 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile project(':propoid-core')
-    testCompile 'junit:junit:4.12'
-    testCompile('org.robolectric:robolectric:3.3.2') {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':propoid-core')
+    testImplementation 'junit:junit:4.12'
+    testImplementation('org.robolectric:robolectric:3.3.2') {
         exclude group: 'commons-logging', module: 'commons-logging'
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
