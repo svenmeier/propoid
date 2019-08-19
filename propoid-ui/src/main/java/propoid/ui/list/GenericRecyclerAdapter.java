@@ -42,6 +42,10 @@ public abstract class GenericRecyclerAdapter<T> extends RecyclerView.Adapter<Gen
 		return items.size();
 	}
 
+	protected  T getItem(int position) {
+		return items.get(position);
+	}
+
 	@Override
 	public GenericHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
@@ -52,7 +56,7 @@ public abstract class GenericRecyclerAdapter<T> extends RecyclerView.Adapter<Gen
 
 	@Override
 	public void onBindViewHolder(GenericHolder holder, int position) {
-		holder.bind(items.get(position));
+		holder.bind(getItem(position));
 	}
 
 	protected abstract GenericHolder createHolder(View v);
