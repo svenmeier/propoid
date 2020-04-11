@@ -19,11 +19,12 @@ import android.content.Context;
 import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.Loader;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.AsyncTaskLoader;
+import androidx.loader.content.Loader;
 
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +67,7 @@ public abstract class MatchLookup<T extends Propoid> {
 	 * @param activity context
 	 */
 	public void restartLoader(int id, FragmentActivity activity) {
-		restartLoader(id, activity, activity.getSupportLoaderManager());
+		restartLoader(id, activity, LoaderManager.getInstance(activity));
 	}
 
 	/**
@@ -76,7 +77,7 @@ public abstract class MatchLookup<T extends Propoid> {
 	 * @param fragment context
 	 */
 	public void restartLoader(int id, Fragment fragment) {
-		restartLoader(id, fragment.getActivity(), fragment.getLoaderManager());
+		restartLoader(id, fragment.getActivity(), LoaderManager.getInstance(fragment));
 	}
 
 	private void restartLoader(int id, Context context, LoaderManager manager) {
